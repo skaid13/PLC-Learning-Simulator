@@ -25,7 +25,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
   console.error('PORT 必须是 1～65535 的整数。');
   process.exit(1);
 }
-const server = createServer(async (request, response) => {
+export const server = createServer(async (request, response) => {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     response.writeHead(405, { Allow: 'GET, HEAD' }).end();
     return;
@@ -43,6 +43,7 @@ const server = createServer(async (request, response) => {
       'Content-Type': contentTypes[extname(file)] || 'application/octet-stream',
       'Cache-Control': 'no-cache',
       'X-Content-Type-Options': 'nosniff',
+      'X-PLC-Learning-Lab': '1',
     });
     response.end(request.method === 'HEAD' ? undefined : body);
   } catch (error) {
