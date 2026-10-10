@@ -1,3 +1,4 @@
+import { sensorTerminals } from '../simulation/plant';
 import type { Simulator } from '../engine/useSimulator';
 
 export function VariableMonitor({ simulator }: { simulator: Simulator }) {
@@ -8,7 +9,10 @@ export function VariableMonitor({ simulator }: { simulator: Simulator }) {
         <h3>变量调试</h3>
         <span>最后扫描值</span>
       </div>
-      <p>输入开关表示待采样值。TRUE / FALSE 是教学布尔状态，不表示真实端子电平。</p>
+      <p>
+        输入开关表示待采样值。自动传感器启用时，位置和液位输入由装置在下一扫描采样；关闭后可手动操作。TRUE
+        / FALSE 是教学布尔状态。
+      </p>
       <div className="monitor-inputs" role="group" aria-label="虚拟输入">
         {state.program.variables
           .filter((variable) => variable.kind === 'input')
@@ -21,6 +25,12 @@ export function VariableMonitor({ simulator }: { simulator: Simulator }) {
                 </small>
               </span>
               <input
+                disabled={
+                  state.autoSensors &&
+                  (sensorTerminals[state.program.experimentId] ?? []).some(
+                    (n) => variable.terminal === `I-${String(n).padStart(2, '0')}`,
+                  )
+                }
                 type="checkbox"
                 role="switch"
                 aria-label={`虚拟输入 ${variable.name} ${variable.description}`}

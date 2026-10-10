@@ -1,3 +1,4 @@
+import { ExecutionExplanation } from './components/ExecutionExplanation';
 import { useState, type CSSProperties } from 'react';
 import { loadProjects, saveProjects } from './storage/projects';
 import { ProjectToolbar } from './components/ProjectToolbar';
@@ -7,14 +8,15 @@ import { Header } from './components/Header';
 import { TeachingPanel } from './components/TeachingPanel';
 import { LadderEditor } from './components/LadderEditor';
 import { createWorkspace, editProgram, type EditorAction } from './editor/model';
-import { SimulationPlaceholder } from './components/SimulationPlaceholder';
+import { SimulationPanel } from './components/SimulationPanel';
+import { createReferenceProgram } from './data/referencePrograms';
+import { curriculum } from './data/curriculum';
 import { ExperimentDetails } from './components/ExperimentDetails';
 import { Modal } from './components/Modal';
 import { Icon } from './components/Icon';
 import { useSimulator } from './engine/useSimulator';
 import { statusNames } from './engine/runtime';
 import { RuntimeControls } from './components/RuntimeControls';
-import { VariableMonitor } from './components/VariableMonitor';
 
 export default function App() {
   const [experimentId, setExperimentId] = useState(experiments[0].id);
@@ -24,6 +26,11 @@ export default function App() {
   const [modal, setModal] = useState<'explain' | 'details' | null>(null);
   const [loaded] = useState(() => loadProjects(window.localStorage));
   const [saveMessage, setSaveMessage] = useState(loaded.message);
+  const [locate, setLocate] = useState<
+    { networkId: string; instructionId: string; request: number } | undefined
+  >();
+  const [pendingReference, setPendingReference] = useState<ProgramWorkspace | null>(null);
+  const [explainTarget, setExplainTarget] = useState<string | undefined>();
   const [pendingImport, setPendingImport] = useState<ProgramWorkspace | null>(null);
   const [history, setHistory] = useState<
     Record<string, { past: ProgramWorkspace[]; future: ProgramWorkspace[] }>
@@ -121,7 +128,7 @@ export default function App() {
           onSave={() => setSaveMessage(saveProjects(window.localStorage, programs))}
           onMessage={setSaveMessage}
           onImport={setPendingImport}
-          onReference={() => setSaveMessage('参考程序正在接入；当前草稿已保留。')}
+          onReference={() => setPendingReference(createReferenceProgram(experiment))}
         />
         <label className="layout-control">
           编辑区宽度
@@ -153,13 +160,17 @@ export default function App() {
             onAction={editCurrentProgram}
             running={simulator.state.status === 'running'}
             traces={simulator.state.scan.traces}
+            locate={locate}
             runtimeControls={<RuntimeControls simulator={simulator} />}
           />
-          <SimulationPlaceholder
+          <SimulationPanel
             experiment={experiment}
-            onExplain={() => setModal('explain')}
+            simulator={simulator}
+            onExplain={(id) => {
+              setExplainTarget(id);
+              setModal('explain');
+            }}
             onDetails={() => setModal('details')}
-            monitor={<VariableMonitor simulator={simulator} />}
           />
         </div>
         <div className="workspace-footnote">
@@ -190,6 +201,47 @@ export default function App() {
           <span>教学简化系统</span>
         </div>
       </footer>
+      {pendingReference && (
+        <Modal
+          title="教学参考程序"
+          onClose={() => setPendingReference(null)}
+          footer={
+            <>
+              <button className="button secondary" onClick={() => setPendingReference(null)}>
+                继续自己编程
+              </button>
+              <button
+                className="button primary"
+                disabled={simulator.state.status === 'running'}
+                onClick={() => {
+                  replaceProgram(pendingReference);
+                  setPendingReference(null);
+                }}
+              >
+                载入参考程序
+              </button>
+            </>
+          }
+        >
+          <p>{curriculum[experiment.id].principle}</p>
+          <p>
+            共 {pendingReference.networks.length}{' '}
+            个可编辑网络。载入会替换当前草稿，可撤销恢复。先导出可保存一份独立备份。
+          </p>
+          <details>
+            <summary>展开参考网络顺序</summary>
+            <ol>
+              {pendingReference.networks.map((n) => (
+                <li key={n.id}>{n.name}</li>
+              ))}
+            </ol>
+          </details>
+          <div className="tip">
+            <p>{curriculum[experiment.id].assumptions}</p>
+          </div>
+          <p>这是根据指导书要求独立编写的教学程序，不是官方软件工程。</p>
+        </Modal>
+      )}
       {pendingImport && (
         <Modal
           title="载入导入程序？"
@@ -220,12 +272,14 @@ export default function App() {
           onClose={() => setModal(null)}
         >
           {modal === 'explain' ? (
-            <div className="explanation-placeholder">
-              <div className="empty-icon">
-                <Icon name="light" size={28} />
-              </div>
-              <p>动态逻辑解释功能将在后续阶段开放。</p>
-            </div>
+            <ExecutionExplanation
+              simulator={simulator}
+              target={explainTarget}
+              onLocate={(networkId, instructionId) => {
+                setLocate({ networkId, instructionId, request: Date.now() });
+                setModal(null);
+              }}
+            />
           ) : (
             <ExperimentDetails experiment={experiment} />
           )}

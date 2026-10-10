@@ -1,3 +1,4 @@
+import { ExperimentLesson } from './ExperimentLesson';
 import { useState } from 'react';
 import { foundationQuestion, learningSteps } from '../data/lesson';
 import type { Experiment, LearningMode } from '../types';
@@ -20,10 +21,20 @@ export function TeachingPanel({
   onShowDetails,
   onStartLearning,
 }: Props) {
+  const [course, setCourse] = useState(false);
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [showReference, setShowReference] = useState(false);
   const selectedOption = foundationQuestion.options.find((option) => option.id === answer);
+  if (course && mode === 'teaching')
+    return (
+      <ExperimentLesson
+        key={experiment.id}
+        experiment={experiment}
+        onFoundation={() => setCourse(false)}
+        onDetails={onShowDetails}
+      />
+    );
   return (
     <aside className="panel teaching-panel" aria-label="教学指导区">
       <div className="panel-heading">
@@ -33,6 +44,15 @@ export function TeachingPanel({
         </div>
         <span className="subtle-label">{mode === 'teaching' ? '循序渐进' : '自主探索'}</span>
       </div>
+      <button
+        className="lesson-course-button"
+        onClick={() => {
+          setCourse(true);
+          onStartLearning();
+        }}
+      >
+        学习当前实验：{experiment.shortName} →
+      </button>
       {mode === 'free' ? (
         <div className="free-content">
           <span className="eyebrow">FREE PRACTICE</span>
@@ -44,7 +64,7 @@ export function TeachingPanel({
             <p>教学模式与自由模式共用当前程序。切换模式不会清空工作区。</p>
           </div>
           <p className="notice-text">
-            绘制并检查梯形图后，可设置右侧虚拟输入，再运行或单步扫描，观察变量值。装置动画与动态解释将在后续阶段开放。
+            绘制并检查梯形图后，可设置右侧虚拟输入，再运行或单步扫描，观察变量值。装置由实际输出驱动；可以查看执行解释并定位网络。
           </p>
           <button className="button secondary full" onClick={onShowDetails}>
             查看当前实验要求
@@ -174,7 +194,7 @@ export function TeachingPanel({
                 <div className="tip">
                   <Icon name="info" />
                   <p>
-                    一次扫描先读取输入，再从上到下计算网络并写入线圈。绿色表示该处串联通路成立。当前为教学简化规则，装置图仍是静态占位。
+                    一次扫描先读取输入，再从上到下计算网络并写入线圈。绿色表示该处串联通路成立。装置按实际输出变化，传感器可自动反馈；本系统使用教学简化规则。
                   </p>
                 </div>
                 <p>

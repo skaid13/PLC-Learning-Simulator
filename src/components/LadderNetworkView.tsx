@@ -94,8 +94,8 @@ export function LadderNetworkView({
         {instruction && trace && (
           <title>
             {instruction.kind === 'coil'
-              ? `最后扫描线圈：${path ? 'TRUE' : 'FALSE'}`
-              : `读取值：${contactTrace?.value ? 'TRUE' : 'FALSE'}；触点条件：${contactTrace?.condition ? '成立' : '不成立'}；串联通路：${path ? '成立' : '不成立'}`}
+              ? `网络通路：${path ? '成立' : '不成立'}；写入值：${String(trace.coil.value)}${trace.coil.written === false ? '（未写入，保留）' : ''}`
+              : `读取值：${String(contactTrace?.value)}；触点条件：${contactTrace?.condition ? '成立' : '不成立'}；串联通路：${path ? '成立' : '不成立'}`}
           </title>
         )}
         <rect x={x - 46} y="25" width="92" height="119" rx="7" className="cell-background" />

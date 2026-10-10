@@ -34,6 +34,21 @@ export function RuntimeControls({ simulator }: { simulator: Simulator }) {
         <strong>扫描 {state.scan.scanCount} 次</strong>
         <span>名义间隔 200 ms · 教学简化</span>
       </div>
+      <label className="speed-control">
+        仿真速度
+        <select
+          aria-label="仿真速度"
+          value={simulator.speed}
+          onChange={(e) => simulator.setSpeed(Number(e.target.value))}
+        >
+          {[1, 5, 20].map((v) => (
+            <option key={v} value={v}>
+              {v}×
+            </option>
+          ))}
+        </select>
+        <span>每次扫描逻辑时间 200 ms</span>
+      </label>
       <p className="runtime-guidance">
         {running
           ? '正在连续扫描。修改输入，观察下次扫描的变量变化；先停止才能编辑程序。'

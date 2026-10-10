@@ -1,5 +1,5 @@
 import { VariableManager } from './VariableManager';
-import { useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace } from '../types';
 import {
   createNetwork,
@@ -23,12 +23,14 @@ export function LadderEditor({
   running,
   traces,
   runtimeControls,
+  locate,
 }: {
   program: ProgramWorkspace;
   onAction: (action: EditorAction) => void;
   running: boolean;
   traces: NetworkTrace[];
   runtimeControls: ReactNode;
+  locate?: { networkId: string; instructionId: string; request: number };
 }) {
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
@@ -36,6 +38,15 @@ export function LadderEditor({
   const [showIssues, setShowIssues] = useState(false);
   const [deleteNetworkId, setDeleteNetworkId] = useState<string | null>(null);
   const networkRefs = useRef(new Map<string, HTMLDivElement>());
+  useEffect(() => {
+    if (!locate || !program.networks.some((n) => n.id === locate.networkId)) return;
+    setSelection({ networkId: locate.networkId, instructionId: locate.instructionId });
+    setTool('select');
+    setMessage('已定位输出的实际写入网络。');
+    networkRefs.current
+      .get(locate.networkId)
+      ?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+  }, [locate, program.experimentId]);
   const selectedNetwork = program.networks.find((item) => item.id === selection?.networkId);
   const selectedInstruction =
     (selectedNetwork &&

@@ -5,12 +5,12 @@ import App from './App';
 import { experiments } from './data/experiments';
 
 describe('学习工作台回归检查', () => {
-  it('展示三栏、11 个真实实验及明确的未开放状态', () => {
+  it('展示三栏、11 个实验和可用的编辑运行功能', () => {
     render(<App />);
     expect(screen.getByLabelText('教学指导区')).toBeInTheDocument();
     expect(screen.getByLabelText('梯形图编程区')).toBeInTheDocument();
     expect(screen.getByLabelText('实验仿真区')).toBeInTheDocument();
-    expect(screen.getAllByRole('option')).toHaveLength(11);
+    expect(within(screen.getByLabelText('当前实验')).getAllByRole('option')).toHaveLength(11);
     expect(screen.getByRole('button', { name: '停止' })).toBeDisabled();
     for (const name of ['运行', '复位', '单步扫描'])
       expect(screen.getByRole('button', { name })).toBeEnabled();
@@ -85,13 +85,13 @@ describe('学习工作台回归检查', () => {
     );
   });
 
-  it('两种模式的解释入口均只展示指定占位说明', async () => {
+  it('两种模式的解释入口均按未扫描状态提供明确说明', async () => {
     const user = userEvent.setup();
     render(<App />);
     for (const mode of ['教学模式', '自由模式']) {
       await user.click(screen.getByRole('button', { name: mode }));
       await user.click(screen.getByRole('button', { name: '为什么这样运行？' }));
-      expect(screen.getByRole('dialog')).toHaveTextContent('动态逻辑解释功能将在后续阶段开放。');
+      expect(screen.getByRole('dialog')).toHaveTextContent('尚未扫描，无法说明输出原因。');
       await user.click(screen.getByRole('button', { name: '我知道了' }));
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     }
