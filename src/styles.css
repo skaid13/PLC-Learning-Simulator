@@ -1790,10 +1790,17 @@ svg {
   overflow-x: auto;
   overscroll-behavior-x: contain;
 }
+.diagram-scroll-hint {
+  margin: 0;
+  padding: 6px 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: #fcfdfb;
+}
 .network-diagram {
   display: block;
   width: 100%;
-  min-width: 580px;
+  min-width: 650px;
   background: radial-gradient(#dce5d9 0.7px, transparent 0.7px) 0 0/14px 14px;
 }
 .diagram-rail {
@@ -1845,7 +1852,7 @@ svg {
 }
 .diagram-variable {
   font:
-    10px ui-monospace,
+    11px ui-monospace,
     monospace;
   fill: #3d6952;
 }
@@ -1855,7 +1862,7 @@ svg {
 }
 .diagram-description {
   fill: #839580;
-  font-size: 9px;
+  font-size: 10px;
 }
 .slot-outline {
   fill: #f9fbf6;

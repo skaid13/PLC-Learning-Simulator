@@ -166,6 +166,7 @@ export function LadderEditor({
           检查结构
         </button>
       </div>
+      <p className="diagram-scroll-hint">窄屏可在梯形图内横向滚动，查看末端线圈。</p>
       <InstructionInspector
         network={selectedNetwork}
         instruction={selectedInstruction ?? undefined}

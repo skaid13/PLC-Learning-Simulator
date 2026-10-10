@@ -77,7 +77,7 @@ export function LadderNetworkView({
         onClick={available || instruction ? action : undefined}
         onKeyDown={available || instruction ? (event) => activate(event, action) : undefined}
       >
-        <rect x={x - 46} y="25" width="92" height="104" rx="7" className="cell-background" />
+        <rect x={x - 46} y="25" width="92" height="119" rx="7" className="cell-background" />
         {instruction ? (
           <>
             <text
@@ -88,7 +88,10 @@ export function LadderNetworkView({
             >
               {variable?.name ?? '未选择变量'}
             </text>
-            <path d={`M${x - 46} 77H${x - 14}M${x + 14} 77H${x + 46}`} className="diagram-wire" />
+            <path
+              d={`M${x - 46} 77H${x - (instruction.kind === 'contact' ? 12 : 14.5)}M${x + (instruction.kind === 'contact' ? 12 : 14.5)} 77H${x + 46}`}
+              className="diagram-wire"
+            />
             {instruction.kind === 'contact' ? (
               <g className="diagram-symbol">
                 <path d={`M${x - 12} 63V91M${x + 12} 63V91`} />
@@ -109,18 +112,19 @@ export function LadderNetworkView({
           </>
         ) : (
           <>
+            <path d={`M${x - 46} 77H${x + 46}`} className="diagram-wire" />
             <rect
               x={x - 28}
-              y="58"
+              y="94"
               width="56"
-              height="38"
+              height="28"
               rx="5"
               className={`slot-outline ${ready ? 'ready' : ''}`}
             />
-            <text x={x} y="83" textAnchor="middle" className="slot-plus">
+            <text x={x} y="114" textAnchor="middle" className="slot-plus">
               {available ? '+' : '·'}
             </text>
-            <text x={x} y="116" textAnchor="middle" className="diagram-description">
+            <text x={x} y="138" textAnchor="middle" className="diagram-description">
               {slot === 'coil' ? '末端线圈' : available ? '添加触点' : '顺序添加'}
             </text>
           </>
