@@ -121,6 +121,14 @@ npm run build
 ## 结构
 
 ```text
+PLC-Learning-Simulator/
+.gitignore          依赖、构建、缓存与敏感文件排除规则
+.prettierrc.json     格式配置
+package.json        Node 要求、依赖和开发/测试/运行脚本
+package-lock.json   精确依赖锁文件，Mac/Windows 安装依据
+tsconfig.json       TypeScript 配置
+vite.config.ts      Vite / Vitest 配置
+index.html          网页入口
 src/data/           实验目录、入门课、各实验课程、参考梯形图生成
 src/editor/         不可变编辑模型、结构与类型校验
 src/engine/         扫描、运行状态机、React 运行连接
@@ -129,12 +137,28 @@ src/storage/        程序格式、JSON 校验和本地草稿
 src/components/     编辑器、教学、SVG 装置、执行解释和文件工具
 src/test/           测试环境
 scripts/serve.mjs   跨平台、离线、只监听本机的正式版服务
+scripts/launch.mjs  双击入口共用的启动与服务复用逻辑
+启动PLC学习工作台.command  macOS 双击入口（Git 保留可执行权限）
+启动PLC学习工作台.bat      Windows 双击入口
+docs/               原始指导书、提取记录、执行规则、清理与上传记录
 DEVELOPMENT_PROGRESS.md  最新恢复入口与测试检查点
 DEVELOPMENT_LOG.md       开发历史、决策与验收限制
 ```
 
+本项目是独立教学仿真系统，没有另行存在的官方 PLC 工程或硬件下载配置。PLC 变量、I/O 及参考程序在 `src/types`、`src/data`，可保存程序的版本化结构在 `src/storage`；这些均属于必须保留的工程源文件。
+
+## GitHub 源码备份与恢复
+
+上传保持原始文件目录和现有 Git 历史，默认使用 Private 仓库。只备份源码、配置、锁文件、测试、启动脚本和文档，包括原始 DOCX；`node_modules`、`dist`、测试输出和凭据由 `.gitignore` 排除，不会从本机删除。
+
+从 GitHub 获取源码后，在项目目录执行 `npm ci`、`npm run build`，再双击对应系统启动入口，或运行 `npm start`。Windows 使用对应的 `npm.cmd` 命令。`dist` 不在仓库中，所以刚获取的源码需要先构建。
+
+学生在浏览器 localStorage 中的草稿不属于源码目录，不能通过 Git 自动备份。需要一并保留自己的梯形图时，请先通过工作台导出 JSON，再将所需文件保存到项目内的 `student-programs/` 后提交；该目录及 JSON 格式不会被忽略。不要把含个人凭据的文件放入其中。
+
+上传准备、保留范围和检查结果见 [GitHub 上传记录](docs/GITHUB_UPLOAD.md)。远程仓库需用户确认后才创建和推送；以该记录中的实际状态为准。
+
 ## 范围与后续
 
-本次完成教学系统范围内的剩余功能。未实现实体 PLC 通信/下载、真实运动轴、任意嵌套梯形图或官方工程格式；这些不属于已授权的教学简化功能。没有云端服务、AI API、用户账户或在线发布。保留现有本地 Git 历史，没有推送远程仓库。
+本次完成教学系统范围内的剩余功能。未实现实体 PLC 通信/下载、真实运动轴、任意嵌套梯形图或官方工程格式；这些不属于已授权的教学简化功能。没有云端服务、AI API、用户账户或在线发布。保留现有本地 Git 历史，GitHub 备份状态见上传记录。
 
 发现中断时先读 `DEVELOPMENT_PROGRESS.md`，检查 Git 差异、现有进程和测试，再从最后已验证检查点继续。清理只移动确认废弃的文件到 macOS 垃圾桶，不清空垃圾桶，不删除指导书、源码历史、依赖或当前构建。

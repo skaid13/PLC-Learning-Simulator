@@ -1,16 +1,38 @@
-node_modules/
-dist/
-coverage/
+# 可由 package-lock.json 与源码重新生成的依赖、构建和测试产物。
+/node_modules/
+/dist/
+/coverage/
 .vite/
 .cache/
-*.local
+*.tsbuildinfo
+/playwright-report/
+/test-results/
+
+# 系统和编辑器产生的临时文件。
 *.log
 .DS_Store
+._*
 Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# 本地凭据与环境配置；示例配置允许版本管理。
 .env
 .env.*
 !.env.example
+/.npmrc
+/.netrc
+/.ssh/
+/.aws/
+/.gnupg/
 *.pem
 *.key
-playwright-report/
-test-results/
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# 保留源码、PLC 定义/配置、项目 JSON、锁文件、原指导书和启动脚本。
+# 不按通用 *.local / *.json / *.xml / PLC 工程扩展名做排除。

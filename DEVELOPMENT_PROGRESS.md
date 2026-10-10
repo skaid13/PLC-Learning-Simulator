@@ -21,6 +21,12 @@
 
 `git remote -v` 无远程；GitHub 未上传。只有本地提交，未经用户进一步授权不关联/推送或公开发布。
 
+### GitHub 上传准备（2026-10-10，等待用户确认）
+
+拟创建 `skaid13/PLC-Learning-Simulator`，Private。Git/目录完整性、忽略规则与凭据模式检查已完成；67 个必要文件拟上传，现有 PLC 源码和原指导书未改。gh 已安装并登录 skaid13，无 origin；建议名称的仓库只读查询未找到。101 项测试、类型和构建通过。详细范围和路径见 `docs/GITHUB_UPLOAD.md`。
+
+**用户明确要求创建远程和推送之前先确认；当前没有创建或推送。** 下一步请求具体仓库确认，得到答复后创建 Private 仓库、推送 main，然后核对远程 Git tree/提交 SHA/可见性及所有必要文件。
+
 ### 恢复步骤
 
 1. 读本节，执行 `git status --short` 与 `git log -5 --oneline`，保留用户已有修改。
