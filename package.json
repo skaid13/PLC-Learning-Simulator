@@ -13,7 +13,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "start": "node scripts/serve.mjs",
     "test": "vitest run",
-    "format": "prettier --write src scripts index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md"
+    "format": "prettier --write src scripts index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md DEVELOPMENT_PROGRESS.md"
   },
   "dependencies": {
     "react": "19.3.0",
