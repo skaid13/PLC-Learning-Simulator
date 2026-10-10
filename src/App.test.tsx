@@ -4,15 +4,18 @@ import userEvent from '@testing-library/user-event';
 import App from './App';
 import { experiments } from './data/experiments';
 
-describe('第一阶段工作台', () => {
+describe('学习工作台回归检查', () => {
   it('展示三栏、11 个真实实验及明确的未开放状态', () => {
     render(<App />);
     expect(screen.getByLabelText('教学指导区')).toBeInTheDocument();
     expect(screen.getByLabelText('梯形图编程区')).toBeInTheDocument();
     expect(screen.getByLabelText('实验仿真区')).toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(11);
-    for (const name of ['运行', '停止', '复位', '常开触点', '常闭触点', '输出线圈']) {
+    for (const name of ['运行', '停止', '复位']) {
       expect(screen.getByRole('button', { name })).toBeDisabled();
+    }
+    for (const name of ['常开触点', '常闭触点', '输出线圈']) {
+      expect(screen.getByRole('button', { name })).toBeEnabled();
     }
     expect(screen.getByRole('button', { name: '上一步' })).toBeDisabled();
   });
@@ -61,17 +64,25 @@ describe('第一阶段工作台', () => {
     expect(screen.getByRole('button', { name: '检查答案' })).toBeDisabled();
     await user.click(screen.getByRole('radio', { name: /指示灯/ }));
     await user.click(screen.getByRole('button', { name: '检查答案' }));
-    expect(screen.getByRole('status')).toHaveTextContent('指示灯是输出设备');
+    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
+      '指示灯是输出设备',
+    );
     await user.click(screen.getByRole('radio', { name: /按钮/ }));
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(
+      within(screen.getByLabelText('当前步骤内容')).queryByRole('status'),
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '检查答案' }));
-    expect(screen.getByRole('status')).toHaveTextContent('正确！');
+    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
+      '正确！',
+    );
     await user.click(screen.getByRole('button', { name: '查看参考答案' }));
     expect(screen.getByText(/参考答案：按钮/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '自由模式' }));
     await user.click(screen.getByRole('button', { name: '教学模式' }));
     expect(screen.getByRole('radio', { name: /按钮/ })).toBeChecked();
-    expect(screen.getByRole('status')).toHaveTextContent('正确！');
+    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
+      '正确！',
+    );
   });
 
   it('两种模式的解释入口均只展示指定占位说明', async () => {
