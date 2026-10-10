@@ -2345,3 +2345,25 @@ svg {
     font-size: 10px;
   }
 }
+
+.branch-actions,
+.variable-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 16px;
+}
+.branch-actions button,
+.variable-actions button {
+  border: 1px solid #dbe3ed;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #466080;
+  padding: 6px 9px;
+  font-size: 11px;
+}
+.block-label {
+  font-size: 10px;
+  font-weight: 700;
+  fill: currentColor;
+}

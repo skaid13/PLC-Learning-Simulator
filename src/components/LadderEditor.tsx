@@ -2,6 +2,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace } from '../types';
 import {
   createNetwork,
+  allContacts,
   instructionNames,
   newId,
   type EditorAction,
@@ -36,13 +37,14 @@ export function LadderEditor({
   const networkRefs = useRef(new Map<string, HTMLDivElement>());
   const selectedNetwork = program.networks.find((item) => item.id === selection?.networkId);
   const selectedInstruction =
-    selectedNetwork?.contacts.find((item) => item.id === selection?.instructionId) ??
+    (selectedNetwork &&
+      allContacts(selectedNetwork).find((item) => item.id === selection?.instructionId)) ??
     (selectedNetwork?.coil?.id === selection?.instructionId ? selectedNetwork?.coil : undefined);
   const issues = validateProgram(program);
   const errors = issues.filter((item) => item.severity === 'error').length;
   const warnings = issues.length - errors;
   const instructionCount = program.networks.reduce(
-    (sum, item) => sum + item.contacts.length + (item.coil ? 1 : 0),
+    (sum, item) => sum + allContacts(item).length + (item.coil ? 1 : 0),
     0,
   );
   const select = (networkId: string, instructionId: string | null) => {
@@ -54,7 +56,7 @@ export function LadderEditor({
         : '已选中网络，可在下方修改名称。',
     );
   };
-  const place = (networkId: string, slot: 'contact' | 'coil') => {
+  const place = (networkId: string, slot: 'contact' | 'coil', branch = 0) => {
     if (running) {
       setMessage('请先停止运行，再放置或修改元件。');
       return;
@@ -65,6 +67,7 @@ export function LadderEditor({
         type: 'addContact',
         networkId,
         contact: { id, kind: 'contact', contactType: tool, variableId: null },
+        branch,
       });
       setSelection({ networkId, instructionId: id });
       setMessage(`已放置${instructionNames[tool]}，请在下方选择变量。`);
@@ -157,7 +160,11 @@ export function LadderEditor({
                 running={running}
                 trace={traces.find((trace) => trace.networkId === network.id)}
                 onSelect={(instructionId) => select(network.id, instructionId)}
-                onPlace={(slot) => place(network.id, slot)}
+                onPlace={(slot, branch) => place(network.id, slot, branch)}
+                onAddBranch={() => onAction({ type: 'addBranch', networkId: network.id })}
+                onDeleteBranch={(branch) =>
+                  onAction({ type: 'deleteBranch', networkId: network.id, branch })
+                }
                 onDelete={() => setDeleteNetworkId(network.id)}
                 onMove={(direction) =>
                   onAction({ type: 'moveNetwork', networkId: network.id, direction })
@@ -178,13 +185,38 @@ export function LadderEditor({
           >
             ＋ 添加网络
           </button>
-          <span>每网络最多 4 个串联触点＋1 个线圈</span>
+          <span>每支路最多 4 个触点 · 支路之间并联</span>
           <button className="button secondary" onClick={() => setShowIssues(true)}>
             <Icon name="check" size={14} />
             检查结构
           </button>
         </div>
         <p className="diagram-scroll-hint">窄屏可在梯形图内横向滚动，查看末端线圈。</p>
+        <div className="variable-actions">
+          {(['boolean', 'number'] as const).map((dataType) => (
+            <button
+              key={dataType}
+              onClick={() => {
+                const count = program.variables.filter(
+                  (v) => (v.dataType ?? 'boolean') === dataType && v.kind === 'internal',
+                ).length;
+                onAction({
+                  type: 'addVariable',
+                  variable: {
+                    id: newId(),
+                    name: `SIM_${dataType === 'number' ? 'N' : 'M'}_${String(count).padStart(2, '0')}`,
+                    kind: 'internal',
+                    description: '自定义教学变量',
+                    dataType,
+                    initialValue: 0,
+                  },
+                });
+              }}
+            >
+              ＋ {dataType === 'number' ? '数值' : '布尔'}变量
+            </button>
+          ))}
+        </div>
         <InstructionInspector
           network={selectedNetwork}
           instruction={selectedInstruction ?? undefined}
@@ -224,9 +256,7 @@ export function LadderEditor({
               ))}
             </ul>
           ) : (
-            <p className="structure-valid">
-              基础结构检查通过。尚未运行，不能据此判定实验控制逻辑正确。
-            </p>
+            <p className="structure-valid">基础结构检查通过。不能据此判定实验控制逻辑正确。</p>
           )}
         </section>
       )}
@@ -239,7 +269,7 @@ export function LadderEditor({
       {runtimeControls}
       <div className="editor-notice">
         <Icon name="lock" size={15} />
-        <p>基础布尔逻辑采用教学简化规则。并联、定时器、计数器、程序保存及动态解释尚未开放。</p>
+        <p>本软件的指令和变量为教学简化实现，不生成可下载到真实 PLC 的工程文件。</p>
       </div>
       {deleteNetworkId && (
         <Modal

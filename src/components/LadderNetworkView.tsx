@@ -7,6 +7,7 @@ import {
   type EditorTool,
 } from '../editor/model';
 import type { NetworkTrace } from '../engine/scan';
+import { operationNames } from '../editor/validation';
 
 interface Props {
   network: LadderNetwork;
@@ -18,7 +19,9 @@ interface Props {
   running: boolean;
   trace?: NetworkTrace;
   onSelect: (instructionId: string | null) => void;
-  onPlace: (slot: 'contact' | 'coil') => void;
+  onPlace: (slot: 'contact' | 'coil', branch?: number) => void;
+  onAddBranch: () => void;
+  onDeleteBranch: (branch: number) => void;
   onDelete: () => void;
   onMove: (direction: -1 | 1) => void;
 }
@@ -43,21 +46,25 @@ export function LadderNetworkView({
   onPlace,
   onDelete,
   onMove,
+  onAddBranch,
+  onDeleteBranch,
 }: Props) {
+  const branches = [network.contacts, ...(network.branches ?? [])];
   const selectedNetwork = selection?.networkId === network.id;
   const renderInstruction = (
     instruction: LadderInstruction | null,
     x: number,
     slot: 'contact' | 'coil',
     slotIndex = 0,
+    branchIndex = 0,
   ) => {
     const selected =
       selectedNetwork && instruction !== null && selection?.instructionId === instruction.id;
     const variable = variables.find((item) => item.id === instruction?.variableId);
-    const available = slot === 'coil' || slotIndex === network.contacts.length;
+    const available = slot === 'coil' || slotIndex === branches[branchIndex].length;
     const name = instruction
       ? instruction.kind === 'coil'
-        ? '输出线圈'
+        ? operationNames[instruction.operation ?? 'coil']
         : instructionNames[instruction.contactType]
       : slot === 'coil'
         ? '线圈'
@@ -65,7 +72,7 @@ export function LadderNetworkView({
     const label = instruction
       ? `网络 ${index + 1} ${name} ${variable?.name ?? '未绑定变量'}${instruction.kind === 'contact' ? ` 位置 ${slotIndex + 1}` : ''}`
       : `网络 ${index + 1} 放置${name}`;
-    const action = () => (instruction ? onSelect(instruction.id) : onPlace(slot));
+    const action = () => (instruction ? onSelect(instruction.id) : onPlace(slot, branchIndex));
     const ready =
       slot === 'coil'
         ? tool === 'coil'
@@ -77,7 +84,7 @@ export function LadderNetworkView({
         key={instruction?.id ?? `${slot}-${slotIndex}`}
         role="button"
         tabIndex={instruction || (available && !running) ? 0 : -1}
-        aria-label={label}
+        aria-label={label + (branchIndex ? ` 分支 ${branchIndex + 1}` : '')}
         aria-pressed={instruction ? selected : undefined}
         aria-disabled={!instruction && (!available || running) ? true : undefined}
         className={`ladder-cell ${path === true ? 'path-true' : path === false ? 'path-false' : ''} ${selected ? 'is-selected' : ''} ${!instruction ? 'is-empty' : ''} ${!available && !instruction ? 'is-future' : ''}`}
@@ -113,6 +120,13 @@ export function LadderNetworkView({
                   <path d={`M${x - 17} 93L${x + 17} 61`} />
                 )}
               </g>
+            ) : instruction.operation && instruction.operation !== 'coil' ? (
+              <g className="diagram-symbol">
+                <rect x={x - 33} y="56" width="66" height="40" rx="4" fill="#f4faf4" />
+                <text x={x} y="81" textAnchor="middle" className="block-label">
+                  {instruction.operation.toUpperCase()}
+                </text>
+              </g>
             ) : (
               <g className="diagram-symbol">
                 <path
@@ -121,7 +135,17 @@ export function LadderNetworkView({
               </g>
             )}
             <text x={x} y="115" textAnchor="middle" className="diagram-description">
-              {variable ? (variable.terminal ?? '内部变量') : '点击设置'}
+              {instruction.kind === 'contact' && instruction.comparison
+                ? `${instruction.comparison.operator.toUpperCase()} ${instruction.comparison.value}`
+                : instruction.kind === 'contact' && instruction.edge
+                  ? '上升沿'
+                  : instruction.kind === 'coil' &&
+                      instruction.operation &&
+                      !['coil', 'set', 'reset'].includes(instruction.operation)
+                    ? `${instruction.preset ?? 1000}${['ton', 'tof', 'pulse'].includes(instruction.operation) ? ' ms' : ''}`
+                    : variable
+                      ? (variable.terminal ?? '内部变量')
+                      : '点击设置'}
             </text>
           </>
         ) : (
@@ -194,21 +218,42 @@ export function LadderNetworkView({
       </div>
       <div className="diagram-viewport">
         <svg
-          viewBox="0 0 700 150"
+          viewBox={`0 0 700 ${150 + (branches.length - 1) * 130}`}
           className="network-diagram"
           role="group"
           aria-label={`网络 ${index + 1} 梯形图`}
         >
-          <path d="M30 18V137M670 18V137" className="diagram-rail" />
+          <path
+            d={`M30 18V${137 + (branches.length - 1) * 130}M670 18V137`}
+            className="diagram-rail"
+          />
           <path d="M30 77H670" className="diagram-wire" />
+          {branches.length > 1 && (
+            <path d={`M540 77V${77 + (branches.length - 1) * 130}`} className="diagram-wire" />
+          )}
           <text x="12" y="81" className="rail-index">
             {String(index + 1).padStart(2, '0')}
           </text>
-          {Array.from({ length: MAX_CONTACTS }, (_, i) =>
-            renderInstruction(network.contacts[i] ?? null, 96 + i * 115, 'contact', i),
-          )}
+          {branches.map((branch, branchIndex) => (
+            <g key={branchIndex} transform={`translate(0 ${branchIndex * 130})`}>
+              {branchIndex > 0 && <path d="M30 77H540" className="diagram-wire" />}
+              {Array.from({ length: MAX_CONTACTS }, (_, i) =>
+                renderInstruction(branch[i] ?? null, 96 + i * 115, 'contact', i, branchIndex),
+              )}
+            </g>
+          ))}
           {renderInstruction(network.coil, 604, 'coil')}
         </svg>
+      </div>
+      <div className="branch-actions">
+        <button disabled={running || branches.length >= 8} onClick={onAddBranch}>
+          ＋ 并联支路
+        </button>
+        {branches.slice(1).map((_, i) => (
+          <button key={i} disabled={running} onClick={() => onDeleteBranch(i + 1)}>
+            移除分支 {i + 2}
+          </button>
+        ))}
       </div>
     </section>
   );

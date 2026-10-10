@@ -27,6 +27,8 @@ export interface BoolVariable {
   description: string;
   /** 指导书端子标记，不是官方软件变量地址。内部变量没有端子。 */
   terminal?: string;
+  dataType?: 'boolean' | 'number';
+  initialValue?: number;
 }
 
 export type ContactType = 'normallyOpen' | 'normallyClosed';
@@ -35,11 +37,18 @@ export interface ContactInstruction {
   kind: 'contact';
   contactType: ContactType;
   variableId: string | null;
+  comparison?: { operator: 'eq' | 'ne' | 'gt' | 'ge' | 'lt' | 'le'; value: number };
+  edge?: 'rising';
 }
 export interface CoilInstruction {
   id: string;
   kind: 'coil';
   variableId: string | null;
+  operation?:
+    'coil' | 'set' | 'reset' | 'ton' | 'tof' | 'pulse' | 'ctu' | 'resetCounter' | 'move' | 'add';
+  preset?: number;
+  sourceVariableId?: string;
+  countVariableId?: string;
 }
 export type LadderInstruction = ContactInstruction | CoilInstruction;
 
@@ -49,6 +58,8 @@ export interface LadderNetwork {
   name: string;
   topology: 'series';
   contacts: ContactInstruction[];
+  /** 与主串联支路并联；每条支路内部串联，支路之间为 OR。 */
+  branches?: ContactInstruction[][];
   coil: CoilInstruction | null;
 }
 

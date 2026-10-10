@@ -42,7 +42,7 @@ export function VariableMonitor({ simulator }: { simulator: Simulator }) {
           </thead>
           <tbody>
             {state.program.variables.map((variable) => {
-              const value = state.scan.values[variable.id] === true;
+              const value = state.scan.values[variable.id];
               return (
                 <tr key={variable.id}>
                   <th scope="row">
@@ -51,8 +51,8 @@ export function VariableMonitor({ simulator }: { simulator: Simulator }) {
                   </th>
                   <td>{{ input: '输入', output: '输出', internal: '内部' }[variable.kind]}</td>
                   <td>
-                    <span className={`bool-value ${value ? 'is-true' : ''}`}>
-                      {value ? 'TRUE' : 'FALSE'}
+                    <span className={`bool-value ${value === true ? 'is-true' : ''}`}>
+                      {typeof value === 'number' ? value : value ? 'TRUE' : 'FALSE'}
                     </span>
                   </td>
                 </tr>
