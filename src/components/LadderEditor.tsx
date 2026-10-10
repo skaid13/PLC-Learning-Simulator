@@ -1,8 +1,9 @@
 import { VariableManager } from './VariableManager';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import type { ProgramWorkspace } from '../types';
+import type { ProgramWorkspace, LadderNetwork } from '../types';
 import {
   createNetwork,
+  cloneNetwork,
   allContacts,
   instructionNames,
   newId,
@@ -32,6 +33,7 @@ export function LadderEditor({
   runtimeControls: ReactNode;
   locate?: { networkId: string; instructionId: string; request: number };
 }) {
+  const [clipboard, setClipboard] = useState<LadderNetwork | null>(null);
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
   const [message, setMessage] = useState('先选择一种元件工具，再点击网络中的＋空位放置。');
@@ -196,6 +198,32 @@ export function LadderEditor({
             }}
           >
             ＋ 添加网络
+          </button>
+          <button
+            className="button secondary"
+            disabled={!selectedNetwork}
+            onClick={() => {
+              if (selectedNetwork) {
+                setClipboard(cloneNetwork(selectedNetwork));
+                setMessage('已复制选中网络，变量引用保持不变。');
+              }
+            }}
+          >
+            复制网络
+          </button>
+          <button
+            className="button secondary"
+            disabled={!clipboard || program.networks.length >= 500}
+            onClick={() => {
+              if (clipboard) {
+                const copied = cloneNetwork(clipboard);
+                onAction({ type: 'addNetwork', network: copied });
+                setSelection({ networkId: copied.id, instructionId: null });
+                setMessage('已粘贴网络。普通线圈重复写同一变量会被结构检查拦截，请重新绑定目标。');
+              }
+            }}
+          >
+            粘贴网络
           </button>
           <span>每支路最多 4 个触点 · 支路之间并联</span>
           <button className="button secondary" onClick={() => setShowIssues(true)}>

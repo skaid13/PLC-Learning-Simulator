@@ -1,4 +1,11 @@
-import type { ProgramWorkspace, BoolVariable, LadderNetwork, LadderInstruction } from '../types';
+import type {
+  ProgramWorkspace,
+  BoolVariable,
+  LadderNetwork,
+  LadderInstruction,
+  ContactInstruction,
+  CoilInstruction,
+} from '../types';
 import { experiments } from '../data/experiments';
 import { createWorkspace } from '../editor/model';
 import { operations } from '../editor/validation';
@@ -29,6 +36,25 @@ function instruction(v: unknown, kind: 'coil' | 'contact'): v is LadderInstructi
     (v.countVariableId === undefined || str(v.countVariableId))
   );
 }
+const cleanContact = (c: ContactInstruction): ContactInstruction => ({
+  id: c.id,
+  kind: 'contact',
+  variableId: c.variableId,
+  contactType: c.contactType,
+  edge: c.edge,
+  comparison: c.comparison
+    ? { operator: c.comparison.operator, value: c.comparison.value }
+    : undefined,
+});
+const cleanCoil = (c: CoilInstruction): CoilInstruction => ({
+  id: c.id,
+  kind: 'coil',
+  variableId: c.variableId,
+  operation: c.operation,
+  preset: c.preset,
+  sourceVariableId: c.sourceVariableId,
+  countVariableId: c.countVariableId,
+});
 export function parseProgram(text: string): ProgramWorkspace {
   if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) throw Error('文件超过 1 MB 限制。');
   let v: unknown;
@@ -99,7 +125,8 @@ export function parseProgram(text: string): ProgramWorkspace {
             y.dataType !== 'number',
         ),
     ) ||
-    variables.filter((x) => x.terminal).length !== expected.length
+    variables.filter((x) => x.terminal).length !== expected.length ||
+    variables.filter((x) => x.kind !== 'internal').length !== expected.length
   )
     throw Error('端子与指导书 I/O 表不匹配。');
   const unique = (ids: string[]) => new Set(ids).size === ids.length;
@@ -133,9 +160,9 @@ export function parseProgram(text: string): ProgramWorkspace {
       id: n.id,
       name: n.name,
       topology: 'series',
-      contacts: n.contacts.map((c) => ({ ...c })),
-      branches: n.branches?.map((b) => b.map((c) => ({ ...c }))),
-      coil: n.coil ? { ...n.coil } : null,
+      contacts: n.contacts.map(cleanContact),
+      branches: n.branches?.map((b) => b.map(cleanContact)),
+      coil: n.coil ? cleanCoil(n.coil) : null,
     })),
   };
 }

@@ -143,7 +143,7 @@ export function ExecutionExplanation({
                         ? `条件不成立，本指令未写入；保留 ${display(trace.coil.previous)}。`
                         : `本次写入：${display(trace.coil.previous)} → ${display(trace.coil.value)}。`}
                     {last?.network.id !== network.id
-                      ? ' 后续网络可能再次写入，请按顺序查看。'
+                      ? ' 最终值以上方标出的最后实际写入为准。'
                       : ' 这是本次扫描该变量的最后实际写入。'}
                   </p>
                 </li>

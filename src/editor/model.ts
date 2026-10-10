@@ -27,6 +27,27 @@ export function createNetwork(id = newId()): LadderNetwork {
 export const allContacts = (network: LadderNetwork) =>
   [network.contacts, ...(network.branches ?? [])].flat();
 
+/** 复制网络时重新生成全部元件标识，变量引用保持当前实验内一致。 */
+export function cloneNetwork(network: LadderNetwork): LadderNetwork {
+  return {
+    ...network,
+    id: newId(),
+    name: network.name ? `${network.name.slice(0, 35)} 副本` : '网络副本',
+    contacts: network.contacts.map((c) => ({
+      ...c,
+      id: newId(),
+      comparison: c.comparison ? { ...c.comparison } : undefined,
+    })),
+    branches: network.branches?.map((b) =>
+      b.map((c) => ({
+        ...c,
+        id: newId(),
+        comparison: c.comparison ? { ...c.comparison } : undefined,
+      })),
+    ),
+    coil: network.coil ? { ...network.coil, id: newId() } : null,
+  };
+}
 export function createWorkspace(experiment: Experiment): ProgramWorkspace {
   const fromManual = (kind: 'input' | 'output'): BoolVariable[] =>
     experiment[kind === 'input' ? 'inputs' : 'outputs'].map((entry) => ({
@@ -103,9 +124,11 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
       ),
     };
   if (action.type === 'addVariable')
-    return program.variables.some((v) => v.id === action.variable.id)
+    return program.variables.length >= 500
       ? program
-      : { ...program, variables: [...program.variables, action.variable] };
+      : program.variables.some((v) => v.id === action.variable.id)
+        ? program
+        : { ...program, variables: [...program.variables, action.variable] };
   if (action.type === 'deleteVariable') {
     if (
       program.networks.some(
@@ -124,7 +147,11 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
     };
   }
   if (action.type === 'addNetwork') {
-    if (program.networks.some((network) => network.id === action.network.id)) return program;
+    if (
+      program.networks.length >= 500 ||
+      program.networks.some((network) => network.id === action.network.id)
+    )
+      return program;
     return { ...program, networks: [...program.networks, action.network] };
   }
   const index = program.networks.findIndex((network) => network.id === action.networkId);

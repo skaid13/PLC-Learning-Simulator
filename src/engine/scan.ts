@@ -67,6 +67,15 @@ export function scanProgram(
       instructionId: null,
       message: '扫描时间步长必须为 0～1000 ms 之间的正数。',
     });
+  for (const n of program.networks)
+    if (n.coil?.operation === 'pulse' && (n.coil.preset ?? 1000) < deltaMs * 2)
+      issues.push({
+        code: 'pulse-resolution',
+        severity: 'error',
+        networkId: n.id,
+        instructionId: n.coil.id,
+        message: '脉冲周期必须至少是两次扫描时间，才能表示高低电平。',
+      });
   if (issues.length) return { ok: false, issues };
   const values: RuntimeValues = Object.fromEntries(
     program.variables.map((v) => [
@@ -104,7 +113,7 @@ export function scanProgram(
             }[contact.comparison.operator];
           } else if (contact.contactType === 'normallyClosed') condition = !condition;
           if (contact.edge === 'rising') {
-            const m = memory[contact.id] ?? freshMemory();
+            const m = Object.hasOwn(memory, contact.id) ? memory[contact.id] : freshMemory();
             const current = condition;
             condition = current && !m.previous;
             memory[contact.id] = { ...m, previous: current };
@@ -129,7 +138,7 @@ export function scanProgram(
       operation = coil.operation ?? 'coil';
     let value = before,
       written = true;
-    const m = { ...(memory[variableId] ?? freshMemory()) };
+    const m = { ...(Object.hasOwn(memory, variableId) ? memory[variableId] : freshMemory()) };
     const preset = coil.preset ?? (operation === 'ctu' ? 1 : 1000);
     switch (operation) {
       case 'coil':

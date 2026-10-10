@@ -44,11 +44,15 @@ export function validateProgram(program: ProgramWorkspace): ProgramIssue[] {
       ids.has(v.id) ||
       !['input', 'output', 'internal'].includes(v.kind) ||
       (v.dataType && !['boolean', 'number'].includes(v.dataType)) ||
-      (v.dataType === 'number' && (v.kind !== 'internal' || !Number.isFinite(v.initialValue ?? 0)))
+      (v.dataType === 'number' &&
+        (v.kind !== 'internal' ||
+          !Number.isFinite(v.initialValue ?? 0) ||
+          Math.abs(v.initialValue ?? 0) > 1000000))
     )
       globalIssue('variable-definition', '变量定义重复、类型无效或数值初始值无效。');
     ids.add(v.id);
   });
+  const counters = new Set<string>();
   const networkIds = new Set<string>(),
     instructionIds = new Set<string>();
   program.networks.forEach((network, index) => {
@@ -139,6 +143,17 @@ export function validateProgram(program: ProgramWorkspace): ProgramIssue[] {
         ))
           if (!program.variables.some((v) => v.id === id && v.dataType === 'number'))
             issue('numeric-variable', '数值来源/计数值变量不存在或类型错误。', instruction.id);
+        if (op === 'ctu') {
+          if (counters.has(variable.id))
+            issue('counter-owner', '每个计数器完成变量只能绑定一个 CTU。', instruction.id);
+          counters.add(variable.id);
+          if (!Number.isInteger(instruction.preset ?? 1))
+            issue('counter-preset', '计数预置值必须为正整数。', instruction.id);
+        }
+        if (instruction.sourceVariableId && !['move', 'add'].includes(op))
+          issue('source-operation', '只有 MOV/ADD 支持数值来源。', instruction.id);
+        if (instruction.countVariableId && !['ctu', 'resetCounter'].includes(op))
+          issue('count-operation', '只有 CTU/计数复位支持计数显示变量。', instruction.id);
         const previous = writers.get(variable.id);
         if (
           previous &&

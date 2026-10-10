@@ -39,3 +39,18 @@ it('多实验草稿恢复并互相隔离', () => {
   saveProjects(localStorage, programs);
   expect(loadProjects(localStorage).programs).toEqual(programs);
 });
+it('导入只保留已知属性，忽略附带元件字段', () => {
+  const p = createWorkspace(experiments[0]);
+  p.networks[0].contacts = [
+    { id: 'c', kind: 'contact', contactType: 'normallyOpen', variableId: p.variables[0].id },
+  ];
+  const extra = JSON.parse(JSON.stringify(p));
+  extra.networks[0].contacts[0].unexpected = { anything: true };
+  const restored = parseProgram(JSON.stringify(extra));
+  expect(restored.networks[0].contacts[0]).not.toHaveProperty('unexpected');
+});
+it('物理 I/O 固定，拒绝导入偷偷追加的无端子输入', () => {
+  const p = createWorkspace(experiments[0]);
+  p.variables.push({ id: 'fake-input', kind: 'input', name: 'FAKE', description: 'not in manual' });
+  expect(() => parseProgram(JSON.stringify(p))).toThrow('I/O');
+});

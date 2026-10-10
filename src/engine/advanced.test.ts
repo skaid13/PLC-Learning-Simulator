@@ -109,3 +109,10 @@ describe('高级指令使用同一扫描引擎', () => {
     expect(s.values[p.variables[1].id]).toBe(true);
   });
 });
+it('周期短于两次扫描时明确拒绝，避免把持续高电平冒充脉冲', () => {
+  const p = fixture('pulse', 400);
+  expect(scanProgram(p, createScanState(p), {}, 1000)).toMatchObject({
+    ok: false,
+    issues: expect.arrayContaining([expect.objectContaining({ code: 'pulse-resolution' })]),
+  });
+});

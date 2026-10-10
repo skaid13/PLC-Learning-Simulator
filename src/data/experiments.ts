@@ -21,7 +21,9 @@ export const experiments: Experiment[] = [
     ],
     inputs: inputs(['启动']),
     outputs: outputs(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']),
-    notes: ['SET、RST 为指导书使用的名称，本阶段未核实其与真实罗克韦尔指令的对应关系。'],
+    notes: [
+      'SET、RST 为指导书使用的名称；本软件独立实现教学语义，未核实与真实罗克韦尔指令的对应关系。',
+    ],
   },
   {
     id: 'stepper',
@@ -38,7 +40,7 @@ export const experiments: Experiment[] = [
     inputs: inputs(['SB1', 'SB2', 'SB3']),
     outputs: outputs(['PUL-', 'DIR-', 'ENA-'], [0, 3, 6]),
     notes: [
-      '该节使用“M850”表述；运动轴能力和配置细节需官方资料核实后再开发。',
+      '该节使用“M850”表述；真实运动轴能力和配置细节未核实，本软件仅提供脉冲/角度教学模型。',
       '原文的 mm/360.0 mm 为配置记录，不据此推断真实电机位移。',
     ],
   },
@@ -56,7 +58,7 @@ export const experiments: Experiment[] = [
     ],
     inputs: inputs(['启动', '停止', 'SQ1', 'SQ2', 'SQ3', 'SQ4'], [1, 2, 6, 5, 4, 3]),
     outputs: outputs(['HL', 'YV1 夹紧', 'YV2 左移', 'YV3 右移', 'YV4 上升', 'YV5 下降']),
-    notes: ['原文称“因无停止信号”，但 I/O 表列有停止输入；停止行为待确认。'],
+    notes: ['原文称“因无停止信号”，但 I/O 表列有停止输入；仿真中的停止行为另列教学设定。'],
   },
   {
     id: 'traffic',
@@ -72,7 +74,7 @@ export const experiments: Experiment[] = [
     ],
     inputs: inputs(['启动'], [1]),
     outputs: outputs(['东 R', '东 Y', '东 G', '南 G', '南 Y', '南 R']),
-    notes: ['原文未明确黄灯闪烁频率，不自行指定。面板图标题误写为“装配流水线”。'],
+    notes: ['原文未明确黄灯闪烁频率，仿真值另标为教学设定。面板图标题误写为“装配流水线”。'],
   },
   {
     id: 'elevator',
@@ -99,7 +101,7 @@ export const experiments: Experiment[] = [
       'RST',
     ]),
     outputs: outputs(['L1', 'L2', 'L3', 'DOWN', 'UP', 'SL1', 'SL2', 'SL3']),
-    notes: ['调度优先级、门控及运动时间未明确，后续需确认。原文 S2/SQ2 表述有混用。'],
+    notes: ['调度优先级、门控及运动时间未明确；仿真另列教学设定。原文 S2/SQ2 表述有混用。'],
   },
   {
     id: 'water',
@@ -170,7 +172,9 @@ export const experiments: Experiment[] = [
       '传送 G',
       '仓库 H',
     ]),
-    notes: ['原文流程描述未显式列出 C 到 H 之间的 G，I/O 表有 G；详细衔接待核对。'],
+    notes: [
+      '原文流程描述未显式列出 C 到 H 之间的 G，I/O 表有 G；参考程序的详细衔接另标为教学选择。',
+    ],
   },
   {
     id: 'vending',
@@ -208,7 +212,7 @@ export const experiments: Experiment[] = [
     ),
     notes: [
       '原文 M3 重物示例只提到 M1、M2 立即停和 5 秒后 M4 停，与一般描述有歧义。',
-      'A～D 的故障/重物信号对应关系、普遍停机间隔未明确，不自行编造。',
+      'A～D 的故障/重物映射、普遍停机间隔未明确，仿真的映射与间隔另标为教学选择。',
     ],
   },
 ];

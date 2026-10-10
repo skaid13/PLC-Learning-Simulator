@@ -49,6 +49,7 @@ export default function App() {
     const nextProgram = programs[id] ?? createWorkspace(next);
     setPrograms((previous) => ({ ...previous, [id]: nextProgram }));
     simulator.reset(nextProgram);
+    setLocate(undefined);
     setExperimentId(id);
   };
   const replaceProgram = (nextProgram: ProgramWorkspace, record = true) => {
@@ -250,6 +251,7 @@ export default function App() {
             <>
               <button onClick={() => setPendingImport(null)}>取消</button>
               <button
+                disabled={simulator.state.status === 'running'}
                 onClick={() => {
                   replaceProgram(pendingImport);
                   setPendingImport(null);
