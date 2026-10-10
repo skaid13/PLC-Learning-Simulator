@@ -69,6 +69,11 @@ export type EditorAction =
   | { type: 'updateCoil'; networkId: string; patch: Partial<Omit<CoilInstruction, 'kind' | 'id'>> }
   | { type: 'addVariable'; variable: BoolVariable }
   | { type: 'deleteVariable'; variableId: string }
+  | {
+      type: 'updateVariable';
+      variableId: string;
+      patch: Partial<Pick<BoolVariable, 'name' | 'description' | 'initialValue'>>;
+    }
   | { type: 'addCoil'; networkId: string; instructionId: string }
   | { type: 'deleteInstruction'; networkId: string; instructionId: string }
   | {
@@ -90,6 +95,13 @@ function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
 
 /** 纯数据编辑，不执行 PLC 逻辑，不改变输入输出值。 */
 export function editProgram(program: ProgramWorkspace, action: EditorAction): ProgramWorkspace {
+  if (action.type === 'updateVariable')
+    return {
+      ...program,
+      variables: program.variables.map((v) =>
+        v.id === action.variableId ? { ...v, ...action.patch } : v,
+      ),
+    };
   if (action.type === 'addVariable')
     return program.variables.some((v) => v.id === action.variable.id)
       ? program

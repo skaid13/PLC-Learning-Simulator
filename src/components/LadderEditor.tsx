@@ -1,3 +1,4 @@
+import { VariableManager } from './VariableManager';
 import { useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace } from '../types';
 import {
@@ -217,6 +218,7 @@ export function LadderEditor({
             </button>
           ))}
         </div>
+        <VariableManager program={program} onAction={onAction} />
         <InstructionInspector
           network={selectedNetwork}
           instruction={selectedInstruction ?? undefined}
@@ -262,9 +264,7 @@ export function LadderEditor({
       )}
       <div className="variable-convention">
         <Icon name="info" size={14} />
-        <p>
-          SIM_* 是本仿真器自定义的布尔教学变量；I-xx / O-xx 仅为指导书端子标记，不是官方编程地址。
-        </p>
+        <p>SIM_* 是本仿真器自定义的教学变量；I-xx / O-xx 仅为指导书端子标记，不是官方编程地址。</p>
       </div>
       {runtimeControls}
       <div className="editor-notice">
@@ -294,9 +294,7 @@ export function LadderEditor({
             </>
           }
         >
-          <p>
-            将删除这个网络及其中的全部元件。当前没有撤销功能，请确认不再需要其中的内容。其它网络不会删除。
-          </p>
+          <p>将删除这个网络及其中的全部元件。可以通过工作台上方的撤销恢复。其它网络不会删除。</p>
         </Modal>
       )}
     </section>
