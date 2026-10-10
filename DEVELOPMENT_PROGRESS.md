@@ -19,13 +19,13 @@
 
 已创建桌面 `PLC实验教学与仿真系统.command`（链接至项目内可执行脚本）及项目内 Mac/Windows 启动入口。现有服务复用、4198 临时服务冷启动/HTTP 标识和脚本语法均通过，测试服务已停止。共用 `scripts/launch.mjs`；README 已说明双击运行和 Ctrl+C 停止。测试用 `--no-open`，默认浏览器打开分支和 Windows 实机尚未操作验证。
 
-`git remote -v` 无远程；GitHub 未上传。只有本地提交，未经用户进一步授权不关联/推送或公开发布。
+此入口阶段完成时尚无远程；后续 GitHub 上传结果见下一节。
 
-### GitHub 上传准备（2026-10-10，等待用户确认）
+### GitHub 上传完成（2026-10-10）
 
-拟创建 `skaid13/PLC-Learning-Simulator`，Private。Git/目录完整性、忽略规则与凭据模式检查已完成；67 个必要文件拟上传，现有 PLC 源码和原指导书未改。gh 已安装并登录 skaid13，无 origin；建议名称的仓库只读查询未找到。101 项测试、类型和构建通过。详细范围和路径见 `docs/GITHUB_UPLOAD.md`。
+用户确认后，已创建 [skaid13/PLC-Learning-Simulator](https://github.com/skaid13/PLC-Learning-Simulator) Private 仓库，添加 `origin` 并推送 `main`，本地分支已跟踪 `origin/main`。67 个必要文件及完整 Git 历史均已上传；现有 PLC 源码和原指导书未改，依赖和构建只排除上传，没有删除。准备阶段 101 项测试、类型和构建通过。
 
-**用户明确要求创建远程和推送之前先确认；当前没有创建或推送。** 下一步请求具体仓库确认，得到答复后创建 Private 仓库、推送 main，然后核对远程 Git tree/提交 SHA/可见性及所有必要文件。
+首次远程核验：提交 `6813ecdf89f2f791957ef584073884b777a626f2`，67 个文件的路径、文件模式、大小和 blob SHA 与本地完全一致，13 次提交历史一致；GitHub 返回 Private、默认分支 `main`。本节及上传记录随后作为文档检查点提交同步。恢复时先检查本地/远程提交是否一致，无需重新创建仓库或重复开发。详细范围和路径见 `docs/GITHUB_UPLOAD.md`。
 
 ### 恢复步骤
 

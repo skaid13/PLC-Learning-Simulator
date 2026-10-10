@@ -155,7 +155,7 @@ DEVELOPMENT_LOG.md       开发历史、决策与验收限制
 
 学生在浏览器 localStorage 中的草稿不属于源码目录，不能通过 Git 自动备份。需要一并保留自己的梯形图时，请先通过工作台导出 JSON，再将所需文件保存到项目内的 `student-programs/` 后提交；该目录及 JSON 格式不会被忽略。不要把含个人凭据的文件放入其中。
 
-上传准备、保留范围和检查结果见 [GitHub 上传记录](docs/GITHUB_UPLOAD.md)。远程仓库需用户确认后才创建和推送；以该记录中的实际状态为准。
+源码已备份至 [skaid13/PLC-Learning-Simulator](https://github.com/skaid13/PLC-Learning-Simulator)，仓库可见性为 **Private**，默认分支为 `main`。67 个文件和现有提交历史已上传，并核对远程文件路径、权限、大小与内容哈希。保留范围和检查结果见 [GitHub 上传记录](docs/GITHUB_UPLOAD.md)。
 
 ## 范围与后续
 

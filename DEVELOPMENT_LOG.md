@@ -184,4 +184,10 @@ GitHub 状态检查：`git remote -v` 无输出，当前只有本地 Git，没�
 
 Git 仓库及 `main` 已存在，无远程。gh 2.101.0 已登录 skaid13；只读查询未找到建议的新仓库 skaid13/PLC-Learning-Simulator。建议 Private，保留现有提交历史。146 个历史文件版本（含 DOCX XML）凭据模式扫描无命中，未显示任何凭据值。101 项测试、类型检查与生产构建通过。README 和 docs/GITHUB_UPLOAD.md 已更新，最终上传准备范围 67 个文件。
 
-尚未创建仓库或推送，等待用户对具体账号、名称及 Private 可见性确认。确认后需要核对远程可见性、提交 SHA 和完整 Git tree，不能把创建成功当作上传成功。
+此准备检查点尚未创建仓库或推送，等待用户对具体账号、名称及 Private 可见性确认。后续结果见下一节。
+
+## 2026-10-10：GitHub Private 备份完成
+
+用户明确回复确认后，创建 [skaid13/PLC-Learning-Simulator](https://github.com/skaid13/PLC-Learning-Simulator)，可见性 Private，默认分支 main。添加 origin 并推送已有完整历史，本地 main 跟踪 origin/main；没有强制推送、重写历史或修改核心 PLC 文件。
+
+GitHub API 核验首次完整提交 `6813ecdf89f2f791957ef584073884b777a626f2` 与本地 HEAD 相同；完整 Git tree 的 67 个文件路径、模式、大小、blob SHA 全部一致，远程 13 次提交与本地历史一致。原指导书、源码、配置、锁文件、测试、文档和启动入口完整，依赖/缓存/构建/凭据文件不在远程树中。README、进度和上传记录同步本次结果，作为后续文档检查点保存。
