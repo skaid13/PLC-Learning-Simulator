@@ -1794,8 +1794,239 @@ svg {
   margin: 0;
   padding: 6px 14px;
   font-size: 11px;
-  color: var(--text-muted);
+  color: #697d60;
   background: #fcfdfb;
+}
+
+/* 第三阶段：扫描控制、轨迹与变量调试。 */
+.editor-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.editor-fieldset:disabled .ladder-tools {
+  opacity: 0.55;
+}
+.execution-toolbar,
+.execution-toolbar > div {
+  flex-wrap: wrap;
+}
+.execution-toolbar button:enabled {
+  color: #476752;
+  border-color: #ceddce;
+  cursor: pointer;
+}
+.execution-toolbar button:enabled:hover {
+  background: #edf6ee;
+}
+.execution-toolbar .run-button:enabled {
+  background: #397f69;
+  border-color: #397f69;
+  color: white;
+}
+.execution-toolbar button:disabled {
+  cursor: not-allowed;
+}
+.scan-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 16px 5px;
+  font-size: 11px;
+  color: #69806e;
+}
+.scan-summary strong {
+  font-weight: 600;
+  color: #396950;
+}
+.runtime-guidance {
+  padding: 5px 16px 14px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #637768;
+}
+.runtime-error {
+  padding: 12px 16px;
+  background: #fff5ed;
+  color: #97522d;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.runtime-error ul {
+  padding-left: 20px;
+  max-height: 150px;
+  overflow: auto;
+}
+.network-result {
+  font:
+    10px ui-monospace,
+    monospace;
+  color: #78877b;
+  background: #f0f3f0;
+  border-radius: 4px;
+  padding: 3px 5px;
+}
+.network-result.is-true {
+  color: #126748;
+  background: #e5f4ea;
+}
+.ladder-cell.path-true .diagram-symbol,
+.ladder-cell.path-true .diagram-wire {
+  stroke: #168c58;
+  stroke-width: 3;
+}
+.ladder-cell.path-false .diagram-symbol {
+  stroke: #84938a;
+}
+.ladder-cell.path-true .diagram-variable {
+  fill: #126b46;
+  font-weight: 600;
+}
+.variable-monitor {
+  min-width: 0;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #dfe8df;
+}
+.monitor-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+.monitor-heading h3 {
+  font-size: 14px;
+  color: #375e46;
+}
+.monitor-heading > span {
+  font-size: 10px;
+  color: #748579;
+}
+.variable-monitor > p {
+  margin: 8px 0 12px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #697b6d;
+}
+.monitor-inputs {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #dce7dd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 10px;
+  border-bottom: 1px solid #edf1ec;
+  cursor: pointer;
+}
+.input-row:last-child {
+  border-bottom: 0;
+}
+.input-row > span {
+  min-width: 0;
+}
+.input-row code,
+.variable-monitor table code {
+  font-size: 11px;
+  color: #365e48;
+  overflow-wrap: anywhere;
+}
+.input-row small,
+.variable-monitor table small {
+  display: block;
+  color: #77877b;
+  font-size: 10px;
+  font-weight: 400;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.input-row input {
+  appearance: none;
+  flex: 0 0 34px;
+  height: 20px;
+  width: 34px;
+  border-radius: 12px;
+  background: #d7e1d8;
+  cursor: pointer;
+  position: relative;
+}
+.input-row input::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+}
+.input-row input:checked {
+  background: #328768;
+}
+.input-row input:checked::after {
+  left: 17px;
+}
+.input-row input:focus-visible {
+  outline: 2px solid #29765b;
+  outline-offset: 3px;
+}
+.monitor-table-scroll {
+  max-height: 300px;
+  overflow: auto;
+  border: 1px solid #e0e8de;
+  border-radius: 6px;
+}
+.variable-monitor table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  text-align: left;
+}
+.variable-monitor caption {
+  text-align: left;
+  padding: 9px;
+  color: #52705a;
+  background: #f5f9f2;
+}
+.variable-monitor thead {
+  color: #6b806f;
+  background: #f9fbf7;
+}
+.variable-monitor th,
+.variable-monitor td {
+  padding: 8px 7px;
+  border-bottom: 1px solid #edf1ea;
+}
+.variable-monitor tbody th {
+  font-weight: 400;
+}
+.bool-value {
+  font:
+    10px ui-monospace,
+    monospace;
+  color: #77877a;
+  padding: 3px 4px;
+  border-radius: 3px;
+  background: #f0f3ef;
+  white-space: nowrap;
+}
+.bool-value.is-true {
+  color: #126946;
+  background: #e1f3e7;
+  font-weight: 600;
+}
+@media (min-width: 641px) and (max-width: 960px) {
+  .variable-monitor {
+    grid-column: 1 / -1;
+    grid-row: 7;
+  }
 }
 .network-diagram {
   display: block;

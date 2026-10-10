@@ -1,5 +1,6 @@
 import type { Experiment } from '../types';
 import { Icon } from './Icon';
+import type { ReactNode } from 'react';
 
 function StaticDisplay({ isLed }: { isLed: boolean }) {
   return (
@@ -76,10 +77,12 @@ export function SimulationPlaceholder({
   experiment,
   onExplain,
   onDetails,
+  monitor,
 }: {
   experiment: Experiment;
   onExplain: () => void;
   onDetails: () => void;
+  monitor: ReactNode;
 }) {
   return (
     <aside className="panel simulation-panel" aria-label="实验仿真区">
@@ -94,7 +97,7 @@ export function SimulationPlaceholder({
         <div className="apparatus-heading">
           <span className="eyebrow">EXPERIMENT {experiment.number}</span>
           <h3>{experiment.shortName}</h3>
-          <p>虚拟实验箱 · 仿真尚未开放</p>
+          <p>装置面板后续开放 · 当前可调试变量</p>
         </div>
         <div className="apparatus">
           <div className="apparatus-title">
@@ -104,7 +107,7 @@ export function SimulationPlaceholder({
           <StaticDisplay isLed={experiment.id === 'led'} />
           <div className="apparatus-footer">
             <span className="status-dot muted" />
-            等待后续阶段接入程序
+            静态装置图 · 不表示运行结果
           </div>
         </div>
         <div className="io-summary">
@@ -115,12 +118,15 @@ export function SimulationPlaceholder({
         </div>
         <div className="simulation-message">
           <Icon name="info" size={17} />
-          <p>这里将呈现你编写的程序的运行结果。当前画面不会响应输入，也不代表真实运行状态。</p>
+          <p>
+            下方可操作虚拟输入并查看程序变量。装置图尚未接入引擎；完整实验教学和动画将在后续阶段开放。
+          </p>
         </div>
         <button className="button secondary full" onClick={onDetails}>
           查看实验要求与 I/O
           <Icon name="arrow" size={14} />
         </button>
+        {monitor}
         <section className="explain-card">
           <div className="explain-icon">
             <Icon name="light" size={21} />

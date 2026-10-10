@@ -9,6 +9,10 @@ import { SimulationPlaceholder } from './components/SimulationPlaceholder';
 import { ExperimentDetails } from './components/ExperimentDetails';
 import { Modal } from './components/Modal';
 import { Icon } from './components/Icon';
+import { useSimulator } from './engine/useSimulator';
+import { statusNames } from './engine/runtime';
+import { RuntimeControls } from './components/RuntimeControls';
+import { VariableMonitor } from './components/VariableMonitor';
 
 export default function App() {
   const [experimentId, setExperimentId] = useState(experiments[0].id);
@@ -20,19 +24,26 @@ export default function App() {
   }));
   const experiment = experiments.find((item) => item.id === experimentId) ?? experiments[0];
   const program = programs[experiment.id];
+  const simulator = useSimulator(program);
   const changeExperiment = (id: string) => {
     const next = experiments.find((item) => item.id === id);
     if (!next) return;
-    setPrograms((previous) =>
-      previous[id] ? previous : { ...previous, [id]: createWorkspace(next) },
-    );
+    if (id === experimentId) return;
+    const nextProgram = programs[id] ?? createWorkspace(next);
+    setPrograms((previous) => ({ ...previous, [id]: nextProgram }));
+    simulator.reset(nextProgram);
     setExperimentId(id);
   };
-  const editCurrentProgram = (action: EditorAction) =>
+  const editCurrentProgram = (action: EditorAction) => {
+    if (simulator.state.status === 'running') return;
+    const nextProgram = editProgram(program, action);
+    if (nextProgram === program) return;
     setPrograms((previous) => ({
       ...previous,
-      [experiment.id]: editProgram(previous[experiment.id], action),
+      [experiment.id]: nextProgram,
     }));
+    simulator.reset(nextProgram);
+  };
 
   return (
     <div className="app-shell">
@@ -69,27 +80,38 @@ export default function App() {
             onShowDetails={() => setModal('details')}
             onStartLearning={() => setMode('teaching')}
           />
-          <LadderEditor key={experiment.id} program={program} onAction={editCurrentProgram} />
+          <LadderEditor
+            key={experiment.id}
+            program={program}
+            onAction={editCurrentProgram}
+            running={simulator.state.status === 'running'}
+            traces={simulator.state.scan.traces}
+            runtimeControls={<RuntimeControls simulator={simulator} />}
+          />
           <SimulationPlaceholder
             experiment={experiment}
             onExplain={() => setModal('explain')}
             onDetails={() => setModal('details')}
+            monitor={<VariableMonitor simulator={simulator} />}
           />
         </div>
         <div className="workspace-footnote">
           <span>
             <Icon name="info" size={14} />
-            第二阶段：基础梯形图编辑。各实验工作区保留在当前网页内，刷新会丢失。
+            第三阶段：基础逻辑执行与变量调试。实验装置仍为静态占位；网页刷新会丢失草稿。
           </span>
           <span>学习 · 编程 · 观察 · 理解</span>
         </div>
       </main>
       <footer className="status-bar">
         <div>
-          <span className="status-dot muted" />
-          <strong>未运行</strong>
+          <span className={`status-dot ${simulator.state.status === 'running' ? '' : 'muted'}`} />
+          <strong>{statusNames[simulator.state.status]}</strong>
           <span className="footer-divider" />
-          <span>可编辑 · 执行引擎尚未开放</span>
+          <span>
+            {simulator.state.status === 'running' ? '扫描中 · 编辑已锁定' : '可编辑'} · 扫描{' '}
+            {simulator.state.scan.scanCount} 次
+          </span>
         </div>
         <div>
           <span>

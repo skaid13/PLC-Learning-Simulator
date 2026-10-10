@@ -11,9 +11,9 @@ describe('学习工作台回归检查', () => {
     expect(screen.getByLabelText('梯形图编程区')).toBeInTheDocument();
     expect(screen.getByLabelText('实验仿真区')).toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(11);
-    for (const name of ['运行', '停止', '复位']) {
-      expect(screen.getByRole('button', { name })).toBeDisabled();
-    }
+    expect(screen.getByRole('button', { name: '停止' })).toBeDisabled();
+    for (const name of ['运行', '复位', '单步扫描'])
+      expect(screen.getByRole('button', { name })).toBeEnabled();
     for (const name of ['常开触点', '常闭触点', '输出线圈']) {
       expect(screen.getByRole('button', { name })).toBeEnabled();
     }

@@ -1,7 +1,7 @@
 {
   "name": "plc-learning-simulator",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
@@ -13,7 +13,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "start": "node scripts/serve.mjs",
     "test": "vitest run",
-    "format": "prettier --write src scripts index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md DEVELOPMENT_PROGRESS.md"
+    "format": "prettier --write src scripts index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md DEVELOPMENT_PROGRESS.md docs/ENGINE_RULES.md"
   },
   "dependencies": {
     "react": "19.3.0",

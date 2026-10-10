@@ -44,7 +44,7 @@ export function TeachingPanel({
             <p>教学模式与自由模式共用当前程序。切换模式不会清空工作区。</p>
           </div>
           <p className="notice-text">
-            在中间选择触点或线圈，点击＋空位放置，再设置变量。运行仿真与逻辑解释将在后续阶段开放。
+            绘制并检查梯形图后，可设置右侧虚拟输入，再运行或单步扫描，观察变量值。装置动画与动态解释将在后续阶段开放。
           </p>
           <button className="button secondary full" onClick={onShowDetails}>
             查看当前实验要求
@@ -140,7 +140,7 @@ export function TeachingPanel({
                 </div>
                 <p>
                   当前实验“{experiment.shortName}”的输入输出来自指导书。编辑器用 SIM_*
-                  教学变量与这些端子对应，暂不连接实体设备或运行。
+                  教学变量与这些端子对应，只在浏览器内计算，不连接实体设备。
                 </p>
                 <button className="button secondary full" onClick={onShowDetails}>
                   查看实验 I/O 摘要
@@ -168,12 +168,18 @@ export function TeachingPanel({
             )}
             {step === 4 && (
               <>
-                <p>后续运行时，你将操作虚拟输入，观察程序控制的输出，再与实验要求比较。</p>
+                <p>
+                  先检查结构，再设置右侧虚拟输入。点击“单步扫描”执行一次，或“运行”连续扫描，观察变量表中的输出。
+                </p>
                 <div className="tip">
-                  <Icon name="lock" />
-                  <p>PLC 执行引擎和实验仿真尚未开放。右侧仅为静态占位，不表示程序正在运行。</p>
+                  <Icon name="info" />
+                  <p>
+                    一次扫描先读取输入，再从上到下计算网络并写入线圈。绿色表示该处串联通路成立。当前为教学简化规则，装置图仍是静态占位。
+                  </p>
                 </div>
-                <p>观察时不仅要问“发生了什么”，也要问“为什么会发生”。</p>
+                <p>
+                  “停止”保留最后结果；“复位”清零所有值。停止后改变输入，要再次单步或运行才会更新输出。修改程序也会复位。
+                </p>
               </>
             )}
             {step === 5 && (

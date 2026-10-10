@@ -6,6 +6,7 @@ import {
   type EditorSelection,
   type EditorTool,
 } from '../editor/model';
+import type { NetworkTrace } from '../engine/scan';
 
 interface Props {
   network: LadderNetwork;
@@ -14,6 +15,8 @@ interface Props {
   variables: BoolVariable[];
   selection: EditorSelection | null;
   tool: EditorTool;
+  running: boolean;
+  trace?: NetworkTrace;
   onSelect: (instructionId: string | null) => void;
   onPlace: (slot: 'contact' | 'coil') => void;
   onDelete: () => void;
@@ -34,6 +37,8 @@ export function LadderNetworkView({
   variables,
   selection,
   tool,
+  running,
+  trace,
   onSelect,
   onPlace,
   onDelete,
@@ -65,18 +70,27 @@ export function LadderNetworkView({
       slot === 'coil'
         ? tool === 'coil'
         : (tool === 'normallyOpen' || tool === 'normallyClosed') && available;
+    const contactTrace = trace?.contacts.find((item) => item.instructionId === instruction?.id);
+    const path = instruction?.kind === 'coil' ? trace?.result : contactTrace?.path;
     return (
       <g
         key={instruction?.id ?? `${slot}-${slotIndex}`}
         role="button"
-        tabIndex={available || instruction ? 0 : -1}
+        tabIndex={instruction || (available && !running) ? 0 : -1}
         aria-label={label}
         aria-pressed={instruction ? selected : undefined}
-        aria-disabled={!instruction && !available ? true : undefined}
-        className={`ladder-cell ${selected ? 'is-selected' : ''} ${!instruction ? 'is-empty' : ''} ${!available && !instruction ? 'is-future' : ''}`}
+        aria-disabled={!instruction && (!available || running) ? true : undefined}
+        className={`ladder-cell ${path === true ? 'path-true' : path === false ? 'path-false' : ''} ${selected ? 'is-selected' : ''} ${!instruction ? 'is-empty' : ''} ${!available && !instruction ? 'is-future' : ''}`}
         onClick={available || instruction ? action : undefined}
         onKeyDown={available || instruction ? (event) => activate(event, action) : undefined}
       >
+        {instruction && trace && (
+          <title>
+            {instruction.kind === 'coil'
+              ? `最后扫描线圈：${path ? 'TRUE' : 'FALSE'}`
+              : `读取值：${contactTrace?.value ? 'TRUE' : 'FALSE'}；触点条件：${contactTrace?.condition ? '成立' : '不成立'}；串联通路：${path ? '成立' : '不成立'}`}
+          </title>
+        )}
         <rect x={x - 46} y="25" width="92" height="119" rx="7" className="cell-background" />
         {instruction ? (
           <>
@@ -148,6 +162,11 @@ export function LadderNetworkView({
         <span className="network-name" title={network.name}>
           {network.name || '未命名网络'}
         </span>
+        {trace && (
+          <span className={`network-result ${trace.result ? 'is-true' : ''}`}>
+            {trace.result ? 'TRUE' : 'FALSE'}
+          </span>
+        )}
         <div className="network-actions">
           <button
             aria-label={`上移网络 ${index + 1}`}

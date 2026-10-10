@@ -32,7 +32,7 @@ describe('基础 SVG 编辑流程', () => {
     await user.selectOptions(screen.getByLabelText('元件变量'), 'output:O-00');
     await user.click(screen.getByRole('button', { name: '检查结构' }));
     expect(screen.getByLabelText('结构检查结果')).toHaveTextContent('基础结构检查通过');
-    expect(screen.getByRole('button', { name: '运行' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '运行' })).toBeEnabled();
   });
 
   it('切换模式和实验保留绘制内容，各实验的端子与程序相互独立', async () => {

@@ -44,7 +44,7 @@ export function Header({ experiment, mode, onExperimentChange, onModeChange }: P
         </div>
         <div className="local-indicator">
           <span className="status-dot" />
-          本地学习工作台<span className="version">v0.2</span>
+          本地学习工作台<span className="version">v0.3</span>
         </div>
       </header>
       <section className="experiment-bar" aria-label="实验选择区">
@@ -67,7 +67,7 @@ export function Header({ experiment, mode, onExperimentChange, onModeChange }: P
           <Icon name="chip" size={15} />
           参考设备 <strong>Rockwell 2080-LC50-24QVB</strong>
         </span>
-        <span className="phase-tag">第二阶段 · 梯形图编辑</span>
+        <span className="phase-tag">第三阶段 · 基础逻辑执行</span>
       </section>
     </>
   );

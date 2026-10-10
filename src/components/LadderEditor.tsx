@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace } from '../types';
 import {
   createNetwork,
@@ -13,13 +13,20 @@ import { Icon } from './Icon';
 import { LadderNetworkView } from './LadderNetworkView';
 import { InstructionInspector } from './InstructionInspector';
 import { Modal } from './Modal';
+import type { NetworkTrace } from '../engine/scan';
 
 export function LadderEditor({
   program,
   onAction,
+  running,
+  traces,
+  runtimeControls,
 }: {
   program: ProgramWorkspace;
   onAction: (action: EditorAction) => void;
+  running: boolean;
+  traces: NetworkTrace[];
+  runtimeControls: ReactNode;
 }) {
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
@@ -48,6 +55,10 @@ export function LadderEditor({
     );
   };
   const place = (networkId: string, slot: 'contact' | 'coil') => {
+    if (running) {
+      setMessage('请先停止运行，再放置或修改元件。');
+      return;
+    }
     if (slot === 'contact' && (tool === 'normallyOpen' || tool === 'normallyClosed')) {
       const id = newId();
       onAction({
@@ -96,93 +107,101 @@ export function LadderEditor({
         </span>
         <span className="memory-note">刷新会丢失</span>
       </div>
-      <div className="ladder-tools" role="group" aria-label="绘图工具">
-        {(['select', 'normallyOpen', 'normallyClosed', 'coil'] as const).map((item) => (
+      <fieldset disabled={running} className="editor-fieldset">
+        <div className="ladder-tools" role="group" aria-label="绘图工具">
+          {(['select', 'normallyOpen', 'normallyClosed', 'coil'] as const).map((item) => (
+            <button
+              key={item}
+              aria-pressed={tool === item}
+              className={tool === item ? 'active' : ''}
+              onClick={() => {
+                setTool(item);
+                setMessage(
+                  item === 'select'
+                    ? '点击网络名称或元件进行选择。'
+                    : `已选择${instructionNames[item]}，点击对应的＋空位放置。`,
+                );
+              }}
+            >
+              <span aria-hidden="true">
+                {
+                  { select: '↖', normallyOpen: '─| |─', normallyClosed: '─|/|─', coil: '─( )─' }[
+                    item
+                  ]
+                }
+              </span>
+              {item === 'select' ? '选择' : instructionNames[item]}
+            </button>
+          ))}
+        </div>
+        <div className="editing-guidance" role="status" aria-label="编辑提示">
+          <Icon name="info" size={15} />
+          <span>{message}</span>
+        </div>
+        <div className="network-list" aria-label="梯形图网络列表">
+          {program.networks.map((network, index) => (
+            <div
+              key={network.id}
+              ref={(element) => {
+                if (element) networkRefs.current.set(network.id, element);
+                else networkRefs.current.delete(network.id);
+              }}
+            >
+              <LadderNetworkView
+                network={network}
+                index={index}
+                count={program.networks.length}
+                variables={program.variables}
+                selection={selection}
+                tool={tool}
+                running={running}
+                trace={traces.find((trace) => trace.networkId === network.id)}
+                onSelect={(instructionId) => select(network.id, instructionId)}
+                onPlace={(slot) => place(network.id, slot)}
+                onDelete={() => setDeleteNetworkId(network.id)}
+                onMove={(direction) =>
+                  onAction({ type: 'moveNetwork', networkId: network.id, direction })
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <div className="editor-management">
           <button
-            key={item}
-            aria-pressed={tool === item}
-            className={tool === item ? 'active' : ''}
+            className="button secondary"
             onClick={() => {
-              setTool(item);
-              setMessage(
-                item === 'select'
-                  ? '点击网络名称或元件进行选择。'
-                  : `已选择${instructionNames[item]}，点击对应的＋空位放置。`,
-              );
+              const network = createNetwork();
+              onAction({ type: 'addNetwork', network });
+              setSelection({ networkId: network.id, instructionId: null });
+              setMessage('已添加空网络。可先命名，再选择工具放置元件。');
             }}
           >
-            <span aria-hidden="true">
-              {{ select: '↖', normallyOpen: '─| |─', normallyClosed: '─|/|─', coil: '─( )─' }[item]}
-            </span>
-            {item === 'select' ? '选择' : instructionNames[item]}
+            ＋ 添加网络
           </button>
-        ))}
-      </div>
-      <div className="editing-guidance" role="status" aria-label="编辑提示">
-        <Icon name="info" size={15} />
-        <span>{message}</span>
-      </div>
-      <div className="network-list" aria-label="梯形图网络列表">
-        {program.networks.map((network, index) => (
-          <div
-            key={network.id}
-            ref={(element) => {
-              if (element) networkRefs.current.set(network.id, element);
-              else networkRefs.current.delete(network.id);
-            }}
-          >
-            <LadderNetworkView
-              network={network}
-              index={index}
-              count={program.networks.length}
-              variables={program.variables}
-              selection={selection}
-              tool={tool}
-              onSelect={(instructionId) => select(network.id, instructionId)}
-              onPlace={(slot) => place(network.id, slot)}
-              onDelete={() => setDeleteNetworkId(network.id)}
-              onMove={(direction) =>
-                onAction({ type: 'moveNetwork', networkId: network.id, direction })
-              }
-            />
-          </div>
-        ))}
-      </div>
-      <div className="editor-management">
-        <button
-          className="button secondary"
-          onClick={() => {
-            const network = createNetwork();
-            onAction({ type: 'addNetwork', network });
-            setSelection({ networkId: network.id, instructionId: null });
-            setMessage('已添加空网络。可先命名，再选择工具放置元件。');
+          <span>每网络最多 4 个串联触点＋1 个线圈</span>
+          <button className="button secondary" onClick={() => setShowIssues(true)}>
+            <Icon name="check" size={14} />
+            检查结构
+          </button>
+        </div>
+        <p className="diagram-scroll-hint">窄屏可在梯形图内横向滚动，查看末端线圈。</p>
+        <InstructionInspector
+          network={selectedNetwork}
+          instruction={selectedInstruction ?? undefined}
+          variables={program.variables}
+          onAction={onAction}
+          onDeleteInstruction={() => {
+            if (!selection?.instructionId) return;
+            onAction({
+              type: 'deleteInstruction',
+              networkId: selection.networkId,
+              instructionId: selection.instructionId,
+            });
+            setSelection({ networkId: selection.networkId, instructionId: null });
+            setMessage('元件已删除。其余触点保持从左到右的串联顺序。');
           }}
-        >
-          ＋ 添加网络
-        </button>
-        <span>每网络最多 4 个串联触点＋1 个线圈</span>
-        <button className="button secondary" onClick={() => setShowIssues(true)}>
-          <Icon name="check" size={14} />
-          检查结构
-        </button>
-      </div>
-      <p className="diagram-scroll-hint">窄屏可在梯形图内横向滚动，查看末端线圈。</p>
-      <InstructionInspector
-        network={selectedNetwork}
-        instruction={selectedInstruction ?? undefined}
-        variables={program.variables}
-        onAction={onAction}
-        onDeleteInstruction={() => {
-          if (!selection?.instructionId) return;
-          onAction({
-            type: 'deleteInstruction',
-            networkId: selection.networkId,
-            instructionId: selection.instructionId,
-          });
-          setSelection({ networkId: selection.networkId, instructionId: null });
-          setMessage('元件已删除。其余触点保持从左到右的串联顺序。');
-        }}
-      />
+        />
+      </fieldset>
       {showIssues && (
         <section className="program-diagnostics" aria-label="结构检查结果">
           <div className="diagnostics-heading">
@@ -217,29 +236,10 @@ export function LadderEditor({
           SIM_* 是本仿真器自定义的布尔教学变量；I-xx / O-xx 仅为指导书端子标记，不是官方编程地址。
         </p>
       </div>
-      <div className="execution-toolbar">
-        <div>
-          <button className="run-button" disabled title="第三阶段开发执行引擎">
-            <Icon name="play" size={14} />
-            运行
-          </button>
-          <button disabled title="执行引擎尚未开放">
-            <Icon name="stop" size={14} />
-            停止
-          </button>
-          <button disabled title="执行引擎尚未开放">
-            <Icon name="reset" size={14} />
-            复位
-          </button>
-        </div>
-        <span>
-          <span className="status-dot muted" />
-          未运行
-        </span>
-      </div>
+      {runtimeControls}
       <div className="editor-notice">
         <Icon name="lock" size={15} />
-        <p>第二阶段仅编辑与检查基础结构。并联、定时器、计数器、运行与保存尚未开放。</p>
+        <p>基础布尔逻辑采用教学简化规则。并联、定时器、计数器、程序保存及动态解释尚未开放。</p>
       </div>
       {deleteNetworkId && (
         <Modal
