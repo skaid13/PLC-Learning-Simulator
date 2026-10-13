@@ -32,6 +32,27 @@ export interface MiniSpec {
   sensor?: boolean;
 }
 export const miniSpecs: Record<string, MiniSpec> = {
+  arm: {
+    input: '01',
+    output: '05',
+    description: '隔离验证启动→下降输出。仅练输入路径，不含到位转移和夹紧，完整取放按课程搭建。',
+  },
+  elevator: {
+    input: '01',
+    output: '04',
+    description: '隔离验证二层内选→上升输出，不含到站停止与调度；完整电梯任务另需请求和SQ反馈。',
+  },
+  water: {
+    input: '03',
+    output: '01',
+    sensor: true,
+    description: '先关闭自动传感器，隔离验证低水位S4→阀Y；完整控制另需上限、保持、缺水保护及报警。',
+  },
+  mix: {
+    input: '00',
+    output: '00',
+    description: '先验证启动→A进液阀，再按液位、搅拌和排液步骤搭建完整批次。',
+  },
   stepper: {
     input: '02',
     output: '06',
@@ -204,6 +225,18 @@ export function createGuide(experimentId: string): GuideStep[] {
     inputStep('input-off', false),
     scan('scan-off', false, false),
   ];
+  if (spec.sensor)
+    steps.unshift(
+      step(
+        'manual-sensors',
+        '切换手动传感器练习',
+        '取消勾选右侧“自动位置 / 液位传感器”。',
+        '基础练习手动设置低位信号；自动模式由实际水位生成，不能直接拨动开关。',
+        'auto-sensors',
+        (c) => (!c.runtime.autoSensors ? null : '自动传感器仍开启，请先取消勾选。'),
+        ['该开关在装置下方；此处只用于隔离测试，最后会引导恢复自动。'],
+      ),
+    );
   if (experimentId === 'led')
     steps.push(
       step(
@@ -243,6 +276,19 @@ export function createGuide(experimentId: string): GuideStep[] {
       scan('set-scan-on', true, true, 'set'),
       inputStep('set-input-off', false),
       scan('set-scan-off', false, true, 'set'),
+    );
+  if (spec.sensor)
+    steps.push(
+      step(
+        'restore-sensors',
+        '恢复自动液位反馈',
+        '重新勾选“自动位置 / 液位传感器”。',
+        '完整实验需要真实模型水位反馈；下一扫描会按液位重新采样。',
+        'auto-sensors',
+        (c) =>
+          c.runtime.autoSensors ? null : '请恢复自动传感器，避免后续完整实验一直等待手动液位。',
+        ['恢复自动不会自动替换你的程序。'],
+      ),
     );
   steps.push(
     step(

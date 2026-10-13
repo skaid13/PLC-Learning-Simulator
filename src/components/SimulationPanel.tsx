@@ -61,6 +61,7 @@ export function SimulationPanel({
         {!!sensorTerminals[experiment.id] && (
           <label className="plant-setting">
             <input
+              data-guide="auto-sensors"
               type="checkbox"
               checked={state.autoSensors}
               onChange={(e) => setSetting('autoSensors', e.target.checked)}
