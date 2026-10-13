@@ -32,6 +32,22 @@ export interface MiniSpec {
   sensor?: boolean;
 }
 export const miniSpecs: Record<string, MiniSpec> = {
+  assembly: {
+    input: '00',
+    output: '00',
+    description: '先隔离验证启动→D传送指示，完整生产线另需定时、人工移位与步骤互锁。',
+  },
+  vending: {
+    input: '03',
+    output: '09',
+    description:
+      '仅隔离测试汽水按钮→出货指示线路，不含付款许可；完整售货必须另加余额、价格、扣款和忙状态。',
+  },
+  conveyor: {
+    input: '00',
+    output: '04',
+    description: '先验证SB1→末端M4线路，不含物料许可/时序/保护；完整输送任务按课程搭建。',
+  },
   arm: {
     input: '01',
     output: '05',

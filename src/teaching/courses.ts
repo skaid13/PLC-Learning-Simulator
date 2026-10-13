@@ -1,5 +1,6 @@
 import { signalCourses } from './coursesSignal';
 import { feedbackCourses } from './coursesFeedback';
+import { productionCourses } from './coursesProduction';
 /** 课程只描述教学任务；不驱动装置，不改变公共 PLC 扫描语义。 */
 export interface Course {
   application: string;
@@ -17,6 +18,7 @@ export interface Course {
 export const courses: Record<string, Course> = {
   ...signalCourses,
   ...feedbackCourses,
+  ...productionCourses,
   led: {
     application:
       '电梯楼层牌、计数显示器都需要把一个数字变成若干发光段。本实验先学会控制一个段，再用“状态序号”组织完整显示循环。',
