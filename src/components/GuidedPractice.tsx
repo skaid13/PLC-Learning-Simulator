@@ -40,7 +40,7 @@ export function GuidedPractice({
   });
   const [feedback, setFeedback] = useState(''),
     [hints, setHints] = useState(0),
-    [baseline, setBaseline] = useState<ScanState | null>(null),
+    [baseline, setBaseline] = useState<ScanState | null>(context.runtime.scan),
     [request, setRequest] = useState(0),
     [storageError, setStorageError] = useState('');
   const current = steps[saved.index];
@@ -75,7 +75,11 @@ export function GuidedPractice({
           ? [...new Set([...saved.completed, current.id])]
           : saved.completed,
       skipped:
-        skip && index > saved.index ? [...new Set([...saved.skipped, current.id])] : saved.skipped,
+        !skip && index > saved.index
+          ? saved.skipped.filter((id) => id !== current.id)
+          : skip && index > saved.index
+            ? [...new Set([...saved.skipped, current.id])]
+            : saved.skipped,
     });
     setBaseline(context.runtime.scan);
     setFeedback('');
@@ -102,6 +106,13 @@ export function GuidedPractice({
       <p>{miniSpecs[id].description}这是基础练习，完整控制任务见实验课程。</p>
       {!saved.active ? (
         <>
+          {context.program.networks.some(
+            (n) => n.contacts.length || n.coil || n.branches?.length,
+          ) && (
+            <p className="guide-small">
+              当前已有程序，引导不会自动覆盖。若程序与最小练习不同，请先导出备份，再建立空白练习；也可直接保留程序阅读完整课程。
+            </p>
+          )}
           <button
             className="button primary full"
             onClick={() => update({ ...saved, active: true })}
@@ -194,7 +205,7 @@ export function GuidedPractice({
         className="text-button"
         onClick={() => {
           update({ ...empty, active: true });
-          setBaseline(null);
+          setBaseline(context.runtime.scan);
           setFeedback('引导进度已重启；程序和运行值保留。');
           setHints(0);
         }}

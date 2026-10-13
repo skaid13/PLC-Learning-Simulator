@@ -13,7 +13,7 @@ function load(id: string): Progress {
       Array.isArray(raw.read) &&
       raw.read.every((n: unknown) => Number.isInteger(n) && Number(n) >= 0 && Number(n) < 6)
     )
-      return raw;
+      return { chapter: raw.chapter, read: [...new Set<number>(raw.read)] };
   } catch {
     /* 教学进度损坏不能影响学生程序加载。 */
   }

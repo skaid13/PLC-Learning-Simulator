@@ -24,7 +24,14 @@ export function GuideHighlight({ target }: { target: GuideTarget | null }) {
         return;
       }
       const r = element.getBoundingClientRect();
-      if (!r.width || !r.height || r.bottom < 0 || r.top > window.innerHeight) {
+      if (
+        !r.width ||
+        !r.height ||
+        r.bottom < 0 ||
+        r.top > window.innerHeight ||
+        r.right < 0 ||
+        r.left > window.innerWidth
+      ) {
         setRect(null);
         return;
       }
@@ -56,7 +63,14 @@ export function GuideHighlight({ target }: { target: GuideTarget | null }) {
       window.removeEventListener('scroll', update, true);
     };
   }, [target]);
-  if (!target || !rect) return null;
+  if (!target) return null;
+  if (!rect)
+    return (
+      <div className="guide-missing" role="status">
+        当前定位目标未显示或已移出视野：{target.text}
+        。先选中对应元件展开属性，再点“定位当前操作”；也可重试、跳过或退出引导。
+      </div>
+    );
   return (
     <div className="guide-highlight-layer" aria-hidden="true">
       <div

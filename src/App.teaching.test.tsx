@@ -3,6 +3,23 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 
+it('刷新恢复手把手进度和学生程序，不自动恢复运行或覆盖草稿', async () => {
+  const u = userEvent.setup();
+  const first = render(<App />);
+  await u.click(screen.getByRole('button', { name: '开始手把手引导' }));
+  await u.click(screen.getByRole('button', { name: '常开触点' }));
+  await u.click(screen.getByRole('button', { name: '验证并继续' }));
+  await u.click(screen.getByRole('button', { name: '网络 1 放置触点 1' }));
+  await u.click(screen.getByRole('button', { name: '验证并继续' }));
+  first.unmount();
+  render(<App />);
+  expect(screen.getByLabelText('手把手操作引导')).toHaveTextContent('操作 3 / 19');
+  expect(screen.getByText('1 个网络 · 1 个元件')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '停止' })).toBeDisabled();
+  await u.click(screen.getByRole('button', { name: '验证并继续' }));
+  expect(screen.getByLabelText('手把手操作引导')).toHaveTextContent('触点应为常开并绑定 SIM_IN_00');
+});
+
 it('LED 引导真实验证放置、绑定、扫描、SET 保持；错误不能推进，退出与模式切换保留步骤和程序', async () => {
   const u = userEvent.setup();
   render(<App />);

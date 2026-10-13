@@ -5,6 +5,12 @@ import { createWorkspace } from '../editor/model';
 import { courses } from './courses';
 import { createGuide, miniSpecs, type GuideContext } from './guide';
 
+it('指导书11个实验均有课程和可执行引导，不遗漏实验', () => {
+  const ids = experiments.map((e) => e.id).sort();
+  expect(Object.keys(courses).sort()).toEqual(ids);
+  expect(Object.keys(miniSpecs).sort()).toEqual(ids);
+});
+
 it.each(Object.keys(courses))('%s 课程包含完整输入状态、具体流程、故障和可操作变式', (id) => {
   const experiment = experiments.find((e) => e.id === id)!;
   const c = courses[id];

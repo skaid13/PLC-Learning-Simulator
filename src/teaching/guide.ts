@@ -124,7 +124,7 @@ export function createGuide(experimentId: string): GuideStep[] {
         : '输入开关是待采样值；扫描后才更新触点、输出和装置。',
       'step',
       (c) =>
-        !matching(c, op)
+        !matching(c, op) || c.runtime.program !== c.program
           ? '练习需要一个网络：一个绑定指定输入的常开触点 → 指定输出；检查指令、变量和多余支路。'
           : c.runtime.status === 'running'
             ? '请先停止，使用单步观察这一扫描。'
@@ -270,7 +270,7 @@ export function createGuide(experimentId: string): GuideStep[] {
       step(
         'set-operation',
         '把执行指令改为 SET',
-        '在“执行指令”选择“SET 置位”。',
+        '在“执行指令”选择“置位 SET”。',
         'SET 只在成立时置位；指令变化会清空目标，下一步需重新绑定。',
         'operation',
         (c) => (coil(c)?.operation === 'set' ? null : '当前末端不是 SET，请在执行指令下拉框选择。'),

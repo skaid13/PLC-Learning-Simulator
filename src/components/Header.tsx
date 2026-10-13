@@ -1,6 +1,7 @@
 import { experiments } from '../data/experiments';
 import type { Experiment, LearningMode } from '../types';
 import { Icon } from './Icon';
+import { version } from '../../package.json';
 
 interface Props {
   experiment: Experiment;
@@ -44,7 +45,7 @@ export function Header({ experiment, mode, onExperimentChange, onModeChange }: P
         </div>
         <div className="local-indicator">
           <span className="status-dot" />
-          本地学习工作台<span className="version">v1.0</span>
+          本地学习工作台<span className="version">v{version}</span>
         </div>
       </header>
       <section className="experiment-bar" aria-label="实验选择区">

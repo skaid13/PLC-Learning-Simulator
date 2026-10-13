@@ -26,7 +26,7 @@
 
 body {
   margin: 0;
-  min-width: 360px;
+  min-width: 0;
 }
 
 button,
@@ -2420,6 +2420,7 @@ svg {
 }
 .layout-control {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   font-size: 12px;
@@ -2857,4 +2858,46 @@ svg {
   padding: 10px;
   background: white;
   border-radius: 8px;
+}
+
+.guide-missing {
+  position: fixed;
+  left: 16px;
+  top: 8px;
+  width: min(370px, calc(100vw - 32px));
+  max-height: 20vh;
+  overflow: auto;
+  padding: 12px;
+  background: #fff1ce;
+  color: #694817;
+  border: 1px solid #ddb973;
+  border-radius: 8px;
+  z-index: 46;
+  font-size: 12px;
+  line-height: 1.7;
+  pointer-events: none;
+}
+
+@media (max-width: 360px) {
+  .brand {
+    gap: 8px;
+  }
+  .brand > div {
+    min-width: 0;
+  }
+  .brand-icon {
+    flex: 0 0 36px;
+  }
+  .brand h1 {
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+  .brand > div > span {
+    flex-wrap: wrap;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .status-bar > div {
+    flex-wrap: wrap;
+  }
 }
