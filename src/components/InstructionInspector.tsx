@@ -182,6 +182,7 @@ export function InstructionInspector({
                 <label className="inspector-field">
                   执行指令
                   <select
+                    data-guide="operation"
                     value={operation}
                     onChange={(e) =>
                       coilPatch({
@@ -255,6 +256,7 @@ export function InstructionInspector({
             <label className="inspector-field variable-field">
               元件变量
               <select
+                data-guide="variable"
                 value={instruction.variableId ?? ''}
                 onChange={(e) =>
                   onAction({

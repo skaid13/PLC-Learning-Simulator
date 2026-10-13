@@ -81,6 +81,9 @@ export function LadderNetworkView({
     const path = instruction?.kind === 'coil' ? trace?.result : contactTrace?.path;
     return (
       <g
+        data-guide={
+          slot === 'coil' ? `coil-${index}` : `contact-${index}-${branchIndex}-${slotIndex}`
+        }
         key={instruction?.id ?? `${slot}-${slotIndex}`}
         role="button"
         tabIndex={instruction || (available && !running) ? 0 : -1}

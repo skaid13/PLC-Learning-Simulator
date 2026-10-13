@@ -1,5 +1,9 @@
 import { ExecutionExplanation } from './components/ExecutionExplanation';
 import { useState, type CSSProperties } from 'react';
+import { GuidedPractice } from './components/GuidedPractice';
+import { GuideHighlight, type GuideTarget } from './components/GuideHighlight';
+import type { EditorSnapshot } from './teaching/guide';
+import { downloadText } from './storage/projects';
 import { loadProjects, saveProjects } from './storage/projects';
 import { ProjectToolbar } from './components/ProjectToolbar';
 import { experiments } from './data/experiments';
@@ -22,6 +26,14 @@ export default function App() {
   const [experimentId, setExperimentId] = useState(experiments[0].id);
   const [mode, setMode] = useState<LearningMode>('teaching');
   const [step, setStep] = useState(0);
+  const [editorSnapshot, setEditorSnapshot] = useState<EditorSnapshot>({
+    tool: 'select',
+    selection: null,
+  });
+  const [checkedProgram, setCheckedProgram] = useState<ProgramWorkspace>();
+  const [guideTarget, setGuideTarget] = useState<GuideTarget | null>(null);
+  const [explanationScan, setExplanationScan] = useState(0);
+  const [blankPractice, setBlankPractice] = useState(false);
   const [editorWidth, setEditorWidth] = useState(1.92);
   const [modal, setModal] = useState<'explain' | 'details' | null>(null);
   const [loaded] = useState(() => loadProjects(window.localStorage));
@@ -51,6 +63,8 @@ export default function App() {
     simulator.reset(nextProgram);
     setLocate(undefined);
     setExperimentId(id);
+    setExplanationScan(0);
+    setCheckedProgram(undefined);
   };
   const replaceProgram = (nextProgram: ProgramWorkspace, record = true) => {
     if (simulator.state.status === 'running') return;
@@ -148,6 +162,21 @@ export default function App() {
           style={{ '--editor-width': `${editorWidth}fr` } as CSSProperties}
         >
           <TeachingPanel
+            guide={
+              <GuidedPractice
+                key={experiment.id}
+                enabled={mode === 'teaching'}
+                context={{
+                  program,
+                  runtime: simulator.state,
+                  editor: editorSnapshot,
+                  checkedProgram,
+                  explanationScan,
+                }}
+                onTarget={setGuideTarget}
+                onBlank={() => setBlankPractice(true)}
+              />
+            }
             mode={mode}
             experiment={experiment}
             step={step}
@@ -156,6 +185,8 @@ export default function App() {
             onStartLearning={() => setMode('teaching')}
           />
           <LadderEditor
+            onEditorState={setEditorSnapshot}
+            onCheck={() => setCheckedProgram(program)}
             key={experiment.id}
             program={program}
             onAction={editCurrentProgram}
@@ -168,6 +199,7 @@ export default function App() {
             experiment={experiment}
             simulator={simulator}
             onExplain={(id) => {
+              setExplanationScan(simulator.state.scan.scanCount);
               setExplainTarget(id);
               setModal('explain');
             }}
@@ -202,6 +234,39 @@ export default function App() {
           <span>教学简化系统</span>
         </div>
       </footer>
+      <GuideHighlight target={guideTarget} />
+      {blankPractice && (
+        <Modal
+          title="备份后建立空白练习？"
+          onClose={() => setBlankPractice(false)}
+          footer={
+            <>
+              <button className="button secondary" onClick={() => setBlankPractice(false)}>
+                取消，保留当前程序
+              </button>
+              <button
+                className="button primary"
+                disabled={simulator.state.status === 'running'}
+                onClick={() => {
+                  downloadText(
+                    JSON.stringify(program, null, 2),
+                    `PLC-${experiment.id}-练习前备份.json`,
+                  );
+                  replaceProgram(createWorkspace(experiment));
+                  setBlankPractice(false);
+                }}
+              >
+                导出备份并建立空白练习
+              </button>
+            </>
+          }
+        >
+          <p>
+            将下载当前程序
+            JSON，再替换为本实验空白工作区。请保留下载文件；替换可撤销恢复。其他实验草稿不变，引导进度不会被清除。只想重新看提示时请选择“重新开始引导”，无需清空程序。
+          </p>
+        </Modal>
+      )}
       {pendingReference && (
         <Modal
           title="教学参考程序"

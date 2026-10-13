@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Experiment } from '../types';
 import { curriculum } from '../data/curriculum';
 import { courses } from '../teaching/courses';
 import { useLessonProgress } from '../teaching/lessonProgress';
 import { CourseChapter } from './CourseChapter';
 export function ExperimentLesson({
+  guide,
   experiment,
   onFoundation,
   onDetails,
 }: {
+  guide?: ReactNode;
   experiment: Experiment;
   onFoundation: () => void;
   onDetails: () => void;
@@ -30,6 +32,7 @@ export function ExperimentLesson({
           入门基础
         </button>
       </div>
+      {guide}
       <div className="lesson-intro">
         <span className="eyebrow">EXPERIMENT {experiment.number}</span>
         <h3>{experiment.shortName}</h3>

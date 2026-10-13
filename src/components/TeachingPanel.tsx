@@ -1,10 +1,11 @@
 import { ExperimentLesson } from './ExperimentLesson';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { foundationQuestion, learningSteps } from '../data/lesson';
 import type { Experiment, LearningMode } from '../types';
 import { Icon } from './Icon';
 
 interface Props {
+  guide?: ReactNode;
   mode: LearningMode;
   experiment: Experiment;
   step: number;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function TeachingPanel({
+  guide,
   mode,
   experiment,
   step,
@@ -29,6 +31,7 @@ export function TeachingPanel({
   if (course && mode === 'teaching')
     return (
       <ExperimentLesson
+        guide={guide}
         key={experiment.id}
         experiment={experiment}
         onFoundation={() => setCourse(false)}
@@ -53,6 +56,7 @@ export function TeachingPanel({
       >
         学习当前实验：{experiment.shortName} →
       </button>
+      {guide}
       {mode === 'free' ? (
         <div className="free-content">
           <span className="eyebrow">FREE PRACTICE</span>

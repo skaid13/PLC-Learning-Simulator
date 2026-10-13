@@ -9,18 +9,18 @@ export function RuntimeControls({ simulator }: { simulator: Simulator }) {
     <section className="runtime-controls" aria-label="运行控制">
       <div className="execution-toolbar">
         <div>
-          <button className="run-button" disabled={running} onClick={start}>
+          <button data-guide="run" className="run-button" disabled={running} onClick={start}>
             <Icon name="play" size={14} />
             运行
           </button>
-          <button disabled={!running} onClick={stop}>
+          <button data-guide="stop" disabled={!running} onClick={stop}>
             <Icon name="stop" size={14} />
             停止
           </button>
-          <button disabled={running} onClick={step}>
+          <button data-guide="step" disabled={running} onClick={step}>
             单步扫描
           </button>
-          <button onClick={() => reset()}>
+          <button data-guide="reset" onClick={() => reset()}>
             <Icon name="reset" size={14} />
             复位
           </button>

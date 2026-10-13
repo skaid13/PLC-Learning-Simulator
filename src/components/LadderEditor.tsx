@@ -17,8 +17,11 @@ import { LadderNetworkView } from './LadderNetworkView';
 import { InstructionInspector } from './InstructionInspector';
 import { Modal } from './Modal';
 import type { NetworkTrace } from '../engine/scan';
+import type { EditorSnapshot } from '../teaching/guide';
 
 export function LadderEditor({
+  onEditorState,
+  onCheck,
   program,
   onAction,
   running,
@@ -26,6 +29,8 @@ export function LadderEditor({
   runtimeControls,
   locate,
 }: {
+  onEditorState?: (state: EditorSnapshot) => void;
+  onCheck?: () => void;
   program: ProgramWorkspace;
   onAction: (action: EditorAction) => void;
   running: boolean;
@@ -36,6 +41,9 @@ export function LadderEditor({
   const [clipboard, setClipboard] = useState<LadderNetwork | null>(null);
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
+  useEffect(() => {
+    onEditorState?.({ tool, selection });
+  }, [tool, selection, onEditorState]);
   const [message, setMessage] = useState('先选择一种元件工具，再点击网络中的＋空位放置。');
   const [showIssues, setShowIssues] = useState(false);
   const [deleteNetworkId, setDeleteNetworkId] = useState<string | null>(null);
@@ -128,6 +136,7 @@ export function LadderEditor({
         <div className="ladder-tools" role="group" aria-label="绘图工具">
           {(['select', 'normallyOpen', 'normallyClosed', 'coil'] as const).map((item) => (
             <button
+              data-guide={`tool-${item}`}
               key={item}
               aria-pressed={tool === item}
               className={tool === item ? 'active' : ''}
@@ -226,7 +235,14 @@ export function LadderEditor({
             粘贴网络
           </button>
           <span>每支路最多 4 个触点 · 支路之间并联</span>
-          <button className="button secondary" onClick={() => setShowIssues(true)}>
+          <button
+            data-guide="check"
+            className="button secondary"
+            onClick={() => {
+              setShowIssues(true);
+              onCheck?.();
+            }}
+          >
             <Icon name="check" size={14} />
             检查结构
           </button>

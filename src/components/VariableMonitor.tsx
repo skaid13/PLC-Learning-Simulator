@@ -25,6 +25,7 @@ export function VariableMonitor({ simulator }: { simulator: Simulator }) {
                 </small>
               </span>
               <input
+                data-guide={`input-${variable.id}`}
                 disabled={
                   state.autoSensors &&
                   (sensorTerminals[state.program.experimentId] ?? []).some(

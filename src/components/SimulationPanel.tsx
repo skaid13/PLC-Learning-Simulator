@@ -108,7 +108,11 @@ export function SimulationPanel({
           </div>
           <h4>从结果追溯条件</h4>
           <p>点击输出对象，查看最后一次扫描的输入条件、定时或计数和写入顺序。</p>
-          <button className="button explain-button full" onClick={() => onExplain()}>
+          <button
+            data-guide="explain"
+            className="button explain-button full"
+            onClick={() => onExplain()}
+          >
             为什么这样运行？
             <Icon name="arrow" size={14} />
           </button>
