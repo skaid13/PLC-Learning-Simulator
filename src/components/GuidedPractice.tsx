@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createGuide, miniSpecs, type GuideContext } from '../teaching/guide';
 import type { GuideTarget } from './GuideHighlight';
+import type { ScanState } from '../engine/scan';
 
 type Saved = { index: number; active: boolean; skipped: string[]; completed: string[] };
 export function GuidedPractice({
@@ -39,7 +40,7 @@ export function GuidedPractice({
   });
   const [feedback, setFeedback] = useState(''),
     [hints, setHints] = useState(0),
-    [baseline, setBaseline] = useState(0),
+    [baseline, setBaseline] = useState<ScanState | null>(null),
     [request, setRequest] = useState(0),
     [storageError, setStorageError] = useState('');
   const current = steps[saved.index];
@@ -76,7 +77,7 @@ export function GuidedPractice({
       skipped:
         skip && index > saved.index ? [...new Set([...saved.skipped, current.id])] : saved.skipped,
     });
-    setBaseline(context.runtime.scan.scanCount);
+    setBaseline(context.runtime.scan);
     setFeedback('');
     setHints(0);
   };
@@ -162,7 +163,7 @@ export function GuidedPractice({
           <div className="guide-actions">
             <button
               onClick={() => {
-                setBaseline(context.runtime.scan.scanCount);
+                setBaseline(context.runtime.scan);
                 setFeedback('本步已重试；程序保留。扫描步骤请重新执行一次。');
                 setRequest((n) => n + 1);
               }}
@@ -193,7 +194,7 @@ export function GuidedPractice({
         className="text-button"
         onClick={() => {
           update({ ...empty, active: true });
-          setBaseline(0);
+          setBaseline(null);
           setFeedback('引导进度已重启；程序和运行值保留。');
           setHints(0);
         }}

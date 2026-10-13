@@ -167,6 +167,7 @@ export function LadderEditor({
         <div className="network-list" aria-label="梯形图网络列表">
           {program.networks.map((network, index) => (
             <div
+              data-guide={`network-${index}`}
               key={network.id}
               ref={(element) => {
                 if (element) networkRefs.current.set(network.id, element);
@@ -198,6 +199,7 @@ export function LadderEditor({
         </div>
         <div className="editor-management">
           <button
+            data-guide="add-network"
             className="button secondary"
             onClick={() => {
               const network = createNetwork();
@@ -248,7 +250,7 @@ export function LadderEditor({
           </button>
         </div>
         <p className="diagram-scroll-hint">窄屏可在梯形图内横向滚动，查看末端线圈。</p>
-        <div className="variable-actions">
+        <div className="variable-actions" data-guide="variables">
           {(['boolean', 'number'] as const).map((dataType) => (
             <button
               key={dataType}

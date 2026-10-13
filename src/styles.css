@@ -2773,3 +2773,88 @@ svg {
 .guide-dock .guide-actions {
   margin-top: 6px;
 }
+
+.live-learning {
+  border: 1px solid #cbded2;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 14px 0;
+  background: #f6faf7;
+}
+.live-learning h4 {
+  color: #17624d;
+  margin-bottom: 8px;
+}
+.live-learning p,
+.live-learning li {
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.live-learning label {
+  display: block;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.live-learning select {
+  max-width: 100%;
+  margin-top: 6px;
+  width: 100%;
+  padding: 7px;
+}
+.live-learning summary {
+  cursor: pointer;
+  font-size: 12px;
+  margin: 8px 0;
+  line-height: 1.8;
+}
+.pending-inputs {
+  color: #8b5b17;
+}
+.runtime-help {
+  padding: 10px 12px;
+  background: #f5f8f6;
+  border: 1px solid #dce7e0;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.runtime-help summary {
+  cursor: pointer;
+  color: #21624f;
+  font-weight: 600;
+}
+.runtime-help dt {
+  font-weight: 600;
+  margin: 12px 0 3px;
+}
+.runtime-help dd {
+  margin: 0;
+  color: #52695e;
+}
+
+.program-recipe {
+  margin: 18px 0;
+  padding: 12px;
+  border: 1px solid #cbded2;
+  border-radius: 8px;
+  background: #f8fbf8;
+}
+.program-recipe > summary {
+  cursor: pointer;
+  color: #17624d;
+  line-height: 1.8;
+  font-weight: 600;
+}
+.program-recipe p {
+  margin-top: 10px;
+}
+.program-recipe code {
+  overflow-wrap: anywhere;
+}
+.recipe-hints {
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+}

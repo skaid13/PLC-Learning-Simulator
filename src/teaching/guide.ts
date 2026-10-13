@@ -2,6 +2,7 @@ import type { ProgramWorkspace } from '../types';
 import type { RuntimeState } from '../engine/runtime';
 import type { EditorSelection, EditorTool } from '../editor/model';
 import { validateProgram } from '../editor/validation';
+import type { ScanState } from '../engine/scan';
 
 export interface EditorSnapshot {
   tool: EditorTool;
@@ -12,8 +13,8 @@ export interface GuideContext {
   runtime: RuntimeState;
   editor: EditorSnapshot;
   checkedProgram?: ProgramWorkspace;
-  explanationScan: number;
-  baseline: number;
+  explanationScan?: ScanState;
+  baseline: ScanState | null;
 }
 export interface GuideStep {
   id: string;
@@ -75,7 +76,9 @@ export function createGuide(experimentId: string): GuideStep[] {
           ? '练习需要一个网络：一个绑定指定输入的常开触点 → 指定输出；检查指令、变量和多余支路。'
           : c.runtime.status === 'running'
             ? '请先停止，使用单步观察这一扫描。'
-            : c.runtime.scan.scanCount <= c.baseline || c.runtime.status === 'error'
+            : c.runtime.scan.scanCount === 0 ||
+                c.runtime.scan === c.baseline ||
+                c.runtime.status === 'error'
               ? '请在本步执行一次新的单步扫描。'
               : c.runtime.scan.values[input] !== on
                 ? `本次扫描输入不是 ${on ? 'TRUE' : 'FALSE'}，请调整输入再扫描。`
@@ -234,7 +237,7 @@ export function createGuide(experimentId: string): GuideStep[] {
       '解释来自最后实际扫描，不是预设动画。现在只完成基础操作；接下来阅读课程搭建完整实验并做独立练习。',
       'explain',
       (c) =>
-        c.explanationScan > 0 && c.explanationScan === c.runtime.scan.scanCount
+        c.runtime.scan.scanCount > 0 && c.explanationScan === c.runtime.scan
           ? null
           : '先完成扫描，再打开“为什么这样运行？”查看当前结果。',
       ['在解释中可以定位网络，比较通路条件和是否实际写入。'],

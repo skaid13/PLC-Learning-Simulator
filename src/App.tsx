@@ -4,6 +4,7 @@ import { GuidedPractice } from './components/GuidedPractice';
 import { GuideHighlight, type GuideTarget } from './components/GuideHighlight';
 import type { EditorSnapshot } from './teaching/guide';
 import { downloadText } from './storage/projects';
+import type { ScanState } from './engine/scan';
 import { loadProjects, saveProjects } from './storage/projects';
 import { ProjectToolbar } from './components/ProjectToolbar';
 import { experiments } from './data/experiments';
@@ -32,7 +33,7 @@ export default function App() {
   });
   const [checkedProgram, setCheckedProgram] = useState<ProgramWorkspace>();
   const [guideTarget, setGuideTarget] = useState<GuideTarget | null>(null);
-  const [explanationScan, setExplanationScan] = useState(0);
+  const [explanationScan, setExplanationScan] = useState<ScanState>();
   const [blankPractice, setBlankPractice] = useState(false);
   const [editorWidth, setEditorWidth] = useState(1.92);
   const [modal, setModal] = useState<'explain' | 'details' | null>(null);
@@ -63,7 +64,7 @@ export default function App() {
     simulator.reset(nextProgram);
     setLocate(undefined);
     setExperimentId(id);
-    setExplanationScan(0);
+    setExplanationScan(undefined);
     setCheckedProgram(undefined);
   };
   const replaceProgram = (nextProgram: ProgramWorkspace, record = true) => {
@@ -162,6 +163,8 @@ export default function App() {
           style={{ '--editor-width': `${editorWidth}fr` } as CSSProperties}
         >
           <TeachingPanel
+            program={program}
+            onTarget={setGuideTarget}
             guide={
               <GuidedPractice
                 key={experiment.id}
@@ -193,13 +196,15 @@ export default function App() {
             running={simulator.state.status === 'running'}
             traces={simulator.state.scan.traces}
             locate={locate}
-            runtimeControls={<RuntimeControls simulator={simulator} />}
+            runtimeControls={
+              <RuntimeControls simulator={simulator} onNew={() => setBlankPractice(true)} />
+            }
           />
           <SimulationPanel
             experiment={experiment}
             simulator={simulator}
             onExplain={(id) => {
-              setExplanationScan(simulator.state.scan.scanCount);
+              setExplanationScan(simulator.state.scan);
               setExplainTarget(id);
               setModal('explain');
             }}

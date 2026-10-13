@@ -3,8 +3,12 @@ import { useState, type ReactNode } from 'react';
 import { foundationQuestion, learningSteps } from '../data/lesson';
 import type { Experiment, LearningMode } from '../types';
 import { Icon } from './Icon';
+import type { ProgramWorkspace } from '../types';
+import type { GuideTarget } from './GuideHighlight';
 
 interface Props {
+  program: ProgramWorkspace;
+  onTarget: (target: GuideTarget | null) => void;
   guide?: ReactNode;
   mode: LearningMode;
   experiment: Experiment;
@@ -15,6 +19,8 @@ interface Props {
 }
 
 export function TeachingPanel({
+  program,
+  onTarget,
   guide,
   mode,
   experiment,
@@ -31,6 +37,8 @@ export function TeachingPanel({
   if (course && mode === 'teaching')
     return (
       <ExperimentLesson
+        program={program}
+        onTarget={onTarget}
         guide={guide}
         key={experiment.id}
         experiment={experiment}
@@ -202,7 +210,7 @@ export function TeachingPanel({
                   </p>
                 </div>
                 <p>
-                  “停止”保留最后结果；“复位”清零所有值。停止后改变输入，要再次单步或运行才会更新输出。修改程序也会复位。
+                  “停止”保留最后结果；“复位”重置运行值和装置，数值变量回到定义初值，保留程序。停止后改变输入，要再次单步或运行才会更新输出。修改程序也会复位。
                 </p>
               </>
             )}

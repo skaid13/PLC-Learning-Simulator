@@ -4,12 +4,19 @@ import { curriculum } from '../data/curriculum';
 import { courses } from '../teaching/courses';
 import { useLessonProgress } from '../teaching/lessonProgress';
 import { CourseChapter } from './CourseChapter';
+import { ProgramRecipe } from './ProgramRecipe';
+import type { ProgramWorkspace } from '../types';
+import type { GuideTarget } from './GuideHighlight';
 export function ExperimentLesson({
+  program,
+  onTarget,
   guide,
   experiment,
   onFoundation,
   onDetails,
 }: {
+  program: ProgramWorkspace;
+  onTarget: (target: GuideTarget | null) => void;
   guide?: ReactNode;
   experiment: Experiment;
   onFoundation: () => void;
@@ -57,6 +64,9 @@ export function ExperimentLesson({
       <section className="lesson-content" aria-label="实验步骤内容">
         <h3>{titles[step]}</h3>
         {course && <CourseChapter course={course} experiment={experiment} chapter={step} />}
+        {step === 3 && (
+          <ProgramRecipe experiment={experiment} program={program} onTarget={onTarget} />
+        )}
         {step === 0 && (
           <>
             <p>{experiment.objective}</p>

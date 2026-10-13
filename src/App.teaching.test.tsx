@@ -77,6 +77,33 @@ it('建立空白练习要求备份确认，取消不改变已有程序', async (
   expect(screen.getByText('1 个网络 · 1 个元件')).toBeInTheDocument();
 });
 
+it('实时反馈区分待采样与已执行输出，复位保留程序；逐网络提示不自动载入答案', async () => {
+  const u = userEvent.setup();
+  render(<App />);
+  await u.click(screen.getByRole('button', { name: '常开触点' }));
+  await u.click(screen.getByRole('button', { name: '网络 1 放置触点 1' }));
+  await u.selectOptions(screen.getByLabelText('元件变量'), 'input:I-00');
+  await u.click(screen.getByRole('button', { name: '输出线圈' }));
+  await u.click(screen.getByRole('button', { name: '网络 1 放置线圈' }));
+  await u.selectOptions(screen.getByLabelText('元件变量'), 'output:O-00');
+  const feedback = () => within(screen.getByLabelText('输入到装置的实际反馈'));
+  await u.click(screen.getByRole('switch', { name: /SIM_IN_00/ }));
+  expect(feedback().getByText(/有 1 个输入与最后采样值不同/)).toBeInTheDocument();
+  await u.click(screen.getByRole('button', { name: '单步扫描' }));
+  expect(feedback().getByText(/最后实际写入来自网络 1/)).toHaveTextContent('TRUE');
+  await u.click(screen.getByRole('switch', { name: /SIM_IN_00/ }));
+  expect(feedback().getByText(/最后实际写入来自网络 1/)).toHaveTextContent('TRUE');
+  await u.click(screen.getByRole('button', { name: '复位' }));
+  expect(feedback().queryByText(/最后实际写入来自/)).not.toBeInTheDocument();
+  expect(screen.getByText('1 个网络 · 2 个元件')).toBeInTheDocument();
+  await u.click(screen.getByRole('button', { name: /学习当前实验/ }));
+  await u.click(screen.getByRole('button', { name: /04.*动手编程/ }));
+  await u.click(screen.getByText('完整任务：逐网络搭建（不自动填入答案）'));
+  await u.click(screen.getByRole('button', { name: '需要帮助：展开本网络搭建提示' }));
+  expect(screen.getByText(/末端：置位 SET/)).toBeInTheDocument();
+  expect(screen.getByText('1 个网络 · 2 个元件')).toBeInTheDocument();
+});
+
 it('LED 分层课程覆盖原理、双向 I/O、独立练习，已读和章节在切换模式后恢复', async () => {
   const user = userEvent.setup();
   render(<App />);

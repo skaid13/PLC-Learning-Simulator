@@ -5,6 +5,7 @@ import { PlantDrawing } from './PlantDrawing';
 import { VariableMonitor } from './VariableMonitor';
 import { curriculum } from '../data/curriculum';
 import { sensorTerminals } from '../simulation/plant';
+import { LiveLearningFeedback } from './LiveLearningFeedback';
 export function SimulationPanel({
   experiment,
   simulator,
@@ -102,6 +103,7 @@ export function SimulationPanel({
           <Icon name="arrow" size={14} />
         </button>
         <VariableMonitor simulator={simulator} />
+        <LiveLearningFeedback key={experiment.id} simulator={simulator} />
         <section className="explain-card">
           <div className="explain-icon">
             <Icon name="light" size={21} />
