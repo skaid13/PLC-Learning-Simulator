@@ -32,6 +32,21 @@ export interface MiniSpec {
   sensor?: boolean;
 }
 export const miniSpecs: Record<string, MiniSpec> = {
+  stepper: {
+    input: '02',
+    output: '06',
+    description: '隔离测试 SB3→使能 ENA；没有脉冲时电机不会转。完整定位任务另需脉冲、方向和计数。',
+  },
+  traffic: {
+    input: '01',
+    output: '00',
+    description: '先用启动开关控制东西红灯，熟悉输入采样；完整交通任务还需四相位、定时和互锁。',
+  },
+  tower: {
+    input: '00',
+    output: '00',
+    description: '先用启动控制 L1，再学习11个灯组的序号和并联条件。',
+  },
   led: { input: '00', output: '00', description: '启动按钮直接控制 A 段，再比较 SET 保持。' },
 };
 const button = (name: string) => `[data-guide="${name}"]`;
