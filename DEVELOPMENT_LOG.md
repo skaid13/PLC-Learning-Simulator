@@ -191,3 +191,7 @@ Git 仓库及 `main` 已存在，无远程。gh 2.101.0 已登录 skaid13；只�
 用户明确回复确认后，创建 [skaid13/PLC-Learning-Simulator](https://github.com/skaid13/PLC-Learning-Simulator)，可见性 Private，默认分支 main。添加 origin 并推送已有完整历史，本地 main 跟踪 origin/main；没有强制推送、重写历史或修改核心 PLC 文件。
 
 GitHub API 核验首次完整提交 `6813ecdf89f2f791957ef584073884b777a626f2` 与本地 HEAD 相同；完整 Git tree 的 67 个文件路径、模式、大小、blob SHA 全部一致，远程 13 次提交与本地历史一致。原指导书、源码、配置、锁文件、测试、文档和启动入口完整，依赖/缓存/构建/凭据文件不在远程树中。README、进度和上传记录同步本次结果，作为后续文档检查点保存。
+
+## 2026-10-13：教学优化阶段 0
+
+核查原始需求、README、开发进度/日志、手册提取及原 DOCX。基线 101 项测试通过；远程 main 为 8e0baf8，当前实际可见性 Public，未改动或上传。新分支 codex/teaching-upgrade 保留初版。无旧 4173/5173 服务；旧 dist 经 Finder 移至 /Users/skaid13/.Trash/dist，可恢复。依赖、源码和学生数据保留。阶段计划见进度文件。
