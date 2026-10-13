@@ -277,7 +277,7 @@ export function TeachingPanel({
       )}
       <div className="panel-bottom-note">
         <Icon name="info" size={14} />
-        <span>共用 PLC 入门课 · 专属实验教学后续开放</span>
+        <span>先学基础，再进入当前实验课程 · 程序在两种模式间保留</span>
       </div>
     </aside>
   );

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import type { Experiment } from '../types';
 import { curriculum } from '../data/curriculum';
+import { courses } from '../teaching/courses';
+import { useLessonProgress } from '../teaching/lessonProgress';
+import { CourseChapter } from './CourseChapter';
 export function ExperimentLesson({
   experiment,
   onFoundation,
@@ -10,11 +13,14 @@ export function ExperimentLesson({
   onFoundation: () => void;
   onDetails: () => void;
 }) {
-  const [step, setStep] = useState(0),
-    [answer, setAnswer] = useState<number | null>(null),
+  const progress = useLessonProgress(experiment.id);
+  const step = progress.chapter,
+    setStep = progress.go;
+  const [answer, setAnswer] = useState<number | null>(null),
     [submitted, setSubmitted] = useState(false),
     [reference, setReference] = useState(false);
   const lesson = curriculum[experiment.id];
+  const course = courses[experiment.id];
   const titles = ['目标与要求', '控制原理', '输入与输出', '动手编程', '调试与故障', '实验理解检查'];
   return (
     <aside className="panel teaching-panel" aria-label="教学指导区">
@@ -28,6 +34,8 @@ export function ExperimentLesson({
         <span className="eyebrow">EXPERIMENT {experiment.number}</span>
         <h3>{experiment.shortName}</h3>
         <p>步骤 {step + 1} / 6 · 可随时回顾</p>
+        <p>已读 {progress.read.length} / 6 节 · 已读不代表掌握</p>
+        <progress aria-label="实验阅读进度" value={progress.read.length} max={6} />
       </div>
       <nav className="step-list" aria-label="实验教学步骤">
         {titles.map((title, i) => (
@@ -39,11 +47,13 @@ export function ExperimentLesson({
           >
             <span className="step-number">0{i + 1}</span>
             {title}
+            {progress.read.includes(i) && <span aria-label="已读">✓</span>}
           </button>
         ))}
       </nav>
       <section className="lesson-content" aria-label="实验步骤内容">
         <h3>{titles[step]}</h3>
+        {course && <CourseChapter course={course} experiment={experiment} chapter={step} />}
         {step === 0 && (
           <>
             <p>{experiment.objective}</p>
@@ -62,10 +72,6 @@ export function ExperimentLesson({
                 输入 → 扫描网络 → 输出 → 装置变化 → 传感器反馈。程序使用实际执行轨迹解释每一步。
               </p>
             </div>
-            <p>
-              串联表示 AND，并联表示
-              OR。顺序控制先保存扫描开始的步骤，再判断转移，避免一次扫描跳过多个步骤。
-            </p>
           </>
         )}
         {step === 2 && (
@@ -168,6 +174,12 @@ export function ExperimentLesson({
           ))}
         </details>
       </section>
+      <div className="course-read">
+        <button className="button secondary" onClick={progress.markRead}>
+          标记本节已读
+        </button>
+        <p>{progress.message}</p>
+      </div>
       <div className="lesson-navigation">
         <button className="button secondary" disabled={!step} onClick={() => setStep(step - 1)}>
           上一步

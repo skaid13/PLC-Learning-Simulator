@@ -122,7 +122,7 @@ export function LadderEditor({
         <span className="editor-tab-label">
           {program.networks.length} 个网络 · {instructionCount} 个元件
         </span>
-        <span className="memory-note">刷新会丢失</span>
+        <span className="memory-note">草稿自动保存</span>
       </div>
       <fieldset disabled={running} className="editor-fieldset">
         <div className="ladder-tools" role="group" aria-label="绘图工具">

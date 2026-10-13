@@ -2602,3 +2602,66 @@ svg {
   padding: 12px;
   border-radius: 7px;
 }
+
+/* 分层课程：每次只展开当前需要的知识。 */
+.knowledge-card {
+  margin: 10px 0;
+  padding: 12px;
+  background: #f4f8f6;
+  border: 1px solid #dce7e0;
+  border-radius: 8px;
+}
+.knowledge-card summary {
+  cursor: pointer;
+  color: #126554;
+  font-weight: 600;
+  line-height: 1.7;
+}
+.knowledge-card p {
+  margin-top: 10px;
+}
+.course-read {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+.course-read p {
+  font-size: 12px;
+  color: #65776e;
+  margin-top: 8px;
+}
+.course-chapter h4 {
+  margin: 18px 0 10px;
+}
+.course-io {
+  overflow: auto;
+  max-height: 520px;
+}
+.course-io table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.course-io th,
+.course-io td {
+  text-align: left;
+  padding: 9px 5px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.course-io code {
+  font-size: 11px;
+}
+.lesson-intro progress {
+  width: 100%;
+  accent-color: #147d6b;
+}
+@media (min-width: 1281px) {
+  .workspace-grid {
+    grid-template-columns: minmax(320px, 1.25fr) minmax(380px, var(--editor-width, 1.92fr)) minmax(
+        285px,
+        1.05fr
+      );
+  }
+}
