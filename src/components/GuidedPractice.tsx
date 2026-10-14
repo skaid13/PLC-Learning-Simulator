@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createGuide, miniSpecs, type GuideContext } from '../teaching/guide';
 import type { GuideTarget } from './GuideHighlight';
 import type { ScanState } from '../engine/scan';
@@ -44,6 +44,22 @@ export function GuidedPractice({
     [request, setRequest] = useState(0),
     [storageError, setStorageError] = useState('');
   const current = steps[saved.index];
+  const [automatic, setAutomaticState] = useState(() => {
+    try {
+      return localStorage.getItem('plc-learning:guide:auto') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+  const setAutomatic = (value: boolean) => {
+    setAutomaticState(value);
+    try {
+      localStorage.setItem('plc-learning:guide:auto', String(value));
+    } catch {
+      /* The preference must never block practice. */
+    }
+  };
+  const entry = useRef<{ index: number; values: unknown[] } | null>(null);
   const update = (p: Saved) => {
     setSaved(p);
     try {
@@ -58,7 +74,6 @@ export function GuidedPractice({
     else onTarget(null);
     return () => onTarget(null);
   }, [enabled, saved.active, saved.index, id, request, onTarget]);
-  if (!steps.length || !enabled) return null;
   const move = (index: number, skip = false) => {
     if (!skip && index > saved.index) {
       const error = current.verify({ ...context, baseline });
@@ -85,6 +100,42 @@ export function GuidedPractice({
     setFeedback('');
     setHints(0);
   };
+  // Only a new learner action may advance a step. Existing correct state on
+  // restore/review must not cascade through steps or reuse an earlier scan.
+  useEffect(() => {
+    const values = [
+      context.program,
+      context.runtime,
+      context.editor.tool,
+      context.editor.selection?.networkId,
+      context.editor.selection?.instructionId,
+      context.editor.actionCount ?? 0,
+      context.checkedProgram,
+      context.explanationScan,
+    ];
+    if (!enabled || !saved.active || !current || !automatic) {
+      entry.current = null;
+      return;
+    }
+    if (!entry.current || entry.current.index !== saved.index) {
+      entry.current = { index: saved.index, values };
+      return;
+    }
+    if (values.every((v, i) => v === entry.current!.values[i])) return;
+    if (current.verify({ ...context, baseline }) === null) move(saved.index + 1);
+  }, [
+    enabled,
+    saved.active,
+    saved.index,
+    automatic,
+    context.program,
+    context.runtime,
+    context.editor,
+    context.checkedProgram,
+    context.explanationScan,
+    baseline,
+  ]);
+  if (!steps.length || !enabled) return null;
   return (
     <section className="guided-practice" aria-label="手把手操作引导">
       {saved.active && current && (
@@ -95,7 +146,7 @@ export function GuidedPractice({
           <p>{current.instruction}</p>
           <div className="guide-actions">
             <button onClick={() => setRequest((n) => n + 1)}>定位当前操作</button>
-            <button onClick={() => move(saved.index + 1)}>继续当前操作</button>
+            {!automatic && <button onClick={() => move(saved.index + 1)}>继续当前操作</button>}
             <button onClick={() => update({ ...saved, active: false })}>收起引导</button>
           </div>
           {feedback && <p role="status">{feedback}</p>}
@@ -104,6 +155,19 @@ export function GuidedPractice({
       <span className="eyebrow">教学模式 · 真实操作检查</span>
       <h3>从一个网络开始</h3>
       <p>{miniSpecs[id].description}这是基础练习，完整控制任务见实验课程。</p>
+      <label className="guide-auto">
+        <input
+          type="checkbox"
+          checked={automatic}
+          onChange={(e) => setAutomatic(e.target.checked)}
+        />
+        完成操作后自动前进
+      </label>
+      <p className="guide-small">
+        {automatic
+          ? '跟随高亮操作即可，无需再点下一步。未达到条件时会停在当前步骤。'
+          : '手动模式：可慢慢阅读，完成后点击验证并继续。'}
+      </p>
       {!saved.active ? (
         <>
           {context.program.networks.some(
@@ -134,13 +198,18 @@ export function GuidedPractice({
           </p>
           <h4>{current.title}</h4>
           <p>{current.instruction}</p>
-          <p className="guide-why">为什么：{current.why}</p>
+          <details className="guide-why">
+            <summary>为什么要这样做？</summary>
+            <p>{current.why}</p>
+          </details>
           <div className="guide-actions">
             <button onClick={() => setRequest((n) => n + 1)}>定位要点击的位置</button>
             <button
               onClick={() => {
                 const error = current.verify({ ...context, baseline });
-                setFeedback(error ?? '本步操作已验证，可以继续。');
+                if (error) setFeedback(error);
+                else if (automatic) move(saved.index + 1);
+                else setFeedback('本步操作已验证，可以继续。');
               }}
             >
               检查本步
@@ -164,12 +233,20 @@ export function GuidedPractice({
             </p>
           ))}
           <div className="guide-actions">
-            <button disabled={!saved.index} onClick={() => move(saved.index - 1, true)}>
+            <button
+              disabled={!saved.index}
+              onClick={() => {
+                setAutomatic(false);
+                move(saved.index - 1, true);
+              }}
+            >
               引导上一步
             </button>
-            <button className="button primary" onClick={() => move(saved.index + 1)}>
-              验证并继续
-            </button>
+            {!automatic && (
+              <button className="button primary" onClick={() => move(saved.index + 1)}>
+                验证并继续
+              </button>
+            )}
           </div>
           <div className="guide-actions">
             <button

@@ -1,3 +1,4 @@
+import { createStarterReference } from './starters';
 import type { Experiment, ContactInstruction, CoilInstruction, ProgramWorkspace } from '../types';
 import { createWorkspace } from '../editor/model';
 type Condition = Omit<ContactInstruction, 'id' | 'kind'>;
@@ -154,6 +155,7 @@ function sequence(b: Builder, start: Condition[], stages: Stage[], reset: Condit
   return state;
 }
 export function createReferenceProgram(e: Experiment): ProgramWorkspace {
+  if (e.id.startsWith('starter-')) return createStarterReference(e);
   const b = new Builder(e);
   b.p.name = `${e.shortName} · 教学参考`;
   switch (e.id) {

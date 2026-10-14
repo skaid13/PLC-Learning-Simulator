@@ -7,6 +7,8 @@ import type { ScanState } from '../engine/scan';
 export interface EditorSnapshot {
   tool: EditorTool;
   selection: EditorSelection | null;
+  /** Counts deliberate user clicks, including reselecting the same tool. */
+  actionCount?: number;
 }
 export interface GuideContext {
   program: ProgramWorkspace;
@@ -32,6 +34,21 @@ export interface MiniSpec {
   sensor?: boolean;
 }
 export const miniSpecs: Record<string, MiniSpec> = {
+  'starter-lamp': {
+    input: '00',
+    output: '00',
+    description: '第一个小项目：按钮接通后扫描，灯亮；断开后扫描，灯灭。',
+  },
+  'starter-stop': {
+    input: '00',
+    output: '00',
+    description: '先完成按钮亮灯，再亲手加一个常闭停止条件。',
+  },
+  'starter-delay': {
+    input: '00',
+    output: '00',
+    description: '先完成立即亮灯，再改为持续接通两秒后亮灯。',
+  },
   assembly: {
     input: '00',
     output: '00',
@@ -241,6 +258,228 @@ export function createGuide(experimentId: string): GuideStep[] {
     inputStep('input-off', false),
     scan('scan-off', false, false),
   ];
+  if (experimentId === 'starter-stop') {
+    const stopContact = (c: GuideContext) => first(c)?.contacts[1];
+    const correct = (c: GuideContext) =>
+      c.program.networks.length === 1 &&
+      first(c)?.contacts.length === 2 &&
+      !first(c)?.branches?.length &&
+      contact(c)?.variableId === input &&
+      contact(c)?.contactType === 'normallyOpen' &&
+      !contact(c)?.comparison &&
+      !contact(c)?.edge &&
+      stopContact(c)?.variableId === 'input:I-01' &&
+      stopContact(c)?.contactType === 'normallyClosed' &&
+      !stopContact(c)?.comparison &&
+      !stopContact(c)?.edge &&
+      coil(c)?.variableId === output &&
+      (coil(c)?.operation ?? 'coil') === 'coil';
+    steps.push(
+      step(
+        'stop-tool',
+        '选择常闭触点',
+        '选“常闭触点”，为停止按钮增加相反判断。',
+        '停止按下是 TRUE，需要常闭在这时切断通路。',
+        'tool-normallyClosed',
+        (c) => (c.editor.tool === 'normallyClosed' ? null : '请选择常闭触点工具。'),
+        ['接下来把它串联在第一个触点后面。'],
+      ),
+      step(
+        'stop-place',
+        '串联一个停止触点',
+        '点击网络 1 中第一个触点右侧的＋，增加第二个触点。',
+        '串联表示两个条件都成立，灯才亮。',
+        'contact-0-0-1',
+        (c) => (stopContact(c) ? null : '请在主支路添加第二个触点。'),
+        ['不需要另建网络，也不要添加并联支路。'],
+      ),
+      step(
+        'stop-bind',
+        '绑定停止输入',
+        '第二个触点保持常闭，元件变量选 SIM_IN_01。',
+        '此输入 TRUE 表示按下停止，常闭条件就变为 FALSE。',
+        'variable',
+        (c) => (correct(c) ? null : '需要常开 SIM_IN_00 与常闭 SIM_IN_01 串联，末端为普通灯线圈。'),
+        ['点击第二个触点，在输入分组选 SIM_IN_01。'],
+      ),
+      inputStep('stop-start-on', true),
+      step(
+        'stop-press',
+        '接通停止按钮',
+        '在右侧接通 SIM_IN_01。先猜两个按钮同时接通时灯会怎样。',
+        '停止条件优先阻断串联通路。',
+        'input-input:I-01',
+        (c) => (c.runtime.inputs['input:I-01'] === true ? null : '请接通停止输入 SIM_IN_01。'),
+        ['不要断开亮灯按钮，两个开关都应接通。'],
+      ),
+      step(
+        'stop-scan-off',
+        '验证停止优先',
+        '点击单步，两个按钮都接通时灯应灭。',
+        '常闭停止条件不成立，串联通路为 FALSE。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === true &&
+          c.runtime.scan.values['input:I-01'] === true &&
+          c.runtime.scan.values[output] === false
+            ? null
+            : '保持两个按钮接通，使用新的单步扫描验证灯灭。',
+        ['观察第二个常闭触点与整个通路的颜色。'],
+      ),
+      step(
+        'stop-release',
+        '解除停止',
+        '断开右侧 SIM_IN_01，保持 SIM_IN_00 接通。',
+        '没有停止请求时，常闭条件重新成立。',
+        'input-input:I-01',
+        (c) =>
+          c.runtime.inputs['input:I-01'] !== true && c.runtime.inputs[input] === true
+            ? null
+            : '断开停止按钮，并保持亮灯按钮接通。',
+        ['解除停止不会自行保持亮灯；亮灯按钮仍需接通。'],
+      ),
+      step(
+        'stop-scan-on',
+        '验证允许亮灯',
+        '点击单步，确认灯重新亮起。',
+        '亮灯 TRUE 且停止 FALSE，两个条件同时成立。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === true &&
+          c.runtime.scan.values['input:I-01'] === false &&
+          c.runtime.scan.values[output] === true
+            ? null
+            : '请在亮灯接通、停止断开时重新单步，确认灯亮。',
+        ['其他三组输入都不应亮灯。'],
+      ),
+    );
+  }
+  if (experimentId === 'starter-delay') {
+    const correct = (c: GuideContext) => matching(c, 'ton') && coil(c)?.preset === 2000;
+    steps.push(
+      step(
+        'delay-select',
+        '选中灯的末端指令',
+        '点击网络 1 末端线圈，准备改成延时接通。',
+        '先保持按钮条件不变，只改变末端执行方式。',
+        'coil-0',
+        (c) =>
+          !!coil(c) && c.editor.selection?.instructionId === coil(c)?.id
+            ? null
+            : '请选中末端线圈。',
+        ['属性区会显示执行指令。'],
+      ),
+      step(
+        'delay-operation',
+        '改成接通延时 TON',
+        '在执行指令中选择 TON。',
+        'TON 要持续满足条件才接通，不是立即亮灯。',
+        'operation',
+        (c) => (coil(c)?.operation === 'ton' ? null : '执行指令还不是 TON。'),
+        ['修改指令会清除原来的变量绑定，之后需重新选择。'],
+      ),
+      step(
+        'delay-preset',
+        '设置两秒预置时间',
+        '在预置时间输入 2000（单位 ms）。',
+        '1000 ms 等于一秒；每次单步推进 200 ms。',
+        'preset',
+        (c) =>
+          coil(c)?.operation === 'ton' && coil(c)?.preset === 2000
+            ? null
+            : '请将 TON 的预置时间设为 2000 ms。',
+        ['填 2 不是两秒。'],
+      ),
+      step(
+        'delay-bind',
+        '重新绑定延时灯',
+        '在元件变量选择 SIM_OUT_00。',
+        '计时达到预置值后，这个完成输出驱动灯。',
+        'variable',
+        (c) => (correct(c) ? null : 'TON 2000 ms 需绑定 SIM_OUT_00，前面是一个常开 SIM_IN_00。'),
+        ['保持一个触点和一个末端指令。'],
+      ),
+      inputStep('delay-on', true),
+      step(
+        'delay-before',
+        '观察未到两秒时灯灭',
+        '点击一次单步。累计 200 ms，灯仍应灭。',
+        '条件已成立，但尚未达到预置时间。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === true &&
+          (c.runtime.scan.memory?.[output]?.elapsed ?? 0) > 0 &&
+          (c.runtime.scan.memory?.[output]?.elapsed ?? 0) < 2000 &&
+          c.runtime.scan.values[output] === false
+            ? null
+            : '请从复位后的接通状态单步，观察不足两秒且灯灭。',
+        ['若已超过两秒，复位、重新接通，再单步；单步不等待现实中的两秒。'],
+      ),
+      inputStep('delay-break', false),
+      step(
+        'delay-clear',
+        '验证中途断开清零',
+        '断开后点击单步，确认累计回到 0、灯灭。',
+        'TON 不保留之前的一小段时间。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === false &&
+          c.runtime.scan.memory?.[output]?.elapsed === 0 &&
+          c.runtime.scan.values[output] === false
+            ? null
+            : '请断开后执行新的单步，检查累计清零。',
+        ['可在为什么这样运行中查看累计时间。'],
+      ),
+      inputStep('delay-restart', true),
+      step(
+        'delay-finish',
+        '持续接通直到两秒',
+        '保持按钮接通，再单步十次；每次 200 ms，到 2000 ms 时灯亮。',
+        '计时从零重新开始，累计达到预置值才完成。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === true &&
+          c.runtime.scan.memory?.[output]?.elapsed === 2000 &&
+          c.runtime.scan.values[output] === true
+            ? null
+            : '继续单步，保持输入 TRUE，累计达到 2000 ms 后灯才亮。',
+        ['观察逻辑时间；十次接通扫描共两秒。'],
+      ),
+      inputStep('delay-final-off', false),
+      step(
+        'delay-final-scan',
+        '验证亮灯后断开熄灭',
+        '再单步一次，灯灭且计时清零。',
+        'TON 是延时接通，不会在断开后继续保持。',
+        'step',
+        (c) =>
+          correct(c) &&
+          c.runtime.status === 'stopped' &&
+          c.runtime.scan !== c.baseline &&
+          c.runtime.scan.values[input] === false &&
+          c.runtime.scan.values[output] === false &&
+          c.runtime.scan.memory?.[output]?.elapsed === 0
+            ? null
+            : '断开按钮后执行新的单步，确认灯灭且累计清零。',
+        ['延时关闭需要另一种指令 TOF。'],
+      ),
+    );
+  }
   if (spec.sensor)
     steps.unshift(
       step(

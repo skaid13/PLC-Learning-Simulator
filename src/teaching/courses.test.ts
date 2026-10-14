@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest';
 import { experiments } from '../data/experiments';
+import { allExperiments } from '../data/catalog';
 import { createRuntime, runtimeReducer } from '../engine/runtime';
 import { createWorkspace } from '../editor/model';
 import { courses } from './courses';
@@ -8,7 +9,7 @@ import { createGuide, miniSpecs, type GuideContext } from './guide';
 it('指导书11个实验均有课程和可执行引导，不遗漏实验', () => {
   const ids = experiments.map((e) => e.id).sort();
   expect(Object.keys(courses).sort()).toEqual(ids);
-  expect(Object.keys(miniSpecs).sort()).toEqual(ids);
+  expect(Object.keys(miniSpecs).sort()).toEqual(allExperiments.map((e) => e.id).sort());
 });
 
 it.each(Object.keys(courses))('%s 课程包含完整输入状态、具体流程、故障和可操作变式', (id) => {
@@ -24,7 +25,7 @@ it.each(Object.keys(courses))('%s 课程包含完整输入状态、具体流程�
 });
 
 it.each(Object.keys(miniSpecs))('%s 基础引导用实际扫描验证输入通断，拒绝旧扫描与错误结构', (id) => {
-  const experiment = experiments.find((e) => e.id === id)!;
+  const experiment = allExperiments.find((e) => e.id === id)!;
   const spec = miniSpecs[id],
     program = createWorkspace(experiment);
   const input = `input:I-${spec.input}`,

@@ -6,11 +6,13 @@ export function Modal({
   onClose,
   children,
   footer,
+  className,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -26,7 +28,7 @@ export function Modal({
   return (
     <dialog
       ref={ref}
-      className="modal"
+      className={`modal${className ? ` ${className}` : ''}`}
       aria-labelledby="modal-title"
       onCancel={(event) => {
         event.preventDefault();

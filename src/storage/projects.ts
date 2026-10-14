@@ -6,7 +6,7 @@ import type {
   ContactInstruction,
   CoilInstruction,
 } from '../types';
-import { experiments } from '../data/experiments';
+import { allExperiments as experiments } from '../data/catalog';
 import { createWorkspace } from '../editor/model';
 import { operations } from '../editor/validation';
 export const STORAGE_KEY = 'plc-learning-projects-v1';
@@ -180,7 +180,7 @@ export function loadProjects(storage: Pick<Storage, 'getItem'>): {
       !object(data) ||
       data.version !== 1 ||
       !Array.isArray(data.programs) ||
-      data.programs.length > 11
+      data.programs.length > experiments.length
     )
       throw Error();
     const programs: Projects = {};

@@ -31,6 +31,27 @@ export function PlantDrawing({ simulator }: { simulator: Simulator }) {
       aria-label={`${id} 输出驱动装置示意图`}
     >
       <rect x="1" y="1" width="298" height="228" rx="12" fill="#f1f6f4" stroke="#d9e4df" />
+      {id.startsWith('starter-') && (
+        <>
+          <circle
+            cx="150"
+            cy="100"
+            r="48"
+            fill={fill(0, '#f0c45b')}
+            stroke="#708b87"
+            strokeWidth="3"
+          />
+          <text x="150" y="108" textAnchor="middle" fontSize="20" fill="#243e38">
+            {on(0) ? '亮' : '灭'}
+          </text>
+          <text x="150" y="182" textAnchor="middle" fontSize="14" fill="#415a58">
+            指示灯 · SIM_OUT_00
+          </text>
+          <text x="150" y="205" textAnchor="middle" fontSize="12" fill="#415a58">
+            扫描后按你的程序更新
+          </text>
+        </>
+      )}
       {(id === 'led' || id === 'vending') && (
         <>
           <rect x="87" y="16" width="126" height="185" rx="8" fill="#213a37" />

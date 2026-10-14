@@ -1226,6 +1226,184 @@ svg {
   backdrop-filter: blur(3px);
 }
 
+.workspace-learning-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.foundation-entry {
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid #bcd7ce;
+  border-radius: 12px;
+  background: #edf7f2;
+}
+.foundation-entry strong {
+  font-size: 15px;
+}
+.foundation-entry p {
+  margin: 8px 0 12px;
+}
+.foundation-modal {
+  width: min(1060px, calc(100% - 32px));
+  max-height: 92vh;
+}
+.foundation-modal .modal-body {
+  padding: 0;
+  max-height: 69vh;
+  overflow: auto;
+}
+.foundation-reader {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+}
+.foundation-nav {
+  padding: 20px 14px;
+  border-right: 1px solid #dae6df;
+  background: #f5f9f6;
+}
+.foundation-nav p {
+  font-size: 12px;
+  color: #637d71;
+  margin-bottom: 10px;
+}
+.foundation-nav button {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  text-align: left;
+  color: #385b4e;
+  font-size: 13px;
+  line-height: 1.65;
+  background: transparent;
+}
+.foundation-nav button.active {
+  background: #e0f0e7;
+  border-color: #adcdbc;
+  color: #155c43;
+  font-weight: 600;
+}
+.foundation-nav button:hover {
+  background: #e9f2ed;
+}
+.foundation-nav small {
+  color: #31826a;
+  white-space: nowrap;
+}
+.foundation-article {
+  padding: 28px 34px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.foundation-article h3 {
+  font-size: 25px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.foundation-article h3:focus {
+  outline: none;
+}
+.foundation-article h4 {
+  font-size: 17px;
+  margin: 26px 0 12px;
+}
+.foundation-article p,
+.foundation-article li {
+  font-size: 15px;
+  line-height: 1.95;
+  margin-bottom: 12px;
+}
+.foundation-goal {
+  padding: 13px 16px;
+  border-left: 3px solid #257e61;
+  background: #f0f7f3;
+}
+.foundation-example,
+.foundation-mistake,
+.foundation-practice {
+  padding: 1px 18px 12px;
+  border: 1px solid #d6e6db;
+  border-radius: 10px;
+  margin-top: 22px;
+}
+.foundation-example {
+  background: #f6faf8;
+}
+.foundation-mistake {
+  background: #fff8eb;
+  border-color: #e8d8b6;
+}
+.foundation-checks details {
+  border-bottom: 1px solid #dfe8e2;
+  padding: 12px 0;
+}
+.foundation-checks summary {
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1.8;
+  font-weight: 600;
+}
+.foundation-checks details p {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f3f8f4;
+  border-radius: 6px;
+}
+.foundation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+.foundation-footer > span {
+  margin-right: auto;
+  font-size: 12px;
+  color: #6c8075;
+  max-width: 380px;
+}
+@media (max-width: 650px) {
+  .foundation-modal {
+    width: calc(100% - 16px);
+  }
+  .foundation-reader {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .foundation-nav {
+    border-right: 0;
+    border-bottom: 1px solid #dae6df;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    padding: 12px;
+  }
+  .foundation-nav p {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .foundation-nav button {
+    margin: 0;
+    font-size: 12px;
+    padding: 7px;
+  }
+  .foundation-article {
+    padding: 20px;
+  }
+  .foundation-article h3 {
+    font-size: 21px;
+  }
+  .foundation-footer > span {
+    flex-basis: 100%;
+    margin: 0;
+  }
+}
+
 .modal-header {
   display: flex;
   align-items: center;
@@ -2765,6 +2943,203 @@ svg {
   border-radius: 9px;
   box-shadow: 0 4px 20px #0002;
   z-index: 45;
+}
+
+/* A clear learning route, then one active task. Disclosure keeps explanations
+   close to the action without filling the whole workbench with text. */
+.beginner-home,
+.starter-lesson {
+  padding: 22px;
+  color: #2c4942;
+}
+.beginner-home h3,
+.starter-lesson h3 {
+  font-size: 23px;
+  line-height: 1.45;
+  margin: 10px 0;
+}
+.beginner-home p,
+.starter-lesson p,
+.starter-lesson li,
+.starter-next p {
+  font-size: 14px;
+  line-height: 1.85;
+}
+.beginner-home h4 {
+  margin: 22px 0 12px;
+  font-size: 15px;
+}
+.foundation-concepts {
+  margin: 18px 0;
+  display: grid;
+  gap: 8px;
+}
+.foundation-concepts details,
+.starter-lesson details {
+  border: 1px solid #d8e5df;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f8fbfa;
+  margin-top: 10px;
+}
+.foundation-concepts summary,
+.starter-lesson summary,
+.starter-next summary,
+.instruction-help summary,
+.foundation-guide > summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.65;
+}
+.foundation-concepts p,
+.starter-lesson details p {
+  margin-top: 10px;
+}
+.concept-example {
+  border-left: 3px solid #1a826c;
+  padding-left: 12px;
+}
+.starter-cards {
+  display: grid;
+  gap: 10px;
+}
+.starter-card {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 5px 10px;
+  border: 1px solid #c8ded5;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: left;
+  background: white;
+  color: #254b40;
+}
+.starter-card:hover {
+  border-color: #16856d;
+  background: #eff9f4;
+}
+.starter-card:focus-visible {
+  outline: 3px solid #e2a136;
+  outline-offset: 3px;
+}
+.starter-number {
+  grid-row: 1 / 4;
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: #e6f3ec;
+  font-weight: 700;
+}
+.starter-card strong {
+  font-size: 16px;
+}
+.starter-card > span:not(.starter-number),
+.starter-card small {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.starter-card small {
+  color: #1a7e63;
+}
+.starter-lesson ul,
+.starter-lesson ol {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+.prediction-card {
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: 10px;
+  background: #fff7e6;
+  border: 1px solid #ecd7a3;
+}
+.prediction-card details {
+  background: transparent;
+}
+.starter-next,
+.foundation-guide {
+  margin: 16px;
+  padding: 14px;
+  border: 1px solid #d8e5df;
+  border-radius: 10px;
+}
+.foundation-guide .guided-practice {
+  margin: 14px 0 0;
+}
+.guide-auto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c7159;
+}
+.guide-auto input {
+  accent-color: #147d6b;
+  width: 16px;
+  height: 16px;
+}
+.guide-why {
+  padding: 10px;
+  background: #fff;
+  border-radius: 7px;
+}
+.guide-why summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.guide-why p {
+  margin-top: 8px;
+}
+.instruction-help {
+  margin: 12px 18px;
+  padding: 12px 15px;
+  border: 1px solid #cbded8;
+  border-radius: 9px;
+  background: #f0f7f5;
+  color: #2c5146;
+}
+.inspector .instruction-help {
+  margin: 12px 0;
+}
+.instruction-help p {
+  font-size: 13px;
+  line-height: 1.85;
+  margin-top: 10px;
+}
+.instruction-help h4 {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.guide-dock {
+  left: auto;
+  right: 16px;
+  width: min(300px, calc(100vw - 32px));
+  max-height: 25vh;
+}
+.guide-dock .guide-actions button {
+  padding: 6px;
+}
+@media (max-width: 650px) {
+  .beginner-home,
+  .starter-lesson {
+    padding: 18px;
+  }
+  .guide-dock {
+    bottom: 10px;
+    max-height: 20vh;
+  }
+  .guide-dock p {
+    display: none;
+  }
+  .guide-dock strong {
+    font-size: 12px;
+  }
 }
 .guide-dock p {
   font-size: 12px;

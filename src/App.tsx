@@ -1,4 +1,5 @@
 import { ExecutionExplanation } from './components/ExecutionExplanation';
+import { FoundationCourse } from './components/FoundationCourse';
 import { useState, type CSSProperties } from 'react';
 import { GuidedPractice } from './components/GuidedPractice';
 import { GuideHighlight, type GuideTarget } from './components/GuideHighlight';
@@ -7,7 +8,7 @@ import { downloadText } from './storage/projects';
 import type { ScanState } from './engine/scan';
 import { loadProjects, saveProjects } from './storage/projects';
 import { ProjectToolbar } from './components/ProjectToolbar';
-import { experiments } from './data/experiments';
+import { allExperiments as experiments } from './data/catalog';
 import type { LearningMode, ProgramWorkspace } from './types';
 import { Header } from './components/Header';
 import { TeachingPanel } from './components/TeachingPanel';
@@ -26,7 +27,6 @@ import { RuntimeControls } from './components/RuntimeControls';
 export default function App() {
   const [experimentId, setExperimentId] = useState(experiments[0].id);
   const [mode, setMode] = useState<LearningMode>('teaching');
-  const [step, setStep] = useState(0);
   const [editorSnapshot, setEditorSnapshot] = useState<EditorSnapshot>({
     tool: 'select',
     selection: null,
@@ -36,7 +36,7 @@ export default function App() {
   const [explanationScan, setExplanationScan] = useState<ScanState>();
   const [blankPractice, setBlankPractice] = useState(false);
   const [editorWidth, setEditorWidth] = useState(1.92);
-  const [modal, setModal] = useState<'explain' | 'details' | null>(null);
+  const [modal, setModal] = useState<'explain' | 'details' | 'foundation' | null>(null);
   const [loaded] = useState(() => loadProjects(window.localStorage));
   const [saveMessage, setSaveMessage] = useState(loaded.message);
   const [locate, setLocate] = useState<
@@ -66,6 +66,7 @@ export default function App() {
     setExperimentId(id);
     setExplanationScan(undefined);
     setCheckedProgram(undefined);
+    setEditorSnapshot({ tool: 'select', selection: null, actionCount: 0 });
   };
   const replaceProgram = (nextProgram: ProgramWorkspace, record = true) => {
     if (simulator.state.status === 'running') return;
@@ -126,11 +127,17 @@ export default function App() {
               {mode === 'teaching' ? '理解每一步，掌握每一次控制。' : '自由探索你的控制思路。'}
             </h2>
           </div>
-          <button className="manual-button" onClick={() => setModal('details')}>
-            <Icon name="book" size={17} />
-            实验指导书摘要
-            <Icon name="arrow" size={14} />
-          </button>
+          <div className="workspace-learning-actions">
+            <button className="manual-button" onClick={() => setModal('foundation')}>
+              <Icon name="book" size={17} />
+              文字基础课堂
+            </button>
+            <button className="manual-button" onClick={() => setModal('details')}>
+              <Icon name="book" size={17} />
+              实验指导书摘要
+              <Icon name="arrow" size={14} />
+            </button>
+          </div>
         </div>
         <ProjectToolbar
           program={program}
@@ -182,8 +189,8 @@ export default function App() {
             }
             mode={mode}
             experiment={experiment}
-            step={step}
-            onStepChange={setStep}
+            onProject={changeExperiment}
+            onFoundation={() => setModal('foundation')}
             onShowDetails={() => setModal('details')}
             onStartLearning={() => setMode('teaching')}
           />
@@ -338,7 +345,17 @@ export default function App() {
           </p>
         </Modal>
       )}
-      {modal && (
+      {modal === 'foundation' && (
+        <FoundationCourse
+          onClose={() => setModal(null)}
+          onProject={(id) => {
+            changeExperiment(id);
+            setMode('teaching');
+            setModal(null);
+          }}
+        />
+      )}
+      {modal && modal !== 'foundation' && (
         <Modal
           title={modal === 'explain' ? '为什么这样运行？' : '实验指导书摘要'}
           onClose={() => setModal(null)}

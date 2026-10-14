@@ -1,4 +1,4 @@
-import { experiments } from '../data/experiments';
+import { allExperiments as experiments } from '../data/catalog';
 import type { Experiment, LearningMode } from '../types';
 import { Icon } from './Icon';
 import { version } from '../../package.json';
@@ -58,7 +58,7 @@ export function Header({ experiment, mode, onExperimentChange, onModeChange }: P
           >
             {experiments.map((item) => (
               <option key={item.id} value={item.id}>
-                实验 {item.number} · {item.name}
+                {item.id.startsWith('starter-') ? item.number : `实验 ${item.number}`} · {item.name}
               </option>
             ))}
           </select>
@@ -68,7 +68,7 @@ export function Header({ experiment, mode, onExperimentChange, onModeChange }: P
           <Icon name="chip" size={15} />
           参考设备 <strong>Rockwell 2080-LC50-24QVB</strong>
         </span>
-        <span className="phase-tag">11 项实验 · 教学仿真</span>
+        <span className="phase-tag">3 个入门项目 · 11 项实验</span>
       </section>
     </>
   );

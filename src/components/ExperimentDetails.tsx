@@ -3,7 +3,10 @@ import type { Experiment } from '../types';
 export function ExperimentDetails({ experiment }: { experiment: Experiment }) {
   return (
     <>
-      <span className="eyebrow">指导书内容摘要 · 实验 {experiment.number}</span>
+      <span className="eyebrow">
+        {experiment.id.startsWith('starter-') ? '独立入门项目' : '指导书内容摘要'} ·{' '}
+        {experiment.number}
+      </span>
       <h3>{experiment.name}</h3>
       <h4>实验目标</h4>
       <p>{experiment.objective}</p>
@@ -22,7 +25,9 @@ export function ExperimentDetails({ experiment }: { experiment: Experiment }) {
               <thead>
                 <tr>
                   <th>设备 / 信号</th>
-                  <th>指导书端子标记</th>
+                  <th>
+                    {experiment.id.startsWith('starter-') ? '虚拟练习端子' : '指导书端子标记'}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -40,8 +45,9 @@ export function ExperimentDetails({ experiment }: { experiment: Experiment }) {
         ))}
       </div>
       <p className="source-note">
-        来源：《PLC实验箱实验指导书0827》对应实验章节；指导书目录标注起始页 {experiment.manualPage}
-        （非重新渲染页码）。I-xx、O-xx 按原文记录为端子标记，不声明为真实罗克韦尔软件变量地址。
+        {experiment.id.startsWith('starter-')
+          ? '独立设计的入门练习，不属于实验指导书。虚拟端子用于教学，不连接实体设备。'
+          : `来源：《PLC实验箱实验指导书0827》对应实验章节；目录起始页 ${experiment.manualPage}。I-xx、O-xx 为原文端子标记，不声明为官方软件地址。`}
       </p>
       {experiment.notes && (
         <>
@@ -54,7 +60,7 @@ export function ExperimentDetails({ experiment }: { experiment: Experiment }) {
         </>
       )}
       <p className="source-note">
-        本阶段仅整理要求，尚未实现该实验的专属教学、控制程序和仿真。入门课中的按钮示例是额外的基础教学示例。
+        请按控制要求实际运行验收；结构检查通过或载入参考程序，不代表已经独立掌握。
       </p>
     </>
   );

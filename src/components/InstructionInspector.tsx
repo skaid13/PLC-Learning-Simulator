@@ -1,3 +1,4 @@
+import { InstructionHelp } from './InstructionHelp';
 import type { BoolVariable, CoilInstruction, LadderInstruction, LadderNetwork } from '../types';
 import { instructionNames, type EditorAction } from '../editor/model';
 import { operations, operationNames } from '../editor/validation';
@@ -214,6 +215,7 @@ export function InstructionInspector({
                         ? '预置计数'
                         : '常数'}
                     <input
+                      data-guide="preset"
                       type="number"
                       value={instruction.preset ?? 0}
                       onChange={(e) => coilPatch({ preset: Number(e.target.value) })}
@@ -288,6 +290,7 @@ export function InstructionInspector({
               </select>
             </label>
           </div>
+          <InstructionHelp instruction={instruction} />
           <div className="inspector-description">
             <p>
               {variable

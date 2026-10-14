@@ -10,31 +10,28 @@ describe('学习工作台回归检查', () => {
     expect(screen.getByLabelText('教学指导区')).toBeInTheDocument();
     expect(screen.getByLabelText('梯形图编程区')).toBeInTheDocument();
     expect(screen.getByLabelText('实验仿真区')).toBeInTheDocument();
-    expect(within(screen.getByLabelText('当前实验')).getAllByRole('option')).toHaveLength(11);
+    expect(within(screen.getByLabelText('当前实验')).getAllByRole('option')).toHaveLength(14);
     expect(screen.getByRole('button', { name: '停止' })).toBeDisabled();
     for (const name of ['运行', '复位', '单步扫描'])
       expect(screen.getByRole('button', { name })).toBeEnabled();
     for (const name of ['常开触点', '常闭触点', '输出线圈']) {
       expect(screen.getByRole('button', { name })).toBeEnabled();
     }
-    expect(screen.getByRole('button', { name: '上一步' })).toBeDisabled();
+    expect(screen.getByLabelText('零基础入门')).toBeInTheDocument();
   });
 
-  it('切换模式保留工作区和入门步骤，允许回顾所有步骤', async () => {
+  it('切换模式保留工作区和可展开的入门知识', async () => {
     const user = userEvent.setup();
     render(<App />);
-    await user.click(screen.getByRole('button', { name: '下一步' }));
-    expect(screen.getByText('什么是输入？')).toBeInTheDocument();
+    await user.click(screen.getByText('2. 输入、输出和变量是什么？'));
+    const intro = screen.getByText('2. 输入、输出和变量是什么？').closest('details');
+    expect(intro).toHaveAttribute('open');
     const program = screen.getByText('主程序');
     await user.click(screen.getByRole('button', { name: '自由模式' }));
     expect(screen.getByText('按自己的节奏探索')).toBeInTheDocument();
     expect(screen.getByText('主程序')).toBe(program);
     await user.click(screen.getByRole('button', { name: '教学模式' }));
-    expect(screen.getByText('什么是输入？')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /06\s*理解检查/ }));
-    expect(screen.getByRole('button', { name: '下一步' })).toBeDisabled();
-    await user.click(screen.getByRole('button', { name: /01\s*认识实验/ }));
-    expect(screen.getByText('什么是 PLC？')).toBeInTheDocument();
+    expect(screen.getByLabelText('零基础入门')).toBeInTheDocument();
   });
 
   it('选择每个实验都更新装置标题、要求及指导书 I/O', async () => {
@@ -57,31 +54,15 @@ describe('学习工作台回归检查', () => {
     }
   });
 
-  it('对错误答案解释原因，再答正确，并可查看参考答案', async () => {
+  it('入门知识可以展开，三个小项目有独立入口', async () => {
     const user = userEvent.setup();
     render(<App />);
-    await user.click(screen.getByRole('button', { name: /06\s*理解检查/ }));
-    expect(screen.getByRole('button', { name: '检查答案' })).toBeDisabled();
-    await user.click(screen.getByRole('radio', { name: /指示灯/ }));
-    await user.click(screen.getByRole('button', { name: '检查答案' }));
-    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
-      '指示灯是输出设备',
-    );
-    await user.click(screen.getByRole('radio', { name: /按钮/ }));
-    expect(
-      within(screen.getByLabelText('当前步骤内容')).queryByRole('status'),
-    ).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '检查答案' }));
-    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
-      '正确！',
-    );
-    await user.click(screen.getByRole('button', { name: '查看参考答案' }));
-    expect(screen.getByText(/参考答案：按钮/)).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '自由模式' }));
-    await user.click(screen.getByRole('button', { name: '教学模式' }));
-    expect(screen.getByRole('radio', { name: /按钮/ })).toBeChecked();
-    expect(within(screen.getByLabelText('当前步骤内容')).getByRole('status')).toHaveTextContent(
-      '正确！',
+    expect(screen.getByRole('button', { name: /按钮亮灯.*打开独立练习/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /停止条件.*打开独立练习/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /延时亮灯.*打开独立练习/ })).toBeEnabled();
+    await user.click(screen.getByText('4. 为什么点了按钮，灯还没变？'));
+    expect(screen.getByText('4. 为什么点了按钮，灯还没变？').closest('details')).toHaveAttribute(
+      'open',
     );
   });
 

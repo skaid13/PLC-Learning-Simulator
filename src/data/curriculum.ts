@@ -1,3 +1,4 @@
+import { starterExperiments, starterLessons } from './starters';
 export interface ExperimentLessonData {
   principle: string;
   practice: string[];
@@ -209,3 +210,17 @@ export const curriculum: Record<string, ExperimentLessonData> = {
       'A～D 分别映射 M1～M4 的故障；内部“重物模式”初值 1 时改为对应段重物。停机送料间隔统一 5 秒。对指导书模糊映射与 M3 重物描述采用一般规则，均为教学选择。',
   },
 };
+
+for (const e of starterExperiments) {
+  const lesson = starterLessons[e.id];
+  curriculum[e.id] = {
+    principle: lesson.before,
+    practice: lesson.build,
+    faults: [],
+    question: lesson.predict,
+    options: [],
+    correct: 0,
+    feedback: lesson.observe,
+    assumptions: e.notes?.join(' ') ?? '独立入门练习，使用现有教学扫描规则。',
+  };
+}

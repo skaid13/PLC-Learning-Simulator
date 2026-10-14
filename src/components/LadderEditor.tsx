@@ -1,3 +1,4 @@
+import { InstructionHelp } from './InstructionHelp';
 import { VariableManager } from './VariableManager';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace, LadderNetwork } from '../types';
@@ -41,9 +42,10 @@ export function LadderEditor({
   const [clipboard, setClipboard] = useState<LadderNetwork | null>(null);
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
+  const [actionCount, setActionCount] = useState(0);
   useEffect(() => {
-    onEditorState?.({ tool, selection });
-  }, [tool, selection, onEditorState]);
+    onEditorState?.({ tool, selection, actionCount });
+  }, [tool, selection, actionCount, onEditorState]);
   const [message, setMessage] = useState('先选择一种元件工具，再点击网络中的＋空位放置。');
   const [showIssues, setShowIssues] = useState(false);
   const [deleteNetworkId, setDeleteNetworkId] = useState<string | null>(null);
@@ -70,6 +72,7 @@ export function LadderEditor({
     0,
   );
   const select = (networkId: string, instructionId: string | null) => {
+    setActionCount((n) => n + 1);
     setSelection({ networkId, instructionId });
     setTool('select');
     setMessage(
@@ -83,6 +86,7 @@ export function LadderEditor({
       setMessage('请先停止运行，再放置或修改元件。');
       return;
     }
+    setActionCount((n) => n + 1);
     if (slot === 'contact' && (tool === 'normallyOpen' || tool === 'normallyClosed')) {
       const id = newId();
       onAction({
@@ -141,6 +145,7 @@ export function LadderEditor({
               aria-pressed={tool === item}
               className={tool === item ? 'active' : ''}
               onClick={() => {
+                setActionCount((n) => n + 1);
                 setTool(item);
                 setMessage(
                   item === 'select'
@@ -160,6 +165,7 @@ export function LadderEditor({
             </button>
           ))}
         </div>
+        {tool !== 'select' && <InstructionHelp tool={tool} />}
         <div className="editing-guidance" role="status" aria-label="编辑提示">
           <Icon name="info" size={15} />
           <span>{message}</span>

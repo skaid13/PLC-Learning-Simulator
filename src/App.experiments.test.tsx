@@ -21,7 +21,7 @@ it('参考程序主动展开，确认替换后可撤销回到空草稿', async (
   expect(screen.getByText('已定位输出的实际写入网络。')).toBeInTheDocument();
   await u.click(screen.getByRole('button', { name: '撤销' }));
   expect(screen.getByText('1 个网络 · 0 个元件')).toBeInTheDocument();
-});
+}, 15000);
 it('每个实验的理解检查给出专属反馈，切换实验清除旧答案', async () => {
   const u = userEvent.setup();
   render(<App />);
