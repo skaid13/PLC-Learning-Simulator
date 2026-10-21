@@ -36,3 +36,7 @@ id_ed25519
 
 # 保留源码、PLC 定义/配置、项目 JSON、锁文件、原指导书和启动脚本。
 # 不按通用 *.local / *.json / *.xml / PLC 工程扩展名做排除。
+
+# 本地桌面应用构建产物（保留desktop源码与打包配置）
+/release/
+/desktop-staging/

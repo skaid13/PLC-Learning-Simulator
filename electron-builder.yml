@@ -1,0 +1,32 @@
+appId: cn.plclearning.simulator
+productName: PLC学习实验室
+directories:
+  output: release
+  buildResources: desktop
+files:
+  - from: desktop-staging
+    to: dist
+    filter: ['**/*']
+  - desktop/*.cjs
+  - package.json
+asar: true
+npmRebuild: false
+publish: null
+mac:
+  category: public.app-category.education
+  identity: null
+  icon: desktop/icon.icns
+  target:
+    - target: dir
+      arch: [arm64]
+win:
+  icon: desktop/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: PLC学习实验室

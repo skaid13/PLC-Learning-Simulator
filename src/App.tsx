@@ -25,6 +25,7 @@ import { Icon } from './components/Icon';
 import { useSimulator } from './engine/useSimulator';
 import { statusNames } from './engine/runtime';
 import { RuntimeControls } from './components/RuntimeControls';
+import { LearningDataTools } from './components/LearningDataTools';
 
 export default function App() {
   const [learning, setLearning] = useState(true);
@@ -38,6 +39,7 @@ export default function App() {
   };
   return (
     <>
+      <LearningDataTools />
       <div hidden={!learning || lesson}>
         <LearningHome onStart={() => setLesson(true)} onWorkbench={open} />
       </div>

@@ -32,7 +32,10 @@ export function LearningHome({
         <div className="learning-brand">
           <Icon name="chip" size={27} />
           <strong>
-            PLC 学习实验室 <small>v{version} · 本地教学</small>
+            PLC 学习实验室{' '}
+            <small>
+              v{version} · {location.protocol === 'plc-app:' ? '桌面教学' : '本地教学'}
+            </small>
           </strong>
         </div>
         <div className="learning-utilities">
@@ -129,9 +132,15 @@ export function LearningHome({
             </div>
           </section>
           <div className="learning-home-footer">
+            <button
+              className="knowledge-link"
+              onClick={() => window.dispatchEvent(new Event('plc-open-backup'))}
+            >
+              备份或迁移学习数据
+            </button>
             <p>
               <Icon name="lock" size={16} />
-              独立练习空间 · 草稿保留在当前浏览器
+              独立练习空间 · 草稿保存在{location.protocol === 'plc-app:' ? '本应用' : '当前浏览器'}
             </p>
             <details>
               <summary>这门课学完以后去哪里？</summary>

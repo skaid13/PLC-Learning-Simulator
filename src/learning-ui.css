@@ -1126,3 +1126,28 @@
     scroll-behavior: auto !important;
   }
 }
+
+.learning-data-tools {
+  min-height: 0;
+  padding: 0;
+}
+.learning-data-tools .modal-body > p {
+  font-size: 15px;
+  color: var(--learn-muted);
+  margin: 12px 0;
+}
+.backup-file {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  color: var(--learn-ink);
+  font-size: 14px;
+}
+.backup-file input {
+  width: 100%;
+  max-width: 100%;
+  font-size: 14px;
+  padding: 12px;
+  border: 1px solid var(--learn-control);
+  border-radius: 8px;
+}
