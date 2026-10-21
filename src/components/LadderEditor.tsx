@@ -29,7 +29,9 @@ export function LadderEditor({
   traces,
   runtimeControls,
   locate,
+  compact = false,
 }: {
+  compact?: boolean;
   onEditorState?: (state: EditorSnapshot) => void;
   onCheck?: () => void;
   program: ProgramWorkspace;
@@ -120,7 +122,10 @@ export function LadderEditor({
       ?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
   };
   return (
-    <section className="panel ladder-panel live-editor" aria-label="梯形图编程区">
+    <section
+      className={`panel ladder-panel live-editor ${compact ? 'lesson-editor' : ''}`}
+      aria-label="梯形图编程区"
+    >
       <div className="panel-heading">
         <div className="heading-label">
           <Icon name="branch" />
@@ -165,7 +170,7 @@ export function LadderEditor({
             </button>
           ))}
         </div>
-        {tool !== 'select' && <InstructionHelp tool={tool} />}
+        {tool !== 'select' && !compact && <InstructionHelp tool={tool} />}
         <div className="editing-guidance" role="status" aria-label="编辑提示">
           <Icon name="info" size={15} />
           <span>{message}</span>
@@ -281,8 +286,9 @@ export function LadderEditor({
             </button>
           ))}
         </div>
-        <VariableManager program={program} onAction={onAction} />
+        {!compact && <VariableManager program={program} onAction={onAction} />}
         <InstructionInspector
+          basic={compact}
           network={selectedNetwork}
           instruction={selectedInstruction ?? undefined}
           variables={program.variables}

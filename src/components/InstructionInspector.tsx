@@ -4,6 +4,7 @@ import { instructionNames, type EditorAction } from '../editor/model';
 import { operations, operationNames } from '../editor/validation';
 
 interface Props {
+  basic?: boolean;
   network: LadderNetwork | undefined;
   instruction: LadderInstruction | undefined;
   variables: BoolVariable[];
@@ -16,6 +17,7 @@ export function InstructionInspector({
   variables,
   onAction,
   onDeleteInstruction,
+  basic = false,
 }: Props) {
   if (!network)
     return (
@@ -30,6 +32,7 @@ export function InstructionInspector({
       : !!(instruction?.kind === 'contact' && instruction.comparison);
   const eligible = variables.filter(
     (v) =>
+      (!basic || v.kind !== 'internal') &&
       (instruction?.kind !== 'coil' || v.kind !== 'input') &&
       (v.dataType === 'number') === needsNumber,
   );
@@ -102,21 +105,23 @@ export function InstructionInspector({
                     <option value="normallyClosed">常闭触点</option>
                   </select>
                 </label>
-                <label className="inspector-field">
-                  条件方式
-                  <select
-                    value={instruction.comparison ? 'number' : 'boolean'}
-                    onChange={(e) => {
-                      contactPatch({
-                        comparison:
-                          e.target.value === 'number' ? { operator: 'eq', value: 0 } : undefined,
-                      });
-                    }}
-                  >
-                    <option value="boolean">布尔条件</option>
-                    <option value="number">数值比较</option>
-                  </select>
-                </label>
+                {!basic && (
+                  <label className="inspector-field">
+                    条件方式
+                    <select
+                      value={instruction.comparison ? 'number' : 'boolean'}
+                      onChange={(e) => {
+                        contactPatch({
+                          comparison:
+                            e.target.value === 'number' ? { operator: 'eq', value: 0 } : undefined,
+                        });
+                      }}
+                    >
+                      <option value="boolean">布尔条件</option>
+                      <option value="number">数值比较</option>
+                    </select>
+                  </label>
+                )}
                 {instruction.comparison && (
                   <>
                     <label className="inspector-field">
@@ -167,16 +172,20 @@ export function InstructionInspector({
                     </label>
                   </>
                 )}
-                <label className="inspector-field">
-                  边沿检测
-                  <select
-                    value={instruction.edge ?? ''}
-                    onChange={(e) => contactPatch({ edge: e.target.value ? 'rising' : undefined })}
-                  >
-                    <option value="">持续条件</option>
-                    <option value="rising">条件上升沿（单次扫描）</option>
-                  </select>
-                </label>
+                {!basic && (
+                  <label className="inspector-field">
+                    边沿检测
+                    <select
+                      value={instruction.edge ?? ''}
+                      onChange={(e) =>
+                        contactPatch({ edge: e.target.value ? 'rising' : undefined })
+                      }
+                    >
+                      <option value="">持续条件</option>
+                      <option value="rising">条件上升沿（单次扫描）</option>
+                    </select>
+                  </label>
+                )}
               </>
             ) : (
               <>
@@ -200,7 +209,7 @@ export function InstructionInspector({
                       })
                     }
                   >
-                    {operations.map((op) => (
+                    {(basic ? ['coil' as const] : operations).map((op) => (
                       <option key={op} value={op}>
                         {operationNames[op]}
                       </option>
@@ -297,11 +306,13 @@ export function InstructionInspector({
                 ? `${variable.description} · ${variable.terminal ?? '内部教学变量'}`
                 : '请绑定与指令类型对应的变量。'}
               <br />
-              {instruction.kind === 'contact'
-                ? instruction.comparison
-                  ? '数值比较直接使用比较运算；常开/常闭符号不反转比较结果。'
-                  : '常开在 TRUE 时成立；常闭在 FALSE 时成立。上升沿只在条件由假变真时成立一次。'
-                : '从上到下执行。SET / RST 保留值；TON 通路断开清零；CTU 只计算通路上升沿。详见执行规则。'}
+              {basic
+                ? '常开读取TRUE，常闭读取FALSE；普通线圈把通路结果写给灯。改变输入后需要扫描。'
+                : instruction.kind === 'contact'
+                  ? instruction.comparison
+                    ? '数值比较直接使用比较运算；常开/常闭符号不反转比较结果。'
+                    : '常开在 TRUE 时成立；常闭在 FALSE 时成立。上升沿只在条件由假变真时成立一次。'
+                  : '从上到下执行。SET / RST 保留值；TON 通路断开清零；CTU 只计算通路上升沿。详见执行规则。'}
             </p>
             {instruction.kind === 'contact' && (
               <div className="contact-order">

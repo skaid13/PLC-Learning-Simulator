@@ -2,6 +2,7 @@ import { ExecutionExplanation } from './components/ExecutionExplanation';
 import { FoundationCourse } from './components/FoundationCourse';
 import { useEffect, useState, type CSSProperties } from 'react';
 import { LearningHome } from './components/LearningHome';
+import { FirstLesson } from './components/FirstLesson';
 import { GuidedPractice } from './components/GuidedPractice';
 import { GuideHighlight, type GuideTarget } from './components/GuideHighlight';
 import type { EditorSnapshot } from './teaching/guide';
@@ -28,6 +29,7 @@ import { RuntimeControls } from './components/RuntimeControls';
 export default function App() {
   const [learning, setLearning] = useState(true);
   const [opened, setOpened] = useState(false);
+  const [lesson, setLesson] = useState(false);
   const [requested, setRequested] = useState<string>();
   const open = (id?: string) => {
     setRequested(id);
@@ -36,9 +38,14 @@ export default function App() {
   };
   return (
     <>
-      <div hidden={!learning}>
-        <LearningHome onStart={() => open('starter-lamp')} onWorkbench={open} />
+      <div hidden={!learning || lesson}>
+        <LearningHome onStart={() => setLesson(true)} onWorkbench={open} />
       </div>
+      {lesson && (
+        <div hidden={!learning}>
+          <FirstLesson active={learning} onHome={() => setLesson(false)} onWorkbench={open} />
+        </div>
+      )}
       {opened && (
         <div hidden={learning}>
           <Workbench

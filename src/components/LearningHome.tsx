@@ -4,6 +4,7 @@ import { allExperiments } from '../data/catalog';
 import { FoundationCourse } from './FoundationCourse';
 import { KnowledgeLibrary } from './KnowledgeLibrary';
 import { Modal } from './Modal';
+import { loadFirstLesson } from '../teaching/firstLesson';
 export const learningPhases = [
   '认识对象',
   '观察示例',
@@ -20,6 +21,7 @@ export function LearningHome({
   onWorkbench: (id?: string) => void;
 }) {
   const [resource, setResource] = useState<'knowledge' | 'foundation' | 'courses' | null>(null);
+  const resume = loadFirstLesson(localStorage).progress.phase;
   return (
     <div className="learning-shell">
       <header className="learning-header">
@@ -47,10 +49,14 @@ export function LearningHome({
           ))}
         </ol>
         <section className="learning-entry">
-          <h2>当前任务：认识按钮、条件和灯</h2>
+          <h2>
+            {resume > 0
+              ? `当前任务：继续${learningPhases[resume]}`
+              : '当前任务：认识按钮、条件和灯'}
+          </h2>
           <p>目标：接通按钮后扫描，灯亮；断开后扫描，灯灭。你会知道每个元件为什么放在这里。</p>
           <button className="button primary" onClick={onStart}>
-            开始第一课：按钮亮灯 →
+            {resume > 0 ? `继续第一课：${learningPhases[resume]} →` : '开始第一课：按钮亮灯 →'}
           </button>
           <p className="notice-text">
             第一课有独立练习空间，原有实验草稿会保留。进度与程序在当前浏览器保存。
