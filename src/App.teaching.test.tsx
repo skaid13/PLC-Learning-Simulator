@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { Workbench as App } from './App';
 
 it('刷新恢复手把手进度和学生程序，不自动恢复运行或覆盖草稿', async () => {
   const u = userEvent.setup();

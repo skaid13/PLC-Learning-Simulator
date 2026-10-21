@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { Workbench as App } from './App';
 import { STORAGE_KEY } from './storage/projects';
 
 it('按钮小项目无需下一步，错误变量不推进，新扫描验证通断并保留独立草稿', async () => {

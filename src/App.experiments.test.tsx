@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { Workbench as App } from './App';
 it('参考程序主动展开，确认替换后可撤销回到空草稿', async () => {
   const u = userEvent.setup();
   render(<App />);

@@ -3276,3 +3276,176 @@ svg {
     flex-wrap: wrap;
   }
 }
+
+/* 第一课：一个主任务，工具与资料按需打开。 */
+[hidden] {
+  display: none !important;
+}
+.learning-shell {
+  min-height: 100vh;
+  background: #f5f7f4;
+  color: #243c34;
+}
+.learning-header {
+  padding: 22px 5vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid #dce5df;
+  background: #fff;
+}
+.learning-header strong {
+  font-size: 18px;
+}
+.learning-header small {
+  display: block;
+  font-size: 11px;
+  color: #60776c;
+  margin-top: 5px;
+}
+.learning-header > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.learning-header button {
+  border: 1px solid #d6e1d9;
+  background: #fff;
+  border-radius: 8px;
+  padding: 9px 13px;
+  color: #355f4b;
+  cursor: pointer;
+}
+.learning-home {
+  max-width: 1020px;
+  margin: auto;
+  padding: 52px 28px;
+}
+.learning-home h1 {
+  font-size: clamp(25px, 4vw, 40px);
+  line-height: 1.35;
+  margin: 16px 0;
+}
+.learning-lead {
+  max-width: 700px;
+  font-size: 17px;
+  line-height: 1.9;
+  color: #536b60;
+}
+.learning-roadmap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 24px 0;
+  list-style: none;
+}
+.learning-roadmap li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+.learning-roadmap li > span {
+  padding: 5px;
+  border-radius: 50%;
+  background: #e1ece5;
+  font-size: 11px;
+}
+.learning-entry {
+  background: white;
+  border: 1px solid #d2e0d5;
+  border-left: 5px solid #43775c;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 12px 0 28px;
+}
+.learning-entry h2 {
+  margin-top: 0;
+  font-size: 21px;
+}
+.learning-entry p {
+  line-height: 1.8;
+}
+.learning-entry .button {
+  margin: 12px 0;
+  min-height: 48px;
+}
+.course-directory {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0;
+}
+.course-directory button {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #dbe5df;
+  background: #f7faf8;
+  color: #355645;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.knowledge-library {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 26px;
+}
+.knowledge-library nav {
+  max-height: 55vh;
+  overflow: auto;
+}
+.knowledge-library nav h3 {
+  font-size: 12px;
+  color: #61756a;
+}
+.knowledge-library nav button {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: #385b48;
+  cursor: pointer;
+}
+.knowledge-library nav button[aria-pressed='true'] {
+  background: #e0eee4;
+  border-radius: 7px;
+  font-weight: 700;
+}
+.knowledge-library article {
+  min-width: 0;
+  line-height: 1.85;
+}
+.knowledge-library article h4 {
+  margin-bottom: 5px;
+  color: #355b45;
+}
+.knowledge-library article p {
+  margin-top: 0;
+}
+.learning-return {
+  margin-bottom: 20px;
+}
+@media (max-width: 650px) {
+  .learning-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+  }
+  .learning-home {
+    padding: 28px 18px;
+  }
+  .learning-entry {
+    padding: 20px;
+  }
+  .knowledge-library {
+    grid-template-columns: 1fr;
+  }
+  .knowledge-library nav {
+    max-height: 180px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}

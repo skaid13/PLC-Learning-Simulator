@@ -1,6 +1,7 @@
 import { ExecutionExplanation } from './components/ExecutionExplanation';
 import { FoundationCourse } from './components/FoundationCourse';
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { LearningHome } from './components/LearningHome';
 import { GuidedPractice } from './components/GuidedPractice';
 import { GuideHighlight, type GuideTarget } from './components/GuideHighlight';
 import type { EditorSnapshot } from './teaching/guide';
@@ -25,6 +26,37 @@ import { statusNames } from './engine/runtime';
 import { RuntimeControls } from './components/RuntimeControls';
 
 export default function App() {
+  const [learning, setLearning] = useState(true);
+  const [opened, setOpened] = useState(false);
+  const [requested, setRequested] = useState<string>();
+  const open = (id?: string) => {
+    setRequested(id);
+    setOpened(true);
+    setLearning(false);
+  };
+  return (
+    <>
+      <div hidden={!learning}>
+        <LearningHome onStart={() => open('starter-lamp')} onWorkbench={open} />
+      </div>
+      {opened && (
+        <div hidden={learning}>
+          <Workbench
+            active={!learning}
+            requestedExperiment={requested}
+            onLearning={() => setLearning(true)}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+export function Workbench({
+  active = true,
+  requestedExperiment,
+  onLearning,
+}: { active?: boolean; requestedExperiment?: string; onLearning?: () => void } = {}) {
   const [experimentId, setExperimentId] = useState(experiments[0].id);
   const [mode, setMode] = useState<LearningMode>('teaching');
   const [editorSnapshot, setEditorSnapshot] = useState<EditorSnapshot>({
@@ -68,6 +100,12 @@ export default function App() {
     setCheckedProgram(undefined);
     setEditorSnapshot({ tool: 'select', selection: null, actionCount: 0 });
   };
+  useEffect(() => {
+    if (requestedExperiment) changeExperiment(requestedExperiment);
+  }, [requestedExperiment]);
+  useEffect(() => {
+    if (!active) simulator.stop();
+  }, [active]);
   const replaceProgram = (nextProgram: ProgramWorkspace, record = true) => {
     if (simulator.state.status === 'running') return;
     if (record && programs[nextProgram.experimentId])
@@ -116,6 +154,11 @@ export default function App() {
         onModeChange={setMode}
       />
       <main className="main-content">
+        {onLearning && (
+          <button className="learning-return button secondary" onClick={onLearning}>
+            ← 返回第一课学习主线（保留草稿）
+          </button>
+        )}
         <div className="workspace-heading">
           <div>
             <div className="workspace-eyebrow">
@@ -175,7 +218,7 @@ export default function App() {
             guide={
               <GuidedPractice
                 key={experiment.id}
-                enabled={mode === 'teaching'}
+                enabled={active && mode === 'teaching'}
                 context={{
                   program,
                   runtime: simulator.state,

@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { Workbench as App } from './App';
 it('新增网络可撤销重做，刷新恢复草稿而不恢复运行状态', async () => {
   const u = userEvent.setup();
   const view = render(<App />);

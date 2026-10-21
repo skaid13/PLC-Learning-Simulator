@@ -1,6 +1,10 @@
 import type { LadderInstruction } from '../types';
+import { knowledgeDetails } from '../data/knowledge';
 
-const help: Record<string, { title: string; meaning: string; example: string; mistake: string }> = {
+export const instructionHelp: Record<
+  string,
+  { title: string; meaning: string; example: string; mistake: string }
+> = {
   normallyOpen: {
     title: '常开触点 · 判断是否为 TRUE',
     meaning:
@@ -99,12 +103,16 @@ export function InstructionHelp({
       : instruction?.kind === 'coil'
         ? (instruction.operation ?? 'coil')
         : (tool ?? 'normallyOpen');
-  const entry = help[key];
+  const entry = instructionHelp[key];
   if (!entry) return null;
   return (
     <details className="instruction-help" key={key}>
       <summary>元件解析：{entry.title}</summary>
       <p>{entry.meaning}</p>
+      <h4>为什么选它？</h4>
+      <p>{knowledgeDetails[key]?.purpose}</p>
+      <h4>与相近对象的区别</h4>
+      <p>{knowledgeDetails[key]?.difference}</p>
       <h4>用在什么地方？</h4>
       <p>{entry.example}</p>
       {instruction?.kind === 'contact' && instruction.edge && (
@@ -114,6 +122,8 @@ export function InstructionHelp({
       )}
       <h4>新手容易弄错</h4>
       <p>{entry.mistake}</p>
+      <h4>亲手验证</h4>
+      <p>{knowledgeDetails[key]?.practice}</p>
     </details>
   );
 }

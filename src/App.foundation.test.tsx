@@ -1,7 +1,7 @@
 import { expect, it, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import { Workbench as App } from './App';
 import { FOUNDATION_KEY } from './components/FoundationCourse';
 import { STORAGE_KEY } from './storage/projects';
 

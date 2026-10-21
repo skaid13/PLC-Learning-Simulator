@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from '../App';
+import { Workbench as App } from '../App';
 
 describe('基础 SVG 编辑流程', () => {
   it('放置常开、常闭、线圈，绑定变量并修改类型，检查完整结构', async () => {
