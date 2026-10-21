@@ -175,6 +175,7 @@ export function FirstLesson({
     setProgress((old) => ({
       ...old,
       programs: phase > 0 ? { ...old.programs, [phase]: p } : old.programs,
+      finished: false,
     }));
     setCases({ on: false, off: false });
     setGuess(null);
@@ -733,7 +734,10 @@ export function FirstLesson({
               id="lesson-next"
               disabled={!ready}
               className="button primary"
-              onClick={() => onWorkbench('starter-stop')}
+              onClick={() => {
+                setProgress((old) => ({ ...old, finished: true }));
+                onWorkbench('starter-stop');
+              }}
             >
               完成第一课，进入停止条件 →
             </button>

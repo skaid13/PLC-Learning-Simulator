@@ -22,10 +22,14 @@ export function KnowledgeLibrary({ initialTopic = 'normallyOpen' }: { initialTop
       <article aria-label="知识讲解" key={topic}>
         <span className="eyebrow">按需回看 · 用一个例子理解</span>
         <h3>{entry?.title ?? knowledgeNames[topic]}</h3>
-        <h4>它是什么、怎样工作？</h4>
+        <h4>{entry ? '它是什么、怎样工作？' : '它是什么、有什么用？'}</h4>
         <p>{entry?.meaning ?? detail.purpose}</p>
-        <h4>有什么用、为什么选它？</h4>
-        <p>{detail.purpose}</p>
+        {entry && (
+          <>
+            <h4>有什么用、为什么选它？</h4>
+            <p>{detail.purpose}</p>
+          </>
+        )}
         <h4>与相近对象的区别</h4>
         <p>{detail.difference}</p>
         {entry && (

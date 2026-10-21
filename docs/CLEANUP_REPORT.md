@@ -46,3 +46,25 @@
 上传1.3.0后再次核查：桌面只有1.3.0启动链接；当前dist仅包含本机构建的1.3.0入口资源；4173为新版服务89725，5173无监听，只有一个Git工作树。检查桌面、Documents、Downloads、用户Applications和学习资料目录中的项目名称（最多4层，跳过Git/依赖等目录），未找到其它旧版独立副本或旧版安装包。本轮无新增待移动旧文件，没有为凑清理结果重复移动垃圾桶归档。
 
 本机main已升级1.3.0；旧版本保留在Git历史、历史开发分支和上节垃圾桶路径中，便于恢复。它们不是运行中的旧软件。不会清空垃圾桶、永久删除历史或清理浏览器草稿。原用户1.3.0更新ZIP是当前版备份，继续保留。
+
+## 1.4试学版替换与本地清理（2026-10-21）
+
+- `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/dist` → `/Users/skaid13/.Trash/20261021-62a898f3-PLC-1.3.0-dist`。
+- `/Users/skaid13/Desktop/PLC实验教学与仿真系统 1.3.0.command` → `/Users/skaid13/.Trash/20261021-62a898f3-PLC-1.3.0-旧快捷方式.command`。
+- `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/dist` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/intermediate-preview-dist`。
+- `/tmp/plc-learning-stage1-dist` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-stage1-dist`。
+- `/tmp/plc-learning-stage2-dist` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-stage2-dist`。
+- `/tmp/plc-learning-stage2b-dist` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-stage2b-dist`。
+- `/tmp/plc-learning-stage2-final` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-stage2-final`。
+- `/tmp/plc-learning-stage2-verified` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-stage2-verified`。
+- `/tmp/plc-learning-1.4-final-dist` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-learning-1.4-final-dist`。
+- `/tmp/plc-stage1-edit.py` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/plc-stage1-edit.py`。
+- `/Users/skaid13/Downloads/PLC-第一课-跟随搭建.json` → `/Users/skaid13/.Trash/PLC-1.4-验证临时文件-20261021-2c4201d8/PLC-第一课-跟随搭建.json`。
+
+核实命令和工作目录后停止1.3.0正式服务PID18365；本次Vite开发服务PID19329已停止，仅保留新试学版4173服务PID20498。桌面当前入口 `/Users/skaid13/Desktop/PLC实验教学与仿真系统 1.4 试学版.command` 指向原项目跨平台启动脚本，带--no-open实测复用成功。原指导书、源码、Git历史、依赖和浏览器学生草稿保留，未永久删除或清空垃圾桶。
+
+安全审核拒绝了包含原始1.3.0更新ZIP的首次清理请求，认为原始资料尚不能确认为可清理残留。该请求未执行文件移动；后改为仅移动旧构建和旧快捷方式成功。原ZIP `/Users/skaid13/学习用文件资料/PLC-Learning-Simulator-1.3.0-update.zip` 保留，未绕过审核。新增临时清理仅包含本轮自己生成的构建/脚本和测试下载JSON。
+
+恢复：垃圾桶中的旧构建与入口可移回原位置；先停止当前服务并保留当前dist，源码与构建需对应。1.3.0源码在Git历史d853626及main中保留，当前检出为1.4试学分支。不要覆盖学习数据或清空垃圾桶。
+
+交付收尾：完成状态与知识说明去重后的最终构建替换了中间预览；该中间dist另保留于同批次 `preview-before-final-wording`，未永久删除。

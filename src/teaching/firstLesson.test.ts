@@ -54,3 +54,18 @@ it('教学记录损坏原文可恢复，非法阶段或其他实验不可混入'
     expect(read.progress.phase).toBe(0);
   }
 });
+
+it('完成记录可恢复，返回认识阶段的记录不需要0号程序', () => {
+  const saved = {
+    version: 1,
+    phase: 0,
+    unlocked: 5,
+    finished: true,
+    programs: { 5: phaseProgram(5) },
+  };
+  localStorage.setItem(FIRST_LESSON_KEY, JSON.stringify(saved));
+  const restored = loadFirstLesson(localStorage);
+  expect(restored.recovery).toBeUndefined();
+  expect(restored.progress.phase).toBe(0);
+  expect(restored.progress.finished).toBe(true);
+});

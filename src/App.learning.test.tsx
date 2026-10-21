@@ -16,6 +16,8 @@ it('新手只有一条第一课主线，知识与正式课程按需打开', asyn
   await u.click(d.getByRole('button', { name: '常闭触点' }));
   expect(d.getByText(/不能推断硬件接线/)).toBeInTheDocument();
   expect(d.getByText(/输入FALSE时灯亮/)).toBeInTheDocument();
+  await u.click(d.getByRole('button', { name: '输入变量' }));
+  expect(d.getAllByText(knowledgeDetails.input.purpose)).toHaveLength(1);
   await u.click(d.getByRole('button', { name: '关闭弹窗' }));
   await u.click(screen.getByRole('button', { name: '课程与实验' }));
   expect(

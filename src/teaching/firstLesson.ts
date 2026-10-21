@@ -9,6 +9,7 @@ export type LessonProgress = {
   version: 1;
   phase: number;
   unlocked: number;
+  finished?: boolean;
   programs: Record<string, ProgramWorkspace>;
 };
 export function phaseProgram(phase: number): ProgramWorkspace {
@@ -37,6 +38,7 @@ export function loadFirstLesson(storage: Pick<Storage, 'getItem'>): {
       saved.phase < 0 ||
       saved.phase > saved.unlocked ||
       saved.unlocked > 5 ||
+      (saved.finished !== undefined && typeof saved.finished !== 'boolean') ||
       !saved.programs ||
       typeof saved.programs !== 'object' ||
       Array.isArray(saved.programs)
@@ -49,7 +51,15 @@ export function loadFirstLesson(storage: Pick<Storage, 'getItem'>): {
       if (p.experimentId !== 'starter-lamp') throw Error();
       programs[key] = p;
     }
-    return { progress: { version: 1, phase: saved.phase, unlocked: saved.unlocked, programs } };
+    return {
+      progress: {
+        version: 1,
+        phase: saved.phase,
+        unlocked: saved.unlocked,
+        finished: saved.finished === true,
+        programs,
+      },
+    };
   } catch {
     return {
       progress: initial,

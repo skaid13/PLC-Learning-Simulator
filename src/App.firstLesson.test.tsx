@@ -86,6 +86,14 @@ it('从认识到常闭变式走通六阶段，错误预测不通过、每阶段�
   expect(saved.phase).toBe(5);
   expect(saved.programs[2].networks[0].contacts[0].contactType).toBe('normallyOpen');
   expect(saved.programs[5].networks[0].contacts[0].contactType).toBe('normallyClosed');
+  await u.click(screen.getByRole('button', { name: '完成第一课，进入停止条件 →' }));
+  expect(JSON.parse(localStorage.getItem(FIRST_LESSON_KEY)!).finished).toBe(true);
+  await u.click(screen.getByRole('button', { name: '← 返回第一课学习主线（保留草稿）' }));
+  await u.click(screen.getByRole('button', { name: '学习首页' }));
+  expect(
+    screen.getByRole('heading', { name: '第一课操作已完成：可以回顾或进入下一项目' }),
+  ).toBeInTheDocument();
+  expect(localStorage.getItem(STORAGE_KEY)).toBe(original);
 }, 25000);
 
 it('恢复教学草稿和位置，但运行与本次扫描证据不自动恢复；重置取消保留程序', async () => {
