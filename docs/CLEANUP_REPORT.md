@@ -68,3 +68,21 @@
 恢复：垃圾桶中的旧构建与入口可移回原位置；先停止当前服务并保留当前dist，源码与构建需对应。1.3.0源码在Git历史d853626及main中保留，当前检出为1.4试学分支。不要覆盖学习数据或清空垃圾桶。
 
 交付收尾：完成状态与知识说明去重后的最终构建替换了中间预览；该中间dist另保留于同批次 `preview-before-final-wording`，未永久删除。
+
+## 1.4.1替换与验证残留（2026-10-21）
+
+核实命令和工作目录后，仅停止旧正式PID20498和本轮Vite PID21628。新正式服务PID22462在4173，5173无监听。新版桌面链接为 `/Users/skaid13/Desktop/PLC实验教学与仿真系统 1.4.1.command`，指向项目原入口，带--no-open复用成功。
+
+以下逐项移动至系统垃圾桶，没有永久删除或清空垃圾桶：
+
+| 原位置                                                            | 垃圾桶位置                                                                       |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/dist`       | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/1.4.0-preview.1-dist`         |
+| `/Users/skaid13/Desktop/PLC实验教学与仿真系统 1.4 试学版.command` | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/1.4试学版-旧快捷方式.command` |
+| `/tmp/plc-ui-141-stage1-dist`                                     | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/plc-ui-141-stage1-dist`       |
+| `/tmp/plc-ui-141-stage2-dist`                                     | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/plc-ui-141-stage2-dist`       |
+| `/tmp/plc-ui-141-stage2-final-dist`                               | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/plc-ui-141-stage2-final-dist` |
+| `/tmp/plc-ui-141-regression-dist`                                 | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/plc-ui-141-regression-dist`   |
+| `/tmp/plc-ui-141-taste`                                           | `/Users/skaid13/.Trash/PLC-1.4.1-替换记录-20261021/plc-ui-141-taste`             |
+
+恢复：Finder垃圾桶内取回对应链接或目录。恢复旧构建前停止当前服务、保留新版dist，再将1.4.0-preview.1-dist放回项目dist；旧源码基线8b39178及开发分支仍在Git中。保留指导书、锁文件、依赖、原ZIP、Git历史和全部浏览器学习数据。本轮没有再次尝试清理原始用户ZIP。
