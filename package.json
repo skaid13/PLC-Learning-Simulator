@@ -13,12 +13,13 @@
     "preview": "vite preview --host 127.0.0.1",
     "start": "node scripts/serve.mjs",
     "test": "vitest run",
-    "format": "prettier --write src scripts index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md DEVELOPMENT_PROGRESS.md docs/ENGINE_RULES.md",
+    "format": "prettier --write src scripts desktop/*.cjs electron-builder.yml index.html vite.config.ts tsconfig.json package.json README.md DEVELOPMENT_LOG.md DEVELOPMENT_PROGRESS.md docs/ENGINE_RULES.md",
     "desktop": "electron .",
     "test:desktop": "node --test desktop/*.test.cjs",
     "package:mac": "npm run build:desktop && electron-builder --mac dir --arm64 --publish never",
     "package:win": "npm run build:desktop && electron-builder --win nsis --x64 --publish never",
-    "build:desktop": "npm run typecheck && vite build --outDir desktop-staging"
+    "build:desktop": "npm run typecheck && vite build --outDir desktop-staging",
+    "package:mac:intel": "npm run build:desktop && electron-builder --mac dir --x64 --publish never"
   },
   "dependencies": {
     "react": "19.3.0",

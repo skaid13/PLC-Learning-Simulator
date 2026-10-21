@@ -1,5 +1,5 @@
 const { app, BrowserWindow, Menu, dialog, protocol, session } = require('electron');
-const { join, extname } = require('node:path');
+const { join, extname, basename } = require('node:path');
 const { readFile } = require('node:fs/promises');
 const { resolveAsset } = require('./paths.cjs');
 
@@ -61,6 +61,13 @@ else {
         callback(false),
       );
       session.defaultSession.setPermissionCheckHandler(() => false);
+      session.defaultSession.on('will-download', (_event, item) => {
+        item.setSaveDialogOptions({
+          title: '保存学习文件',
+          buttonLabel: '保存',
+          defaultPath: join(app.getPath('downloads'), basename(item.getFilename())),
+        });
+      });
       session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
         callback({
           cancel:

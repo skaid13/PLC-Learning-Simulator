@@ -16,9 +16,7 @@ mac:
   category: public.app-category.education
   identity: null
   icon: desktop/icon.icns
-  target:
-    - target: dir
-      arch: [arm64]
+  target: [dir]
 win:
   icon: desktop/icon.ico
   target:
