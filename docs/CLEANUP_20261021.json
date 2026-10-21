@@ -1,0 +1,91 @@
+{
+  "batch": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859",
+  "items": [
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/dist",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/dist",
+      "files": 3,
+      "bytes": 568090
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/desktop-staging",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/desktop-staging",
+      "files": 3,
+      "bytes": 568090
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/release",
+      "files": 1,
+      "bytes": 85
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/scripts",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/scripts",
+      "files": 2,
+      "bytes": 5285
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/启动PLC学习工作台.command",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/启动PLC学习工作台.command",
+      "files": 1,
+      "bytes": 1046
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/启动PLC学习工作台.bat",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/启动PLC学习工作台.bat",
+      "files": 1,
+      "bytes": 255
+    },
+    {
+      "source": "/tmp/plc-1.4-cleanup.json",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-1.4-cleanup.json",
+      "files": 1,
+      "bytes": 2410
+    },
+    {
+      "source": "/tmp/plc-141-blue-cleanup.json",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-141-blue-cleanup.json",
+      "files": 1,
+      "bytes": 135
+    },
+    {
+      "source": "/tmp/plc-swift-modules",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-swift-modules",
+      "files": 209,
+      "bytes": 210678204
+    },
+    {
+      "source": "/tmp/plc-ui-141-before.png",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-ui-141-before.png",
+      "files": 1,
+      "bytes": 56606
+    },
+    {
+      "source": "/tmp/plc-ui-141-cleanup.json",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-ui-141-cleanup.json",
+      "files": 1,
+      "bytes": 1307
+    },
+    {
+      "source": "/tmp/plc-ui-skill-0.md",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-ui-skill-0.md",
+      "files": 1,
+      "bytes": 15969
+    },
+    {
+      "source": "/tmp/plc-ui-skill-1.md",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/plc-ui-skill-1.md",
+      "files": 1,
+      "bytes": 38458
+    },
+    {
+      "source": "/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/desktop-staging",
+      "destination": "/Users/skaid13/.Trash/PLC-网页版与开发残留-20261021-113859/desktop-staging-清理后构建验证",
+      "files": 3,
+      "bytes": 568090,
+      "note": "清理后验证npm run build生成的临时资源"
+    }
+  ],
+  "totalBytes": 212504030
+}
