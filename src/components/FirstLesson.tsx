@@ -17,29 +17,27 @@ import { LadderEditor } from './LadderEditor';
 import { GuideHighlight, type GuideTarget } from './GuideHighlight';
 import { KnowledgeLibrary } from './KnowledgeLibrary';
 import { Modal } from './Modal';
+import { LearningSymbol } from './LearningSymbol';
+import { Icon } from './Icon';
 
 const objects = [
   {
     name: '亮灯按钮',
-    symbol: '▣',
     text: '它提供输入消息。接通是TRUE，断开是FALSE；按钮不会直接替你写程序。',
     topic: 'input',
   },
   {
     name: '常开触点',
-    symbol: '─| |─',
     text: '它读取按钮，判断是否接通。输入TRUE时条件成立，FALSE时不成立。触点不改变输入。',
     topic: 'normallyOpen',
   },
   {
     name: '输出线圈',
-    symbol: '─( )─',
     text: '它把判断结果写给灯。普通线圈每扫描更新：通路成立写TRUE，不成立写FALSE。',
     topic: 'coil',
   },
   {
     name: '指示灯',
-    symbol: '◉',
     text: '它读取输出结果。SIM_OUT_00是这盏灯的变量名；灯亮说明输出接通，不说明整个实验都已掌握。',
     topic: 'output',
   },
@@ -199,14 +197,14 @@ export function FirstLesson({
     contact = n.contacts[0];
   let task = {
     title: '先接通亮灯按钮',
-    action: '点击右侧“亮灯按钮”开关，使待采样输入变为TRUE。',
+    action: '点击操作区“亮灯按钮”开关，使待采样输入变为TRUE。',
     why: '输入先提供消息，随后还要扫描，程序才会读取它。',
     selector: '#lesson-input',
   };
   if (phase === 0)
     task = {
       title: '依次认识四个对象',
-      action: '点击下面四张对象卡，读一句用途，再回答一个问题。',
+      action: '点击操作区的四张对象卡，读一句用途，再回答一个问题。',
       why: '先分清谁提供消息、谁判断、谁写结果，再动手画线路。',
       selector: '.lesson-objects',
     };
@@ -355,10 +353,13 @@ export function FirstLesson({
   return (
     <div className="learning-shell first-lesson">
       <header className="learning-header">
-        <strong>
-          第一课 · 按钮亮灯<small>v{version} · 从看懂到自己完成</small>
-        </strong>
-        <div>
+        <div className="learning-brand">
+          <Icon name="chip" size={27} />
+          <strong>
+            第一课 · 按钮亮灯<small>v{version} · 从看懂到自己完成</small>
+          </strong>
+        </div>
+        <div className="learning-utilities">
           <button
             onClick={() => {
               simulator.stop();
@@ -393,7 +394,12 @@ export function FirstLesson({
             >
               <span>{i + 1}</span>
               {name}
-              {i < progress.unlocked ? ' ✓' : ''}
+              {i < progress.unlocked && (
+                <>
+                  <Icon name="check" size={14} />
+                  <span className="sr-only">已完成</span>
+                </>
+              )}
             </button>
           ))}
         </nav>
@@ -442,7 +448,7 @@ export function FirstLesson({
                 当前触点读到了输出SIM_OUT_00。本课应读取按钮输入SIM_IN_00，请改“元件变量”。
               </p>
             )}
-            <details open={phase < 2}>
+            <details open={phase === 0}>
               <summary>为什么这样做？</summary>
               <p>{task.why}</p>
             </details>
@@ -463,20 +469,23 @@ export function FirstLesson({
                         : `示范思路：常${phase === 5 ? '闭' : '开'}触点绑定SIM_IN_00 → 普通线圈绑定SIM_OUT_00。输入${phase === 5 ? 'FALSE' : 'TRUE'}时灯亮。请手动操作，软件不会替你填入。`}
                   </p>
                 )}
-                <p className="lesson-target">
-                  预期：
-                  {phase === 5
-                    ? '输入FALSE→灯亮；输入TRUE→灯灭。'
-                    : '输入TRUE→灯亮；输入FALSE→灯灭。'}
-                  输入改变后必须扫描。
-                </p>
-                <ul className="lesson-checks" aria-label="本阶段验证结果">
-                  <li>{cases.on ? '✓' : '○'} 接通输入并正确预测、扫描</li>
-                  <li>{cases.off ? '✓' : '○'} 断开输入并正确预测、扫描</li>
-                </ul>
-                <p className="notice-text">
-                  编辑或重新进入阶段会清除本次验证，旧扫描不作新程序的证据。
-                </p>
+                <details className="lesson-verification">
+                  <summary>预期结果与验证记录（{Number(cases.on) + Number(cases.off)}/2）</summary>
+                  <p className="lesson-target">
+                    预期：
+                    {phase === 5
+                      ? '输入FALSE→灯亮；输入TRUE→灯灭。'
+                      : '输入TRUE→灯亮；输入FALSE→灯灭。'}
+                    输入改变后必须扫描。
+                  </p>
+                  <ul className="lesson-checks" aria-label="本阶段验证结果">
+                    <li>{cases.on ? '已通过' : '待验证'}：接通输入并正确预测、扫描</li>
+                    <li>{cases.off ? '已通过' : '待验证'}：断开输入并正确预测、扫描</li>
+                  </ul>
+                  <p className="notice-text">
+                    编辑或重新进入阶段会清除本次验证，旧扫描不作新程序的证据。
+                  </p>
+                </details>
               </>
             )}
             <details>
@@ -501,7 +510,7 @@ export function FirstLesson({
                         setSeen((v) => (v.includes(i) ? v : [...v, i]));
                       }}
                     >
-                      <span>{o.symbol}</span>
+                      <LearningSymbol kind={(['input', 'contact', 'coil', 'lamp'] as const)[i]} />
                       <strong>{o.name}</strong>
                       <small>{seen.includes(i) ? '已查看' : '点击认识'}</small>
                     </button>
@@ -573,7 +582,7 @@ export function FirstLesson({
                       role="img"
                       aria-label={`指示灯${simulator.state.scan.scanCount ? (output ? '亮' : '灭') : '尚未扫描'}`}
                     >
-                      <span>◉</span>
+                      <LearningSymbol kind="lamp" />
                       <strong>
                         ④ 指示灯：
                         {simulator.state.scan.scanCount ? (output ? '亮' : '灭') : '尚未扫描'}
@@ -645,11 +654,13 @@ export function FirstLesson({
                       <span
                         className={simulator.state.scan.scanCount && sampled ? 'energized' : ''}
                       >
-                        ─| |─<small>常开 · 读SIM_IN_00</small>
+                        <LearningSymbol kind="contact" />
+                        <small>常开 · 读SIM_IN_00</small>
                       </span>
                       <b>→</b>
                       <span className={output ? 'energized' : ''}>
-                        ─( )─<small>普通线圈 · 写SIM_OUT_00</small>
+                        <LearningSymbol kind="coil" />
+                        <small>普通线圈 · 写SIM_OUT_00</small>
                       </span>
                     </div>
                     <p>
@@ -762,7 +773,11 @@ export function FirstLesson({
           </section>
         )}
       </main>
-      <GuideHighlight target={active ? target : null} />
+      <GuideHighlight
+        target={active ? target : null}
+        showCallout={false}
+        missingText="操作目标当前未显示或不在视野内。请在当前学习任务中点“定位当前操作”；如需选择变量，先点选对应元件展开属性。"
+      />
       {topic && (
         <Modal
           title="知识工具箱 · 就近理解这个部分"

@@ -7,6 +7,20 @@ export function KnowledgeLibrary({ initialTopic = 'normallyOpen' }: { initialTop
     detail = knowledgeDetails[topic];
   return (
     <div className="knowledge-library">
+      <label className="knowledge-mobile-picker">
+        选择要了解的元件或操作
+        <select value={topic} onChange={(e) => setTopic(e.target.value)} aria-label="知识主题">
+          {knowledgeGroups.map((group) => (
+            <optgroup key={group.title} label={group.title}>
+              {group.topics.map((key) => (
+                <option key={key} value={key}>
+                  {instructionHelp[key]?.title.split(' · ')[0] ?? knowledgeNames[key]}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+      </label>
       <nav aria-label="知识工具箱目录">
         {knowledgeGroups.map((group) => (
           <div key={group.title}>
@@ -40,8 +54,10 @@ export function KnowledgeLibrary({ initialTopic = 'normallyOpen' }: { initialTop
             <p>{entry.mistake}</p>
           </>
         )}
-        <h4>亲手验证：先预测，再扫描</h4>
-        <p>{detail.practice}</p>
+        <section className="knowledge-practice">
+          <h4>亲手验证：先预测，再扫描</h4>
+          <p>{detail.practice}</p>
+        </section>
         <p className="notice-text">
           这里解释本软件的教学规则。虚拟地址与软件触点不代表真实PLC的接线、周期或安全能力。
         </p>

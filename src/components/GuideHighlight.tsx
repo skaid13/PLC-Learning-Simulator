@@ -5,7 +5,15 @@ export interface GuideTarget {
   text: string;
   request: number;
 }
-export function GuideHighlight({ target }: { target: GuideTarget | null }) {
+export function GuideHighlight({
+  target,
+  showCallout = true,
+  missingText,
+}: {
+  target: GuideTarget | null;
+  showCallout?: boolean;
+  missingText?: string;
+}) {
   const [rect, setRect] = useState<Rect | null>(null);
   useEffect(() => {
     if (!target) {
@@ -67,8 +75,12 @@ export function GuideHighlight({ target }: { target: GuideTarget | null }) {
   if (!rect)
     return (
       <div className="guide-missing" role="status">
-        当前定位目标未显示或已移出视野：{target.text}
-        。先选中对应元件展开属性，再点“定位当前操作”；也可重试、跳过或退出引导。
+        {missingText ?? (
+          <>
+            当前定位目标未显示或已移出视野：{target.text}
+            。先选中对应元件展开属性，再点“定位当前操作”；也可重试、跳过或退出引导。
+          </>
+        )}
       </div>
     );
   return (
@@ -77,15 +89,17 @@ export function GuideHighlight({ target }: { target: GuideTarget | null }) {
         className="guide-ring"
         style={{ left: rect.left, top: rect.top, width: rect.width, height: rect.height }}
       />
-      <div
-        className="guide-callout"
-        style={{
-          left: Math.min(rect.left, Math.max(8, window.innerWidth - 288)),
-          top: rect.tipTop,
-        }}
-      >
-        {target.text}
-      </div>
+      {showCallout && (
+        <div
+          className="guide-callout"
+          style={{
+            left: Math.min(rect.left, Math.max(8, window.innerWidth - 288)),
+            top: rect.tipTop,
+          }}
+        >
+          {target.text}
+        </div>
+      )}
     </div>
   );
 }
