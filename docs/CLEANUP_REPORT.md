@@ -1,5 +1,21 @@
 # 残留清理记录
 
+## 1.4.1独立桌面应用（2026-10-21）
+
+新安装`/Users/skaid13/Applications/PLC学习实验室.app`，桌面`/Users/skaid13/Desktop/PLC学习实验室.app`链接到该应用。已精确停止原网页服务22462；4173/5173无监听。关闭应用后进程全部退出；交付时再次打开应用供试学。
+
+| 原位置/内容                                                     | 垃圾桶位置                                                                          |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 首次打包验证release/mac-arm64                                   | /Users/skaid13/.Trash/PLC-桌面应用首次验证-20261021                                 |
+| 加入迁移入口前的dist                                            | /Users/skaid13/.Trash/PLC-1.4.1-网页迁移入口更新前-20261021                         |
+| 保存标题修订前的打包目录                                        | /Users/skaid13/.Trash/PLC-桌面打包验证残留-20261021/packaged-before-save-title      |
+| 保存标题修订前的已安装应用                                      | /Users/skaid13/.Trash/PLC-桌面打包验证残留-20261021/installed-before-save-title.app |
+| 旧桌面PLC实验教学与仿真系统 1.4.1.command                       | /Users/skaid13/.Trash/PLC-桌面打包验证残留-20261021/old-terminal-shortcut.command   |
+| 与正式安装相同的重复打包产物                                    | /Users/skaid13/.Trash/PLC-桌面打包验证残留-20261021/final-packaged-output           |
+| 本轮/tmp/plc-icon.iconset、plc-icon-images、plc-make-icon.swift | 同一垃圾桶批次内对应名称                                                            |
+
+没有永久删除、清空垃圾桶、卸载Node或清理依赖。源码、原指导书、锁文件、Git历史、原浏览器学习记录和用户导出JSON保留。迁移前源备份在学习资料目录，应用备份与重启校验文件在Downloads，均未提交Git。恢复旧入口可从垃圾桶取回对应.command；应用数据在App Support目录，重装时保留，导入前先备份。
+
 时间：2026-10-10T16:25:28。全部移动到 macOS 垃圾桶，没有永久删除或清空垃圾桶。
 
 垃圾桶批次目录：`/Users/skaid13/.Trash/PLC-Learning-Simulator-cleanup-20261010-162528`。

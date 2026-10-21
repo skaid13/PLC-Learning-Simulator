@@ -34,3 +34,13 @@ Electron44.9.2与electron-builder26.15.3固定版本，新增主进程、仅包�
 - 未实测：Windows、Intel Mac、系统大字体、整套梯形图编辑的原生鼠标操作、单程序JSON导入；相应前端行为由160项回归覆盖。没有对外签名/公证、上传或发布。
 
 备份留在学习资料目录与下载目录，未进入Git：`/Users/skaid13/学习用文件资料/PLC-浏览器学习数据-迁移前-20261021.json`；原浏览器记录保留。应用当前数据固定在`~/Library/Application Support/PLC-Learning-Simulator/`，更换.app不会删除该目录。
+
+### 阶段3完成：正式入口与恢复
+
+正式应用安装在`/Users/skaid13/Applications/PLC学习实验室.app`，桌面`PLC学习实验室.app`为该目录链接。已从桌面入口打开并实际确认原生首页，最终截图见`docs/screenshots/desktop-app-1.4.1.png`。新版源代码与原启动脚本保留；旧入口及重复构建路径见CLEANUP_REPORT.md，所有清理均为移动垃圾桶。
+
+使用时不需要终端/系统Node；开发源码需要Node22.12+。Apple Silicon构建`npm run package:mac`；Intel构建`npm run package:mac:intel`；Windows x64在Windows开发机执行`npm run package:win`。只有Apple Silicon Mac已实际生成和验收。均设置不发布，不接入自动更新或云服务。
+
+最终安装包关闭后再次确认主进程和辅助进程全部退出，4173/5173没有监听。应用重新打开供用户试学时会正常出现一个主进程及Chromium辅助进程，关闭后结束；磁盘学习记录属于持久数据，保留用于下次学习。
+
+恢复：原网页版本在ba6e98a与codex/ui-1.4.1；桌面功能473df52、验证97fbe63。需要恢复网页入口可从垃圾桶取回旧.command或直接使用项目原脚本，会重新启动网页服务。应用重装保留App Support数据；导入前先通过界面导出备份。发生中断先读此文与进度，核对Git、安装路径和进程，不覆盖学生数据。尚未上传GitHub或发布。
