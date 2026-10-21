@@ -2,7 +2,7 @@
 
 面向 PLC 零基础学生的本地教学工作台。版本 **2.0.0 · PLC学习实验室**。React + TypeScript + Vite + CSS + SVG，Electron封装独立桌面窗口。教学与仿真在本机执行，无服务器数据库、登录、付费 API 或实体 PLC 依赖；桌面应用内置运行环境，使用时不需要安装Node.js，也不需要联网。
 
-2.0汇总自已存档1.3.0以来的教学主线、元件知识、界面、桌面封装和数据迁移改动。完整说明、兼容范围与已知限制见 [2.0更新说明](docs/RELEASE_2.0.0.md)。应用下载见 [GitHub Releases](https://github.com/skaid13/PLC-Learning-Simulator/releases/tag/v2.0.0)；当前仅提供Apple Silicon Mac构建，Windows/Intel Mac仍需自行构建并实测。下方1.4/1.4.1章节保留为迭代记录，属于本次2.0的组成部分。
+2.0汇总自已存档1.3.0以来的教学主线、元件知识、界面、桌面封装和数据迁移改动。完整说明、兼容范围与已知限制见 [2.0更新说明](docs/RELEASE_2.0.0.md)，上传核验见 [发布记录](docs/PUBLISH_2.0.0.md)。应用下载见 [GitHub Releases](https://github.com/skaid13/PLC-Learning-Simulator/releases/tag/v2.0.0)；当前仅提供Apple Silicon Mac构建，Windows/Intel Mac仍需自行构建并实测。下方1.4/1.4.1章节保留为迭代记录，属于本次2.0的组成部分。
 
 依据用户提供的《PLC实验箱实验指导书0827.docx》，参考其中的 Rockwell **2080-LC50-24QVB** 和 BDT-PLC-A 实验箱。`SIM_*` 为本软件教学变量，`I-xx / O-xx` 为指导书端子标记。本软件不是官方 PLC 仿真器，JSON 不能下载到实体 PLC。真实指令语义和运动轴能力未作官方核验；支持的行为以 [执行规则](docs/ENGINE_RULES.md) 为准。
 
