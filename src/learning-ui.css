@@ -1,14 +1,15 @@
-/* 1.4.1 · 浅色框架，白色学习页。离线系统字体，不加载外部素材。 */
+/* 1.4.1 · 蓝白配色，白色学习页。离线系统字体，不加载外部素材。 */
 :root {
-  --learn-ground: #edf2ef;
+  --learn-ground: #f1f5fb;
   --learn-surface: #fff;
-  --learn-ink: #202d28;
-  --learn-muted: #5c6962;
-  --learn-line: #e3e9e5;
-  --learn-control: #a4b1a9;
-  --learn-accent: #146747;
-  --learn-tint: #eef6f0;
-  --learn-primary: #263e32;
+  --learn-ink: #18243b;
+  --learn-muted: #53627a;
+  --learn-line: #e2e8f2;
+  --learn-control: #899bb8;
+  --learn-accent: #2456ce;
+  --learn-tint: #edf3ff;
+  --learn-primary: #2563eb;
+  --learn-signal: #16734b;
   --learn-radius: 16px;
 }
 .learning-shell {
@@ -75,7 +76,7 @@
   border-radius: 8px;
 }
 .learning-header button:hover {
-  background: #e0e8e2;
+  background: #e3ecfb;
 }
 .learning-header button:last-child {
   border-color: var(--learn-control);
@@ -113,8 +114,8 @@
   font-size: 14px;
 }
 .learning-roadmap li[aria-current='step'] {
-  background: #dfe8e1;
-  color: var(--learn-ink);
+  background: #e4edff;
+  color: var(--learn-accent);
 }
 .learning-roadmap li > span {
   display: grid;
@@ -140,7 +141,7 @@
   margin-top: 5px;
 }
 .learning-route-progress {
-  border-top: 1px solid #cbd6ce;
+  border-top: 1px solid #d2dced;
   padding: 20px 10px 0;
 }
 .learning-route-progress > span {
@@ -162,10 +163,10 @@
   border: 0;
   border-radius: 4px;
   overflow: hidden;
-  background: #d4ded7;
+  background: #d7e1f1;
 }
 .learning-route-progress progress::-webkit-progress-bar {
-  background: #d4ded7;
+  background: #d7e1f1;
 }
 .learning-route-progress progress::-webkit-progress-value {
   background: var(--learn-accent);
@@ -233,7 +234,7 @@
   gap: 16px;
   padding: 24px 12px;
   margin: 24px 0 8px;
-  background: #f5f8f6;
+  background: #f6f8fc;
   border-radius: 8px;
 }
 .learning-circuit-object {
@@ -292,7 +293,7 @@
   box-shadow: none;
 }
 .learning-shell .button.primary:hover:not(:disabled) {
-  background: #172b20;
+  background: #1d4ed8;
 }
 .learning-shell .button.secondary {
   color: var(--learn-ink);
@@ -452,11 +453,14 @@
   background: transparent;
   border: 0;
 }
+.app-shell :is(.brand h1, .workspace-heading h2, .heading-label h2) {
+  color: var(--learn-ink);
+}
 .app-shell .brand-icon {
   background: transparent;
   color: var(--learn-accent);
   box-shadow: none;
-  border: 1px solid #b3c7b9;
+  border: 1px solid #c1d1ef;
 }
 .app-shell
   :is(
@@ -490,7 +494,7 @@
   box-shadow: none;
 }
 .app-shell .button.primary:hover {
-  background: #172b20;
+  background: #1d4ed8;
 }
 .app-shell :is(button, select, input, summary):focus-visible {
   outline: 3px solid var(--learn-accent);
@@ -528,16 +532,16 @@
 .lesson-phases button[aria-current='step'] {
   border-bottom-color: var(--learn-accent);
   color: var(--learn-ink);
-  background: #edf3ef;
+  background: #edf3ff;
   font-weight: 600;
 }
 .lesson-phases button:disabled {
   opacity: 1;
-  color: #68736c;
+  color: #64748b;
   background: transparent;
 }
 .lesson-phases button:hover:not(:disabled) {
-  background: #edf3ef;
+  background: #edf3ff;
 }
 .lesson-phases button span {
   font-variant-numeric: tabular-nums;
@@ -563,7 +567,7 @@
   margin: 24px 0;
 }
 .lesson-task {
-  background: #f3f6f4;
+  background: #f5f7fb;
   border: 1px solid var(--learn-line);
   border-radius: 12px;
   padding: 24px;
@@ -604,7 +608,7 @@
 .lesson-target {
   color: var(--learn-ink);
   margin-top: 16px;
-  border-color: #d2ded5;
+  border-color: #d2dced;
 }
 .lesson-checks {
   padding: 0;
@@ -632,7 +636,7 @@
   gap: 8px;
 }
 .lesson-objects button:hover {
-  background: #f3f6f4;
+  background: #f5f7fb;
 }
 .lesson-objects button[aria-pressed='true'] {
   background: var(--learn-tint);
@@ -656,7 +660,7 @@
   border-radius: 12px;
 }
 .object-explanation {
-  background: #f5f8f6;
+  background: #f6f8fc;
   border: 0;
 }
 .object-explanation h2 {
@@ -745,7 +749,7 @@
   border-color: var(--learn-accent);
 }
 .lesson-lamp {
-  background: #f4f6f4;
+  background: #f3f6fb;
   color: var(--learn-muted);
   padding: 16px;
   border-radius: 8px;
@@ -786,7 +790,7 @@
   outline: 1px solid var(--learn-accent);
 }
 .lesson-live {
-  background: #f4f7f5;
+  background: #f3f7fd;
   border-radius: 8px;
   padding: 16px;
   line-height: 1.8;
@@ -829,14 +833,14 @@
 .lesson-next button:disabled,
 .learning-shell .button:disabled {
   opacity: 1;
-  color: #68736c;
-  background: #f1f4f2;
-  border-color: #cdd7d0;
+  color: #64748b;
+  background: #f1f4f9;
+  border-color: #d4deed;
   cursor: not-allowed;
 }
 .lesson-next {
   padding: 20px 24px;
-  background: #f5f8f6;
+  background: #f6f8fc;
   border: 0;
   gap: 12px;
   border-radius: 12px;
@@ -860,7 +864,7 @@
   color: var(--learn-muted);
 }
 .demo-rung .energized {
-  color: var(--learn-accent);
+  color: var(--learn-signal);
 }
 .demo-rung small {
   color: inherit;
@@ -912,14 +916,15 @@
   border-radius: 6px;
 }
 .knowledge-library nav button:hover {
-  background: #f1f5f2;
+  background: #f1f5fc;
 }
 .knowledge-library nav button[aria-pressed='true'] {
-  background: #e7eee9;
+  background: #e8f0ff;
   color: var(--learn-ink);
   font-weight: 600;
 }
 .knowledge-library article h3 {
+  color: var(--learn-ink);
   font-size: 22px;
   margin: 8px 0 24px;
   line-height: 1.5;
@@ -940,7 +945,7 @@
 }
 .knowledge-practice {
   padding: 16px;
-  background: #f1f6f2;
+  background: #eff5ff;
   border-radius: 8px;
   margin-top: 24px;
 }
@@ -948,15 +953,16 @@
   margin-top: 0 !important;
 }
 .learning-shell .modal {
+  color: var(--learn-ink);
   border-color: var(--learn-line);
   border-radius: 16px;
 }
 .learning-shell .modal::backdrop {
-  background: #1e302866;
+  background: #13213b66;
   backdrop-filter: none;
 }
 .first-lesson .guide-ring {
-  border: 2px solid #146747;
+  border: 2px solid #2456ce;
   box-shadow: none;
 }
 .first-lesson .guide-missing {
@@ -966,7 +972,7 @@
   margin: 16px 24px 0;
   color: var(--learn-muted);
   border-color: var(--learn-line);
-  background: #f5f8f6;
+  background: #f6f8fc;
   box-shadow: none;
   font-size: 13px;
 }
@@ -1003,7 +1009,7 @@
   justify-content: flex-start;
 }
 .course-directory button:hover {
-  background: #f0f5f1;
+  background: #f0f5ff;
   border-color: var(--learn-control);
 }
 @media (max-width: 900px) {
