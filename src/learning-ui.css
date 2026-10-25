@@ -1,4 +1,4 @@
-/* 1.4.1 · 蓝白配色，白色学习页。离线系统字体，不加载外部素材。 */
+/* 蓝白学习界面；本地系统字体，不加载外部素材。 */
 :root {
   --learn-ground: #f1f5fb;
   --learn-surface: #fff;
@@ -1150,4 +1150,289 @@
   padding: 12px;
   border: 1px solid var(--learn-control);
   border-radius: 8px;
+}
+
+/* 教学工作区：线路、操作和执行证据共享当前视野。 */
+.first-lesson .learning-header {
+  min-height: 64px;
+  padding-block: 12px;
+}
+.first-lesson .lesson-main {
+  padding: 16px;
+}
+.first-lesson .lesson-phases {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+}
+.first-lesson .lesson-heading h1 {
+  margin: 4px 0;
+}
+.first-lesson .lesson-heading p {
+  margin: 4px 0;
+}
+.first-lesson .lesson-save {
+  margin: 4px 0;
+}
+.first-lesson .lesson-columns {
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 16px;
+  margin: 16px 0;
+}
+.first-lesson .lesson-task {
+  padding: 16px;
+}
+.first-lesson .lesson-task h2 {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 6px 0 10px;
+}
+.first-lesson .lesson-task p {
+  margin-block: 10px;
+}
+.first-lesson .lesson-task details {
+  margin-block: 12px;
+}
+.first-lesson .lesson-task .button {
+  margin-block: 8px;
+}
+.first-lesson .lesson-next {
+  padding: 10px 16px;
+}
+.first-lesson .lesson-next p {
+  margin: 4px 0;
+}
+.first-lesson .lesson-objects button {
+  padding: 12px 8px;
+  gap: 8px;
+}
+.first-lesson .object-explanation,
+.first-lesson .lesson-question {
+  padding: 16px;
+  margin: 12px 0;
+}
+.first-lesson .object-explanation p {
+  margin: 6px 0;
+}
+.first-lesson .object-explanation > button {
+  margin: 0;
+  padding: 6px 0;
+}
+.lesson-reading-progress {
+  color: var(--learn-muted);
+  font-size: 13px;
+  margin: 10px 0;
+}
+.first-lesson .lesson-simulator {
+  padding: 16px;
+  margin: 0 0 12px;
+}
+.lesson-phase-1 .lesson-simulator:not([hidden]) {
+  display: grid;
+  /* 两列等宽 =（工作区内宽 - 16px列间距）/ 2；外部任务列248px，列间距16px。 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 16px;
+  align-items: start;
+}
+.lesson-phase-1 .lesson-demo {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  min-width: 0;
+}
+.lesson-phase-1 .lesson-demo h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+.lesson-phase-1 .demo-rung {
+  gap: 12px;
+  padding: 8px 0;
+}
+.lesson-phase-1 .demo-rung .learning-symbol {
+  width: 64px;
+  height: 38px;
+}
+.lesson-phase-1 .lesson-demo details {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.lesson-phase-1 .lesson-input-output {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 100px;
+  gap: 12px;
+  align-items: center;
+}
+.lesson-phase-1 .lesson-input-output > span {
+  display: none;
+}
+.lesson-phase-1 .lesson-input-output button {
+  margin: 6px 0;
+  min-height: 44px;
+  padding: 8px;
+  font-size: 14px;
+}
+.lesson-phase-1 .lesson-lamp {
+  padding: 8px;
+  gap: 4px;
+}
+.lesson-phase-1 .lesson-lamp .learning-symbol {
+  width: 44px;
+  height: 30px;
+}
+.lesson-phase-1 .lesson-lamp strong {
+  font-size: 14px;
+}
+.lesson-phase-1 .lesson-prediction {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 8px 12px 12px;
+}
+.lesson-phase-1 .lesson-live {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px;
+}
+.lesson-phase-1 .lesson-live p {
+  margin: 6px 0 0;
+}
+.lesson-phase-1 .lesson-simulator:has(.lesson-feedback) .lesson-live {
+  grid-column: 1;
+}
+.lesson-phase-1 .lesson-feedback {
+  grid-column: 2;
+  margin: 0;
+  padding: 12px;
+  font-size: 14px;
+}
+.lesson-phase-1 .lesson-simulator > details {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+@media (min-width: 1000px) {
+  .first-lesson .network-diagram {
+    min-width: 0;
+    width: 100%;
+  }
+  .first-lesson .diagram-scroll-hint {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .first-lesson .lesson-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .first-lesson .lesson-task {
+    padding: 12px 16px;
+  }
+  .first-lesson .lesson-task > h2 {
+    margin-top: 0;
+  }
+}
+@media (max-width: 650px) {
+  .first-lesson .lesson-main {
+    padding: 12px;
+  }
+  .lesson-phase-1 .lesson-simulator:not([hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lesson-phase-1 .lesson-demo,
+  .lesson-phase-1 .lesson-feedback,
+  .lesson-phase-1 .lesson-simulator:has(.lesson-feedback) .lesson-live {
+    grid-column: 1;
+  }
+  .lesson-phase-1 .lesson-input-output {
+    grid-template-columns: minmax(0, 1fr) 100px;
+  }
+}
+.first-lesson .lesson-help-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+.first-lesson .lesson-help-actions > button {
+  width: 100%;
+  margin: 0;
+  padding: 6px 4px;
+  font-size: 13px;
+}
+.first-lesson .lesson-task summary {
+  min-height: 36px;
+  padding-block: 6px;
+}
+.first-lesson .lesson-task details {
+  margin-block: 8px;
+}
+.first-lesson .lesson-next p {
+  flex-basis: auto;
+  flex: 1;
+  min-width: 240px;
+}
+.lesson-phase-1 .demo-rung span {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.lesson-phase-1 .lesson-input-output {
+  grid-template-columns: minmax(0, 1fr) 136px;
+}
+@media (max-width: 650px) {
+  .first-lesson .lesson-task summary {
+    min-height: 44px;
+  }
+  .first-lesson .lesson-next p {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+  .lesson-phase-1 .lesson-input-output {
+    grid-template-columns: minmax(0, 1fr) 110px;
+  }
+}
+.lesson-phase-1 .lesson-demo .demo-caption {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+@media (min-width: 1001px) {
+  .first-lesson .lesson-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 16px;
+  }
+  .first-lesson .lesson-heading h1 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .first-lesson .lesson-heading > .eyebrow {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .first-lesson .lesson-heading > p {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1001px) and (max-height: 820px) {
+  .first-lesson .learning-header {
+    padding-block: 8px;
+  }
+  .first-lesson .lesson-main {
+    padding: 12px;
+  }
+  .first-lesson .lesson-phases {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+  .first-lesson .lesson-columns {
+    margin-block: 12px;
+  }
+  .first-lesson .lesson-next {
+    padding-block: 8px;
+  }
+  .first-lesson .lesson-heading h1 {
+    font-size: 22px;
+  }
+  .lesson-phase-1 .lesson-simulator {
+    padding: 12px;
+    gap: 8px 12px;
+  }
 }

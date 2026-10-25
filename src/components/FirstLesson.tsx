@@ -161,8 +161,8 @@ export function FirstLesson({
     setRedo([]);
     setEditor({ tool: 'select', selection: null });
     setTarget(null);
-    heading.current?.focus();
-    heading.current?.scrollIntoView({ block: 'start' });
+    heading.current?.focus({ preventScroll: true });
+    heading.current?.closest('.first-lesson')?.scrollIntoView({ block: 'start' });
   };
   const replace = (p: ProgramWorkspace, record = true) => {
     if (record) {
@@ -358,7 +358,7 @@ export function FirstLesson({
   const exportProgram = () =>
     downloadText(JSON.stringify(program, null, 2), `PLC-第一课-${learningPhases[phase]}.json`);
   return (
-    <div className="learning-shell first-lesson">
+    <div className={`learning-shell first-lesson lesson-phase-${phase}`}>
       <header className="learning-header">
         <div className="learning-brand">
           <Icon name="chip" size={27} />
@@ -461,12 +461,18 @@ export function FirstLesson({
             </details>
             {phase > 0 && (
               <>
-                <button onClick={locate} className="button secondary">
-                  定位当前操作
-                </button>
-                <button className="text-button" onClick={() => setHints((v) => Math.min(3, v + 1))}>
-                  需要一点帮助（{hints}/3）
-                </button>
+                <div className="lesson-help-actions">
+                  <button onClick={locate} className="button secondary">
+                    定位当前操作
+                  </button>
+                  <button
+                    className="text-button"
+                    aria-label={`需要一点帮助（${hints}/3）`}
+                    onClick={() => setHints((v) => Math.min(3, v + 1))}
+                  >
+                    帮助（{hints}/3）
+                  </button>
+                </div>
                 {hints > 0 && (
                   <p className="lesson-hint">
                     {hints === 1
@@ -581,6 +587,25 @@ export function FirstLesson({
                   aria-label="按钮与实际扫描"
                   hidden={phase === 2 || (phase > 1 && checked !== program)}
                 >
+                  {phase === 1 && (
+                    <div className="lesson-demo">
+                      <h2>这条线路已经搭好，先观察</h2>
+                      <div className="demo-rung" aria-label="常开按钮接普通线圈示例">
+                        <span
+                          className={simulator.state.scan.scanCount && sampled ? 'energized' : ''}
+                        >
+                          <LearningSymbol kind="contact" />
+                          <small>常开 · 读SIM_IN_00</small>
+                        </span>
+                        <b>→</b>
+                        <span className={output ? 'energized' : ''}>
+                          <LearningSymbol kind="coil" />
+                          <small>普通线圈 · 写SIM_OUT_00</small>
+                        </span>
+                      </div>
+                      <p className="demo-caption">常开读取按钮，线圈写入灯；高亮来自实际扫描。</p>
+                    </div>
+                  )}
                   <div className="lesson-input-output">
                     <div>
                       <span>① 待采样输入</span>
@@ -670,27 +695,7 @@ export function FirstLesson({
                     </button>
                   </details>
                 </section>
-                {phase === 1 ? (
-                  <div className="lesson-demo">
-                    <h2>这条线路已经搭好，先观察</h2>
-                    <div className="demo-rung" aria-label="常开按钮接普通线圈示例">
-                      <span
-                        className={simulator.state.scan.scanCount && sampled ? 'energized' : ''}
-                      >
-                        <LearningSymbol kind="contact" />
-                        <small>常开 · 读SIM_IN_00</small>
-                      </span>
-                      <b>→</b>
-                      <span className={output ? 'energized' : ''}>
-                        <LearningSymbol kind="coil" />
-                        <small>普通线圈 · 写SIM_OUT_00</small>
-                      </span>
-                    </div>
-                    <p>
-                      从左到右读：如果亮灯按钮接通，就让指示灯亮。这里的颜色来自最后一次真实扫描，不模拟真实电流。
-                    </p>
-                  </div>
-                ) : (
+                {phase !== 1 && (
                   <div className="lesson-editor-wrap">
                     {checked !== program && (
                       <p className="lesson-build-intro">

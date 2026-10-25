@@ -24,7 +24,15 @@ export function GuideHighlight({
     const initial = find();
     const scrollTarget =
       typeof initial?.scrollIntoView === 'function' ? initial : initial?.closest('svg');
-    scrollTarget?.scrollIntoView?.({ block: 'center', inline: 'nearest', behavior: 'auto' });
+    const bounds = initial?.getBoundingClientRect();
+    if (
+      bounds &&
+      (bounds.top < 8 ||
+        bounds.bottom > window.innerHeight - 8 ||
+        bounds.left < 8 ||
+        bounds.right > window.innerWidth - 8)
+    )
+      scrollTarget?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'auto' });
     const update = () => {
       const element = find();
       if (!element) {
