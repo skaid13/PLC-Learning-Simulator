@@ -179,7 +179,11 @@ export function FirstLesson({
     setGuess(null);
     setPending(null);
     setChecked(undefined);
-    setFeedback('程序已修改，运行已复位。请重新设置输入，两种情况都需要重新验证。');
+    setFeedback(
+      phase === 2
+        ? '程序已修改，请完成搭建并检查结构；本阶段不重复观察实验。'
+        : '程序已修改，运行已复位。请重新设置输入，两种情况都需要重新验证。',
+    );
     setTarget(null);
   };
   const edit = (action: EditorAction) => {
@@ -189,17 +193,21 @@ export function FirstLesson({
   };
   const valid = phase > 0 && !lampProblem(program, phase === 5);
   const ready =
-    phase === 0 ? seen.length === 4 && answer === 'read' : valid && cases.on && cases.off;
+    phase === 0
+      ? seen.length === 4 && answer === 'read'
+      : phase === 2
+        ? valid && checked === program
+        : valid && cases.on && cases.off;
   const input = simulator.state.inputs['input:I-00'] === true;
   const sampled = simulator.state.scan.values['input:I-00'] === true;
   const output = simulator.state.scan.values['output:O-00'] === true;
   const n = program.networks[0],
     contact = n.contacts[0];
   let task = {
-    title: '先接通亮灯按钮',
-    action: '点击操作区“亮灯按钮”开关，使待采样输入变为TRUE。',
-    why: '输入先提供消息，随后还要扫描，程序才会读取它。',
-    selector: '#lesson-input',
+    title: '保持断开，先做一次扫描',
+    action: '不用切换按钮。保持默认FALSE，选择亮/灭预测，再点“预测后单步扫描”。',
+    why: '初始灯灭只是复位状态；扫描后才能证明程序怎样处理断开输入。',
+    selector: '#lesson-predict',
   };
   if (phase === 0)
     task = {
@@ -279,41 +287,40 @@ export function FirstLesson({
       why: '先确保元件完整、变量有效；结构正确仍需用实际输入验证。',
       selector: '[data-guide="check"]',
     };
-  else if (cases.on && !cases.off)
-    task = input
-      ? {
-          title: '再验证按钮断开',
-          action: '关闭“亮灯按钮”，使待采样值为FALSE。',
-          why: '只成功亮一次还不够，必须检查另一种输入。',
-          selector: '#lesson-input',
-        }
-      : {
-          title: '预测断开后的灯',
-          action: '选择你预计的亮/灭，再点击“预测后单步扫描”。',
-          why:
-            phase === 5
-              ? '常闭在FALSE时成立，普通线圈会写TRUE。'
-              : '常开在FALSE时不成立，普通线圈会写FALSE。',
-          selector: '#lesson-predict',
-        };
-  else if (!cases.on && input)
-    task = {
-      title: '预测接通后的灯',
-      action: '选择你预计的亮/灭，再点击“预测后单步扫描”。',
-      why:
-        phase === 5 ? '常闭在TRUE时不成立，因此灯应灭。' : '常开在TRUE时成立，普通线圈应让灯亮。',
-      selector: '#lesson-predict',
-    };
   else if (ready)
     task = {
-      title: '两种输入都验证通过',
+      title: phase === 2 ? '线路已搭好，结构检查通过' : '两种输入都验证通过',
       action:
         phase === 5
           ? '用自己的话解释常开和常闭的区别，再进入下一项目。'
-          : '点击下方“进入下一阶段”，逐步撤去帮助。',
+          : phase === 2
+            ? '直接进入“补全程序”；本阶段无需重复上一阶段的亮灭实验。'
+            : '点击下方“进入下一阶段”，逐步撤去帮助。',
       why: '能解释并预测结果，比只记住点了哪些按钮更重要。',
       selector: '#lesson-next',
     };
+  else if (phase > 0 && (phase === 1 || (valid && checked === program))) {
+    const needed = cases.off;
+    const stateName = needed ? '接通' : '断开';
+    const valueName = needed ? 'TRUE' : 'FALSE';
+    if (input !== needed)
+      task = {
+        title: `接下来验证${stateName}输入`,
+        action: `点击“亮灯按钮”，使待采样输入为${valueName}，然后预测并扫描。`,
+        why: '验证记录来自实际扫描，两种输入各验证一次即可，不用反复切换。',
+        selector: '#lesson-input',
+      };
+    else
+      task = {
+        title:
+          !needed && !simulator.state.scan.scanCount
+            ? '保持断开，先做一次扫描'
+            : `预测${stateName}后的灯`,
+        action: `${!needed && !simulator.state.scan.scanCount ? '不用切换按钮，保持默认FALSE。' : `保持当前${valueName}。`}选择亮/灭预测，再点“预测后单步扫描”。`,
+        why: `复位状态不算验证。${phase === 5 ? '常闭在FALSE时成立、TRUE时不成立。' : '常开在TRUE时成立、FALSE时不成立。'}扫描后才能记录结果。`,
+        selector: '#lesson-predict',
+      };
+  }
   const showGuidance = phase < 4 || hints > 0;
   const locate = () =>
     setTarget({
@@ -463,29 +470,37 @@ export function FirstLesson({
                 {hints > 0 && (
                   <p className="lesson-hint">
                     {hints === 1
-                      ? '方向：左边触点读输入，右边线圈写输出；先确认条件，再验证两种输入。'
+                      ? '方向：左边触点读输入，右边线圈写输出；先确认条件，再完成当前任务。'
                       : hints === 2
                         ? `位置：${task.action}`
                         : `示范思路：常${phase === 5 ? '闭' : '开'}触点绑定SIM_IN_00 → 普通线圈绑定SIM_OUT_00。输入${phase === 5 ? 'FALSE' : 'TRUE'}时灯亮。请手动操作，软件不会替你填入。`}
                   </p>
                 )}
-                <details className="lesson-verification">
-                  <summary>预期结果与验证记录（{Number(cases.on) + Number(cases.off)}/2）</summary>
+                {phase === 2 ? (
                   <p className="lesson-target">
-                    预期：
-                    {phase === 5
-                      ? '输入FALSE→灯亮；输入TRUE→灯灭。'
-                      : '输入TRUE→灯亮；输入FALSE→灯灭。'}
-                    输入改变后必须扫描。
+                    本阶段只做搭建与结构检查，亮灭观察已在上一阶段完成。
                   </p>
-                  <ul className="lesson-checks" aria-label="本阶段验证结果">
-                    <li>{cases.on ? '已通过' : '待验证'}：接通输入并正确预测、扫描</li>
-                    <li>{cases.off ? '已通过' : '待验证'}：断开输入并正确预测、扫描</li>
-                  </ul>
-                  <p className="notice-text">
-                    编辑或重新进入阶段会清除本次验证，旧扫描不作新程序的证据。
-                  </p>
-                </details>
+                ) : (
+                  <details className="lesson-verification">
+                    <summary>
+                      预期结果与验证记录（{Number(cases.on) + Number(cases.off)}/2）
+                    </summary>
+                    <p className="lesson-target">
+                      预期：
+                      {phase === 5
+                        ? '输入FALSE→灯亮；输入TRUE→灯灭。'
+                        : '输入TRUE→灯亮；输入FALSE→灯灭。'}
+                      输入改变后必须扫描。
+                    </p>
+                    <ul className="lesson-checks" aria-label="本阶段验证结果">
+                      <li>{cases.on ? '已通过' : '待验证'}：接通输入并正确预测、扫描</li>
+                      <li>{cases.off ? '已通过' : '待验证'}：断开输入并正确预测、扫描</li>
+                    </ul>
+                    <p className="notice-text">
+                      编辑或重新进入阶段会清除本次验证，旧扫描不作新程序的证据。
+                    </p>
+                  </details>
+                )}
               </>
             )}
             <details>
@@ -564,7 +579,7 @@ export function FirstLesson({
                 <section
                   className="lesson-simulator"
                   aria-label="按钮与实际扫描"
-                  hidden={phase > 1 && checked !== program}
+                  hidden={phase === 2 || (phase > 1 && checked !== program)}
                 >
                   <div className="lesson-input-output">
                     <div>
@@ -679,7 +694,9 @@ export function FirstLesson({
                   <div className="lesson-editor-wrap">
                     {checked !== program && (
                       <p className="lesson-build-intro">
-                        先完成这一条线路并点击“检查结构”，按钮、预测和扫描区会随后出现。当前阶段只用触点、线圈和两个变量。
+                        {phase === 2
+                          ? '本阶段专注搭建：放好触点和线圈、绑定变量，再检查结构，即可进入补全练习。'
+                          : '先完成这一条线路并点击“检查结构”，按钮、预测和扫描区会随后出现。当前阶段只用触点、线圈和两个变量。'}
                       </p>
                     )}
                     <div className="lesson-edit-actions">
@@ -720,11 +737,18 @@ export function FirstLesson({
                         setChecked(program);
                         setFeedback(
                           lampProblem(program, phase === 5) ??
-                            '结构与本课要求符合。现在还要预测并扫描，检查接通和断开。',
+                            (phase === 2
+                              ? '结构与本课要求符合，可以直接进入补全程序。'
+                              : '结构与本课要求符合。保持默认FALSE先预测并扫描，再接通验证。'),
                         );
                       }}
                       runtimeControls={null}
                     />
+                    {phase === 2 && feedback && (
+                      <p className="lesson-feedback" role="status">
+                        {feedback}
+                      </p>
+                    )}
                   </div>
                 )}
               </>
@@ -766,7 +790,9 @@ export function FirstLesson({
               ? '已达到本阶段操作检查。请试着用自己的话解释原因。'
               : phase === 0
                 ? '先认识四个对象并回答问题。'
-                : '先完成当前线路，对接通和断开分别正确预测并扫描。'}
+                : phase === 2
+                  ? '完成触点与线圈绑定并检查结构，即可继续。'
+                  : '先完成当前线路，保持默认断开先预测并扫描，再接通验证。'}
           </p>
         </footer>
         {ready && phase === 5 && (

@@ -47,8 +47,8 @@ it('从认识到常闭变式走通六阶段，错误预测不通过、每阶段�
   await contact();
   await coil();
   await check();
-  await scan(true, true);
-  await scan(false, false);
+  expect(screen.getByRole('button', { name: /进入下一阶段/ })).toBeEnabled();
+  expect(screen.queryByRole('switch', { name: '亮灯按钮' })).not.toBeInTheDocument();
   await next();
   expect(
     screen.getByRole('button', { name: '网络 1 常开触点 SIM_IN_00 位置 1' }),
