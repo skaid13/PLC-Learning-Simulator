@@ -1199,7 +1199,11 @@
   margin-block: 10px;
 }
 .first-lesson .lesson-task details {
-  margin-block: 12px;
+  margin-block: 8px;
+}
+.first-lesson .lesson-task summary {
+  min-height: 36px;
+  padding-block: 6px;
 }
 .first-lesson .lesson-task .button {
   margin-block: 8px;
@@ -1209,6 +1213,8 @@
 }
 .first-lesson .lesson-next p {
   margin: 4px 0;
+  flex: 1;
+  min-width: 240px;
 }
 .first-lesson .lesson-objects button {
   padding: 12px 8px;
@@ -1262,17 +1268,17 @@
   gap: 12px;
   padding: 8px 0;
 }
+.lesson-phase-1 .demo-rung span {
+  font-size: 14px;
+  line-height: 1.5;
+}
 .lesson-phase-1 .demo-rung .learning-symbol {
   width: 64px;
   height: 38px;
 }
-.lesson-phase-1 .lesson-demo details {
-  margin: 4px 0 0;
-  font-size: 13px;
-}
 .lesson-phase-1 .lesson-input-output {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 100px;
+  grid-template-columns: minmax(0, 1fr) 136px;
   gap: 12px;
   align-items: center;
 }
@@ -1354,9 +1360,6 @@
   .lesson-phase-1 .lesson-simulator:has(.lesson-feedback) .lesson-live {
     grid-column: 1;
   }
-  .lesson-phase-1 .lesson-input-output {
-    grid-template-columns: minmax(0, 1fr) 100px;
-  }
 }
 .first-lesson .lesson-help-actions {
   display: grid;
@@ -1369,25 +1372,6 @@
   margin: 0;
   padding: 6px 4px;
   font-size: 13px;
-}
-.first-lesson .lesson-task summary {
-  min-height: 36px;
-  padding-block: 6px;
-}
-.first-lesson .lesson-task details {
-  margin-block: 8px;
-}
-.first-lesson .lesson-next p {
-  flex-basis: auto;
-  flex: 1;
-  min-width: 240px;
-}
-.lesson-phase-1 .demo-rung span {
-  font-size: 14px;
-  line-height: 1.5;
-}
-.lesson-phase-1 .lesson-input-output {
-  grid-template-columns: minmax(0, 1fr) 136px;
 }
 @media (max-width: 650px) {
   .first-lesson .lesson-task summary {
