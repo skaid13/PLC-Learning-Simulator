@@ -77,7 +77,7 @@ export function FirstLesson({
   const simulator = useSimulator(program);
   const [editor, setEditor] = useState<EditorSnapshot>({ tool: 'select', selection: null });
   const [checked, setChecked] = useState<ProgramWorkspace>();
-  const [seen, setSeen] = useState<number[]>([]);
+  const [seen, setSeen] = useState<number[]>([0]);
   const [object, setObject] = useState(0);
   const [answer, setAnswer] = useState('');
   const [guess, setGuess] = useState<boolean | null>(null);
@@ -523,33 +523,41 @@ export function FirstLesson({
                     展开用途、区别和例子
                   </button>
                 </article>
-                <fieldset className="lesson-question">
-                  <legend>想一想：常开触点负责什么？</legend>
-                  {[
-                    ['read', '读取按钮，判断它是否接通'],
-                    ['write', '直接给输入变量写TRUE'],
-                    ['light', '不经过程序就让灯一直亮'],
-                  ].map(([value, label]) => (
-                    <label key={value}>
-                      <input
-                        type="radio"
-                        name="object-question"
-                        value={value}
-                        checked={answer === value}
-                        onChange={() => setAnswer(value)}
-                      />
-                      {label}
-                    </label>
-                  ))}
-                  {answer && (
-                    <p role="status">
-                      {answer === 'read'
-                        ? '理解正确：触点读条件，线圈写结果。'
-                        : '再想一下：输入提供消息，触点只读不写，输出线圈才把结果写给灯。'}
-                    </p>
-                  )}
-                  <p>已认识 {seen.length}/4 个对象。四个都看过并答对，再观察真实运行。</p>
-                </fieldset>
+                <p className="lesson-reading-progress" role="status">
+                  已认识 {seen.length}/4 个对象。
+                  {seen.length < 4
+                    ? '亮灯按钮已默认展开；继续点击其余对象，全部看完后出现习题。'
+                    : '四项已看完，请完成下面的理解题。'}
+                </p>
+                {seen.length === 4 && (
+                  <fieldset className="lesson-question">
+                    <legend>想一想：常开触点负责什么？</legend>
+                    {[
+                      ['read', '读取按钮，判断它是否接通'],
+                      ['write', '直接给输入变量写TRUE'],
+                      ['light', '不经过程序就让灯一直亮'],
+                    ].map(([value, label]) => (
+                      <label key={value}>
+                        <input
+                          type="radio"
+                          name="object-question"
+                          value={value}
+                          checked={answer === value}
+                          onChange={() => setAnswer(value)}
+                        />
+                        {label}
+                      </label>
+                    ))}
+                    {answer && (
+                      <p role="status">
+                        {answer === 'read'
+                          ? '理解正确：触点读条件，线圈写结果。'
+                          : '再想一下：输入提供消息，触点只读不写，输出线圈才把结果写给灯。'}
+                      </p>
+                    )}
+                    <p>已认识 {seen.length}/4 个对象。四个都看过并答对，再观察真实运行。</p>
+                  </fieldset>
+                )}
               </>
             ) : (
               <>
