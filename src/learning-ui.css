@@ -671,7 +671,7 @@
   font-size: 16px;
   max-width: 700px;
 }
-.object-explanation > button,
+.object-explanation button,
 .lesson-simulator details > button {
   color: var(--learn-accent);
   background: transparent;
@@ -682,7 +682,7 @@
   font-size: 14px;
   text-align: left;
 }
-.object-explanation > button {
+.object-explanation button {
   margin-top: 8px;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -1157,8 +1157,16 @@
   min-height: 64px;
   padding-block: 12px;
 }
+.first-lesson {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
 .first-lesson .lesson-main {
   padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .first-lesson .lesson-phases {
   margin-bottom: 12px;
@@ -1177,6 +1185,7 @@
   grid-template-columns: 248px minmax(0, 1fr);
   gap: 16px;
   margin: 16px 0;
+  flex: 1;
 }
 .first-lesson .lesson-task {
   padding: 16px;
@@ -1213,9 +1222,14 @@
 .first-lesson .object-explanation p {
   margin: 6px 0;
 }
-.first-lesson .object-explanation > button {
+.first-lesson .object-explanation button {
   margin: 0;
   padding: 6px 0;
+}
+.first-lesson .object-explanation > .learning-symbol {
+  width: 96px;
+  height: 64px;
+  color: var(--learn-accent);
 }
 .lesson-reading-progress {
   color: var(--learn-muted);
@@ -1393,6 +1407,135 @@
   margin: 0;
 }
 @media (min-width: 1001px) {
+  /* 高屏把空间交给线路与操作区；内容展开时自然增高，不裁切或嵌套滚动。 */
+  .first-lesson .lesson-columns {
+    align-items: stretch;
+  }
+  .first-lesson .lesson-task {
+    align-self: start;
+    border: 0;
+    border-left: 3px solid var(--learn-line);
+    border-radius: 0 8px 8px 0;
+  }
+  .first-lesson .lesson-practice {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .first-lesson .lesson-next {
+    border: 0;
+    border-top: 1px solid var(--learn-line);
+    border-radius: 0;
+    background: transparent;
+    padding: 12px 0 0;
+  }
+  .first-lesson .lesson-next > .primary {
+    order: 3;
+    margin-left: auto;
+  }
+  .lesson-phase-0 .lesson-objects button {
+    padding-block: 20px;
+  }
+  .lesson-phase-0 .object-explanation {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    min-height: 180px;
+  }
+  .lesson-phase-0 .object-explanation > .learning-symbol {
+    width: 160px;
+    height: 100px;
+  }
+  .lesson-phase-0 .lesson-practice:has(.lesson-question) .lesson-objects button {
+    padding-block: 8px;
+  }
+  .lesson-phase-0 .lesson-practice:has(.lesson-question) .object-explanation {
+    min-height: 112px;
+    padding: 12px 16px;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 16px;
+    margin-block: 8px;
+  }
+  .lesson-phase-0 .lesson-practice:has(.lesson-question) .object-explanation > .learning-symbol {
+    width: 80px;
+    height: 50px;
+  }
+  .lesson-phase-0 .lesson-practice:has(.lesson-question) .object-explanation h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+  .lesson-phase-0 .lesson-practice:has(.lesson-question) .object-explanation p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-block: 4px;
+  }
+  .lesson-phase-0 .lesson-reading-progress {
+    margin-block: 4px;
+  }
+  .first-lesson.lesson-phase-0 .lesson-question {
+    padding: 8px 16px;
+    margin-block: 4px;
+  }
+  .lesson-phase-0 .lesson-question label {
+    padding: 8px;
+    margin-block: 4px;
+  }
+  .lesson-phase-1 .lesson-simulator:not([hidden]) {
+    flex: 1;
+    margin-bottom: 0;
+    grid-template-rows: minmax(160px, 1fr) auto auto auto;
+    gap: 16px;
+    padding: 24px;
+    align-items: stretch;
+  }
+  .lesson-phase-1 .lesson-demo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    padding-right: 24px;
+    border-right: 1px solid var(--learn-line);
+  }
+  .lesson-phase-1 .demo-rung {
+    gap: 24px;
+    padding: 12px 0;
+  }
+  .lesson-phase-1 .demo-rung .learning-symbol {
+    width: clamp(80px, 7vw, 120px);
+    height: clamp(48px, 7dvh, 80px);
+  }
+  .lesson-phase-1 .demo-rung small {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .lesson-phase-1 .lesson-input-output {
+    grid-template-columns: minmax(0, 1fr) minmax(136px, 0.8fr);
+    gap: 24px;
+    padding-left: 8px;
+  }
+  .lesson-phase-1 .lesson-input-output button {
+    min-height: 64px;
+    font-size: 15px;
+    margin-block: 12px;
+  }
+  .lesson-phase-1 .lesson-lamp {
+    padding: 20px 12px;
+    gap: 12px;
+  }
+  .lesson-phase-1 .lesson-lamp .learning-symbol {
+    width: 72px;
+    height: 52px;
+  }
+  .lesson-phase-1 .lesson-prediction {
+    padding: 12px 16px 16px;
+  }
+  .lesson-phase-1 .lesson-live,
+  .lesson-phase-1 .lesson-feedback {
+    padding: 16px;
+  }
   .first-lesson .lesson-heading {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1408,7 +1551,35 @@
     grid-row: 1;
   }
   .first-lesson .lesson-heading > p {
-    grid-column: 1 / -1;
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .first-lesson .lesson-heading > .lesson-save {
+    grid-column: 2;
+    text-align: right;
+  }
+}
+@media (min-width: 1001px) and (max-height: 950px) {
+  .lesson-phase-1 .lesson-simulator:not([hidden]) {
+    padding: 16px;
+    gap: 12px;
+  }
+  .lesson-phase-1 .lesson-demo {
+    gap: 8px;
+    padding-right: 16px;
+  }
+  .lesson-phase-1 .demo-rung .learning-symbol {
+    width: 88px;
+    height: 52px;
+  }
+  .lesson-phase-1 .lesson-lamp {
+    padding: 12px;
+    gap: 8px;
+  }
+  .lesson-phase-1 .lesson-prediction,
+  .lesson-phase-1 .lesson-live,
+  .lesson-phase-1 .lesson-feedback {
+    padding: 12px;
   }
 }
 @media (min-width: 1001px) and (max-height: 820px) {
@@ -1434,6 +1605,44 @@
   .lesson-phase-1 .lesson-simulator {
     padding: 12px;
     gap: 8px 12px;
+  }
+  .lesson-phase-1 .lesson-simulator:not([hidden]) {
+    padding: 12px;
+    gap: 8px 12px;
+    grid-template-rows: minmax(120px, 1fr) auto auto auto;
+  }
+  .lesson-phase-1 .lesson-demo {
+    gap: 8px;
+    padding-right: 12px;
+  }
+  .lesson-phase-1 .demo-rung {
+    gap: 12px;
+    padding-block: 4px;
+  }
+  .lesson-phase-1 .demo-rung .learning-symbol {
+    width: 72px;
+    height: 44px;
+  }
+  .lesson-phase-1 .lesson-input-output {
+    gap: 12px;
+    padding-left: 0;
+  }
+  .lesson-phase-1 .lesson-input-output button {
+    min-height: 44px;
+    margin-block: 6px;
+  }
+  .lesson-phase-1 .lesson-lamp {
+    padding: 8px;
+    gap: 4px;
+  }
+  .lesson-phase-1 .lesson-lamp .learning-symbol {
+    width: 48px;
+    height: 32px;
+  }
+  .lesson-phase-1 .lesson-prediction,
+  .lesson-phase-1 .lesson-live,
+  .lesson-phase-1 .lesson-feedback {
+    padding: 8px 12px;
   }
 }
 

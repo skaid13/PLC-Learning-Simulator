@@ -430,10 +430,10 @@ export function FirstLesson({
             }
           </h1>
           <p>{purposes[phase]}</p>
+          <p className="lesson-save" role="status">
+            {storageMessage}
+          </p>
         </div>
-        <p className="lesson-save" role="status">
-          {storageMessage}
-        </p>
         {loaded.recovery && !allowSave && (
           <div role="alert">
             <p>原始记录尚未覆盖。</p>
@@ -542,11 +542,14 @@ export function FirstLesson({
                   ))}
                 </div>
                 <article className="object-explanation">
-                  <h2>{objects[object].name}有什么用？</h2>
-                  <p>{objects[object].text}</p>
-                  <button onClick={() => setTopic(objects[object].topic)}>
-                    展开用途、区别和例子
-                  </button>
+                  <LearningSymbol kind={(['input', 'contact', 'coil', 'lamp'] as const)[object]} />
+                  <div>
+                    <h2>{objects[object].name}有什么用？</h2>
+                    <p>{objects[object].text}</p>
+                    <button onClick={() => setTopic(objects[object].topic)}>
+                      展开用途、区别和例子
+                    </button>
+                  </div>
                 </article>
                 <p className="lesson-reading-progress" role="status">
                   已认识 {seen.length}/4 个对象。
@@ -580,7 +583,6 @@ export function FirstLesson({
                           : '再想一下：输入提供消息，触点只读不写，输出线圈才把结果写给灯。'}
                       </p>
                     )}
-                    <p>已认识 {seen.length}/4 个对象。四个都看过并答对，再观察真实运行。</p>
                   </fieldset>
                 )}
               </>
