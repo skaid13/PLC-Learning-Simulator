@@ -120,6 +120,21 @@ function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
   return result;
 }
 
+// 身份即编辑边界：调用方只对真正变化的程序保存历史、复位扫描。
+function patchIfChanged<T extends object>(current: T, patch: Partial<NoInfer<T>>): T {
+  return Object.entries(patch).every(([key, value]) => Object.is(current[key as keyof T], value))
+    ? current
+    : { ...current, ...patch };
+}
+function mapChanged<T>(items: T[], transform: (item: T) => T): T[] {
+  const next = items.map(transform);
+  return next.every((item, index) => item === items[index]) ? items : next;
+}
+function filterChanged<T>(items: T[], keep: (item: T) => unknown): T[] {
+  const next = items.filter(keep);
+  return next.length === items.length ? items : next;
+}
+
 /** 纯数据编辑，不执行 PLC 逻辑，不改变输入输出值。 */
 export function editProgram(program: ProgramWorkspace, action: EditorAction): ProgramWorkspace {
   if (action.type === 'createAndBindVariable') {
@@ -154,13 +169,12 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
       },
     );
   }
-  if (action.type === 'updateVariable')
-    return {
-      ...program,
-      variables: program.variables.map((v) =>
-        v.id === action.variableId ? { ...v, ...action.patch } : v,
-      ),
-    };
+  if (action.type === 'updateVariable') {
+    const variables = mapChanged(program.variables, (v) =>
+      v.id === action.variableId ? patchIfChanged(v, action.patch) : v,
+    );
+    return patchIfChanged(program, { variables });
+  }
   if (action.type === 'addVariable')
     return program.variables.length >= 500
       ? program
@@ -179,10 +193,9 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
       )
     )
       return program;
-    return {
-      ...program,
-      variables: program.variables.filter((v) => v.id !== action.variableId || v.terminal),
-    };
+    return patchIfChanged(program, {
+      variables: filterChanged(program.variables, (v) => v.id !== action.variableId || v.terminal),
+    });
   }
   if (action.type === 'addNetwork') {
     if (
@@ -199,17 +212,21 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
     return { ...program, networks: program.networks.filter((_, i) => i !== index) };
   }
   if (action.type === 'moveNetwork')
-    return { ...program, networks: moveItem(program.networks, index, action.direction) };
+    return patchIfChanged(program, {
+      networks: moveItem(program.networks, index, action.direction),
+    });
   const network = program.networks[index];
-  const update = (next: LadderNetwork): ProgramWorkspace => ({
-    ...program,
-    networks: program.networks.map((item, i) => (i === index ? next : item)),
-  });
-  const mapContacts = (fn: (item: ContactInstruction) => ContactInstruction): LadderNetwork => ({
-    ...network,
-    contacts: network.contacts.map(fn),
-    branches: network.branches?.map((b) => b.map(fn)),
-  });
+  const update = (patch: Partial<LadderNetwork>): ProgramWorkspace => {
+    const next = patchIfChanged(network, patch);
+    return next === network
+      ? program
+      : { ...program, networks: program.networks.map((item, i) => (i === index ? next : item)) };
+  };
+  const mapContacts = (fn: (item: ContactInstruction) => ContactInstruction): LadderNetwork =>
+    patchIfChanged(network, {
+      contacts: mapChanged(network.contacts, fn),
+      branches: network.branches && mapChanged(network.branches, (b) => mapChanged(b, fn)),
+    });
   switch (action.type) {
     case 'renameNetwork':
       return update({ ...network, name: action.name.slice(0, 40) });
@@ -230,18 +247,28 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
         ? program
         : update({ ...network, branches: [...(network.branches ?? []), []] });
     case 'deleteBranch':
+      if (!network.branches || action.branch < 1 || action.branch > network.branches.length)
+        return program;
       return update({
         ...network,
         branches: network.branches?.filter((_, i) => i !== action.branch - 1),
       });
     case 'updateContact':
       return update(
-        mapContacts((i) => (i.id === action.instructionId ? { ...i, ...action.patch } : i)),
+        mapContacts((i) => {
+          if (i.id !== action.instructionId) return i;
+          const comparison = action.patch.comparison;
+          const patch =
+            comparison &&
+            i.comparison?.operator === comparison.operator &&
+            i.comparison.value === comparison.value
+              ? { ...action.patch, comparison: i.comparison }
+              : action.patch;
+          return patchIfChanged(i, patch);
+        }),
       );
     case 'updateCoil':
-      return network.coil
-        ? update({ ...network, coil: { ...network.coil, ...action.patch } })
-        : program;
+      return network.coil ? update({ coil: patchIfChanged(network.coil, action.patch) }) : program;
     case 'addCoil':
       if (network.coil || allContacts(network).some((item) => item.id === action.instructionId))
         return program;
@@ -252,21 +279,27 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
     case 'deleteInstruction':
       return update({
         ...network,
-        contacts: network.contacts.filter((item) => item.id !== action.instructionId),
-        branches: network.branches?.map((b) => b.filter((i) => i.id !== action.instructionId)),
+        contacts: filterChanged(network.contacts, (item) => item.id !== action.instructionId),
+        branches:
+          network.branches &&
+          mapChanged(network.branches, (b) =>
+            filterChanged(b, (i) => i.id !== action.instructionId),
+          ),
         coil: network.coil?.id === action.instructionId ? null : network.coil,
       });
     case 'changeContactType':
       return update(
         mapContacts((item) =>
-          item.id === action.instructionId ? { ...item, contactType: action.contactType } : item,
+          item.id === action.instructionId
+            ? patchIfChanged(item, { contactType: action.contactType })
+            : item,
         ),
       );
     case 'setVariable': {
       const instruction =
         allContacts(network).find((item) => item.id === action.instructionId) ??
         (network.coil?.id === action.instructionId ? network.coil : undefined);
-      if (!instruction) return program;
+      if (!instruction || instruction.variableId === action.variableId) return program;
       const variable = program.variables.find((item) => item.id === action.variableId);
       if (
         action.variableId !== null &&
@@ -275,7 +308,9 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
         return program;
       return update({
         ...mapContacts((item) =>
-          item.id === action.instructionId ? { ...item, variableId: action.variableId } : item,
+          item.id === action.instructionId
+            ? patchIfChanged(item, { variableId: action.variableId })
+            : item,
         ),
         coil:
           network.coil?.id === action.instructionId
@@ -291,7 +326,15 @@ export function editProgram(program: ProgramWorkspace, action: EditorAction): Pr
           action.direction,
         ),
       );
-      return update({ ...network, contacts: branches[0], branches: branches.slice(1) });
+      if (
+        branches[0] === network.contacts &&
+        branches.slice(1).every((b, i) => b === network.branches?.[i])
+      )
+        return program;
+      return update({
+        contacts: branches[0],
+        branches: network.branches ? branches.slice(1) : undefined,
+      });
     }
   }
 }

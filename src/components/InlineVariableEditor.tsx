@@ -56,7 +56,7 @@ export function InlineVariableEditor({
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
     observer?.observe(element);
     observer?.observe(anchor);
-    const closeOutside = (event: PointerEvent) => {
+    const closeOutside = (event: MouseEvent) => {
       if (!element.contains(event.target as Node) && !anchor.contains(event.target as Node))
         onClose();
     };
@@ -67,13 +67,15 @@ export function InlineVariableEditor({
         (anchor as SVGElement).focus?.();
       }
     };
-    document.addEventListener('pointerdown', closeOutside);
+    // click的目标已确定再关闭，避免pointerdown重排让同一次点击落空；
+    // 捕获阶段先关闭旧浮层，元件自身的click仍可打开新的浮层。
+    document.addEventListener('click', closeOutside, true);
     document.addEventListener('keydown', escape);
     window.addEventListener('resize', update);
     window.addEventListener('scroll', update, true);
     return () => {
       observer?.disconnect();
-      document.removeEventListener('pointerdown', closeOutside);
+      document.removeEventListener('click', closeOutside, true);
       document.removeEventListener('keydown', escape);
       window.removeEventListener('resize', update);
       window.removeEventListener('scroll', update, true);

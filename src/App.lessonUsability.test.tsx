@@ -78,3 +78,40 @@ it('跟随搭建阶段结构完整并检查后即可继续，不重复观察扫�
   await user.selectOptions(screen.getByLabelText('元件变量'), 'output:O-00');
   expect(screen.getByRole('button', { name: /进入下一阶段/ })).toBeDisabled();
 });
+
+it('重复选择同一变量不复位真实扫描证据、不占撤销；实际改绑定仍取消完成', async () => {
+  const user = userEvent.setup();
+  localStorage.setItem(
+    FIRST_LESSON_KEY,
+    JSON.stringify({
+      version: 1,
+      phase: 4,
+      unlocked: 4,
+      programs: { 4: phaseProgram(1) },
+    }),
+  );
+  render(<App />);
+  await user.click(screen.getByRole('button', { name: /继续第一课/ }));
+  await user.click(screen.getByRole('button', { name: '检查结构' }));
+  await user.click(screen.getByRole('button', { name: '我预测：灯会灭' }));
+  await user.click(screen.getByRole('button', { name: '预测后单步扫描' }));
+  await user.click(screen.getByRole('switch', { name: '亮灯按钮' }));
+  await user.click(screen.getByRole('button', { name: '我预测：灯会亮' }));
+  await user.click(screen.getByRole('button', { name: '预测后单步扫描' }));
+  const next = screen.getByRole('button', { name: /进入下一阶段/ });
+  expect(next).toBeEnabled();
+  await user.click(screen.getByRole('button', { name: '网络 1 常开触点 SIM_IN_00 位置 1' }));
+  const saved = localStorage.getItem(FIRST_LESSON_KEY);
+  await user.selectOptions(screen.getByLabelText('图上元件变量'), 'input:I-00');
+  expect(next).toBeEnabled();
+  expect(screen.getByText('③ 最后实际扫描 #2')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '撤销本次编辑' })).toBeDisabled();
+  expect(localStorage.getItem(FIRST_LESSON_KEY)).toBe(saved);
+  await user.selectOptions(screen.getByLabelText('图上元件变量'), 'internal:0');
+  expect(next).toBeDisabled();
+  expect(screen.getByRole('button', { name: '撤销本次编辑' })).toBeEnabled();
+  await user.click(screen.getByRole('button', { name: '撤销本次编辑' }));
+  expect(
+    screen.getByRole('button', { name: '网络 1 常开触点 SIM_IN_00 位置 1' }),
+  ).toBeInTheDocument();
+});
