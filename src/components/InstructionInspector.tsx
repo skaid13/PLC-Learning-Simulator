@@ -1,4 +1,5 @@
 import { InstructionHelp } from './InstructionHelp';
+import { VariableBinding } from './VariableBinding';
 import type { BoolVariable, CoilInstruction, LadderInstruction, LadderNetwork } from '../types';
 import { instructionNames, type EditorAction } from '../editor/model';
 import { operations, operationNames } from '../editor/validation';
@@ -26,16 +27,6 @@ export function InstructionInspector({
       </section>
     );
   const operation = instruction?.kind === 'coil' ? (instruction.operation ?? 'coil') : 'coil';
-  const needsNumber =
-    instruction?.kind === 'coil'
-      ? ['move', 'add'].includes(operation)
-      : !!(instruction?.kind === 'contact' && instruction.comparison);
-  const eligible = variables.filter(
-    (v) =>
-      (!basic || v.kind !== 'internal') &&
-      (instruction?.kind !== 'coil' || v.kind !== 'input') &&
-      (v.dataType === 'number') === needsNumber,
-  );
   const variable = variables.find((v) => v.id === instruction?.variableId);
   const branch =
     [network.contacts, ...(network.branches ?? [])].find((b) =>
@@ -265,39 +256,12 @@ export function InstructionInspector({
                 )}
               </>
             )}
-            <label className="inspector-field variable-field">
-              元件变量
-              <select
-                data-guide="variable"
-                aria-label="元件变量"
-                value={instruction.variableId ?? ''}
-                onChange={(e) =>
-                  onAction({
-                    type: 'setVariable',
-                    networkId: network.id,
-                    instructionId: instruction.id,
-                    variableId: e.target.value || null,
-                  })
-                }
-              >
-                <option value="">请选择变量</option>
-                {(['input', 'output', 'internal'] as const).map((kind) => {
-                  const items = eligible.filter((v) => v.kind === kind);
-                  return items.length ? (
-                    <optgroup
-                      key={kind}
-                      label={{ input: '输入变量', output: '输出变量', internal: '内部变量' }[kind]}
-                    >
-                      {items.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.name} · {v.description}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ) : null;
-                })}
-              </select>
-            </label>
+            <VariableBinding
+              instruction={instruction}
+              networkId={network.id}
+              variables={variables}
+              onAction={onAction}
+            />
           </div>
           <InstructionHelp instruction={instruction} />
           <div className="inspector-description">

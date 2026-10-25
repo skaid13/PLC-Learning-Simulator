@@ -89,6 +89,12 @@ export type EditorAction =
     }
   | { type: 'updateCoil'; networkId: string; patch: Partial<Omit<CoilInstruction, 'kind' | 'id'>> }
   | { type: 'addVariable'; variable: BoolVariable }
+  | {
+      type: 'createAndBindVariable';
+      networkId: string;
+      instructionId: string;
+      variable: BoolVariable;
+    }
   | { type: 'deleteVariable'; variableId: string }
   | {
       type: 'updateVariable';
@@ -116,6 +122,38 @@ function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
 
 /** 纯数据编辑，不执行 PLC 逻辑，不改变输入输出值。 */
 export function editProgram(program: ProgramWorkspace, action: EditorAction): ProgramWorkspace {
+  if (action.type === 'createAndBindVariable') {
+    const network = program.networks.find((n) => n.id === action.networkId);
+    const instruction =
+      network &&
+      [...allContacts(network), ...(network.coil ? [network.coil] : [])].find(
+        (i) => i.id === action.instructionId,
+      );
+    const numeric =
+      instruction?.kind === 'contact'
+        ? !!instruction.comparison
+        : ['move', 'add'].includes(instruction?.operation ?? 'coil');
+    if (
+      !instruction ||
+      action.variable.kind !== 'internal' ||
+      action.variable.terminal ||
+      !action.variable.name.trim() ||
+      action.variable.name.length > 40 ||
+      (action.variable.dataType === 'number') !== numeric ||
+      program.variables.length >= 500 ||
+      program.variables.some((v) => v.id === action.variable.id || v.name === action.variable.name)
+    )
+      return program;
+    return editProgram(
+      { ...program, variables: [...program.variables, action.variable] },
+      {
+        type: 'setVariable',
+        networkId: action.networkId,
+        instructionId: action.instructionId,
+        variableId: action.variable.id,
+      },
+    );
+  }
   if (action.type === 'updateVariable')
     return {
       ...program,

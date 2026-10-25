@@ -81,6 +81,7 @@ export function LadderNetworkView({
     const path = instruction?.kind === 'coil' ? trace?.result : contactTrace?.path;
     return (
       <g
+        data-instruction-id={instruction?.id}
         data-guide={
           slot === 'coil' ? `coil-${index}` : `contact-${index}-${branchIndex}-${slotIndex}`
         }

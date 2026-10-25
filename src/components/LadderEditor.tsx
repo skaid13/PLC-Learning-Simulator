@@ -1,6 +1,7 @@
 import { InstructionHelp } from './InstructionHelp';
 import { VariableManager } from './VariableManager';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { InlineVariableEditor } from './InlineVariableEditor';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ProgramWorkspace, LadderNetwork } from '../types';
 import {
   createNetwork,
@@ -44,14 +45,27 @@ export function LadderEditor({
   const [clipboard, setClipboard] = useState<LadderNetwork | null>(null);
   const [tool, setTool] = useState<EditorTool>('select');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
+  const [inlineOpen, setInlineOpen] = useState(false);
   const [actionCount, setActionCount] = useState(0);
   useEffect(() => {
-    onEditorState?.({ tool, selection, actionCount });
-  }, [tool, selection, actionCount, onEditorState]);
+    onEditorState?.({ tool, selection, actionCount, inlineVariableOpen: inlineOpen });
+  }, [tool, selection, actionCount, onEditorState, inlineOpen]);
   const [message, setMessage] = useState('先选择一种元件工具，再点击网络中的＋空位放置。');
   const [showIssues, setShowIssues] = useState(false);
   const [deleteNetworkId, setDeleteNetworkId] = useState<string | null>(null);
   const networkRefs = useRef(new Map<string, HTMLDivElement>());
+  const getInlineAnchor = useCallback(() => {
+    if (!selection) return null;
+    return (
+      [
+        ...(networkRefs.current
+          .get(selection.networkId)
+          ?.querySelectorAll('[data-instruction-id]') ?? []),
+      ].find((e) => e.getAttribute('data-instruction-id') === selection.instructionId) ?? null
+    );
+  }, [selection?.networkId, selection?.instructionId]);
+  const closeInline = useCallback(() => setInlineOpen(false), []);
+  useEffect(() => setInlineOpen(false), [running, program.experimentId]);
   useEffect(() => {
     if (!locate || !program.networks.some((n) => n.id === locate.networkId)) return;
     setSelection({ networkId: locate.networkId, instructionId: locate.instructionId });
@@ -76,10 +90,11 @@ export function LadderEditor({
   const select = (networkId: string, instructionId: string | null) => {
     setActionCount((n) => n + 1);
     setSelection({ networkId, instructionId });
+    setInlineOpen(!running && instructionId !== null);
     setTool('select');
     setMessage(
       instructionId
-        ? '已选中元件，在下方设置变量、修改类型或删除。'
+        ? '已选中元件，可在图上选择/命名变量；下方属性仍可修改类型或删除。'
         : '已选中网络，可在下方修改名称。',
     );
   };
@@ -98,12 +113,14 @@ export function LadderEditor({
         branch,
       });
       setSelection({ networkId, instructionId: id });
-      setMessage(`已放置${instructionNames[tool]}，请在下方选择变量。`);
+      setInlineOpen(true);
+      setMessage(`已放置${instructionNames[tool]}，可在元件旁选择变量，也可使用下方属性。`);
     } else if (slot === 'coil' && tool === 'coil') {
       const id = newId();
       onAction({ type: 'addCoil', networkId, instructionId: id });
       setSelection({ networkId, instructionId: id });
-      setMessage('已放置输出线圈，请在下方选择输出或内部变量。');
+      setInlineOpen(true);
+      setMessage('已放置输出线圈，在元件旁选择输出或内部变量；下方属性保留。');
     } else
       setMessage(
         tool === 'select'
@@ -287,6 +304,28 @@ export function LadderEditor({
           ))}
         </div>
         {!compact && <VariableManager program={program} onAction={onAction} />}
+        {program.variables.some(
+          (v) =>
+            v.kind === 'internal' &&
+            (!/^internal:[0-3]$/.test(v.id) ||
+              v.name !== `SIM_M_${v.id.slice(-1).padStart(2, '0')}`),
+        ) && (
+          <section className="custom-variable-shelf" aria-label="本程序自定义变量">
+            <strong>自定义变量 · 本程序内可再次调用</strong>
+            {program.variables
+              .filter(
+                (v) =>
+                  v.kind === 'internal' &&
+                  (!/^internal:[0-3]$/.test(v.id) ||
+                    v.name !== `SIM_M_${v.id.slice(-1).padStart(2, '0')}`),
+              )
+              .map((v) => (
+                <span key={v.id}>
+                  {v.name} · {v.dataType === 'number' ? '数值' : '布尔'}
+                </span>
+              ))}
+          </section>
+        )}
         <InstructionInspector
           basic={compact}
           network={selectedNetwork}
@@ -305,6 +344,16 @@ export function LadderEditor({
           }}
         />
       </fieldset>
+      {inlineOpen && selectedNetwork && selectedInstruction && !running && (
+        <InlineVariableEditor
+          instruction={selectedInstruction}
+          networkId={selectedNetwork.id}
+          variables={program.variables}
+          onAction={onAction}
+          onClose={closeInline}
+          getAnchor={getInlineAnchor}
+        />
+      )}
       {showIssues && (
         <section className="program-diagnostics" aria-label="结构检查结果">
           <div className="diagnostics-heading">

@@ -9,6 +9,7 @@ export interface EditorSnapshot {
   selection: EditorSelection | null;
   /** Counts deliberate user clicks, including reselecting the same tool. */
   actionCount?: number;
+  inlineVariableOpen?: boolean;
 }
 export interface GuideContext {
   program: ProgramWorkspace;

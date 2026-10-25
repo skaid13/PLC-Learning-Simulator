@@ -1436,3 +1436,103 @@
     gap: 8px 12px;
   }
 }
+
+/* 图上编辑与下方属性共用同一变量数据，不复制变量或修改端子标识。 */
+.inline-variable-editor {
+  position: fixed;
+  z-index: 120;
+  width: min(352px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--learn-control);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--learn-ink);
+  box-shadow: 0 8px 24px #18243b20;
+  font-size: 14px;
+}
+.inline-variable-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.inline-variable-editor button,
+.variable-binding button {
+  border: 1px solid var(--learn-control);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--learn-ink);
+  padding: 8px 10px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.inline-variable-editor .inspector-field,
+.variable-binding .inspector-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.variable-binding {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.variable-binding select,
+.variable-binding input {
+  min-width: 0;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--learn-control);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--learn-ink);
+  padding: 8px;
+  font-size: 14px;
+}
+.variable-name-edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+.variable-name-edit small {
+  grid-column: 1 / -1;
+  color: var(--learn-muted);
+  line-height: 1.5;
+}
+.variable-binding .create-variable summary {
+  cursor: pointer;
+  min-height: 36px;
+  padding: 6px 0;
+}
+.variable-binding .create-variable button {
+  margin-top: 8px;
+}
+.variable-binding p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.variable-binding [role='alert'] {
+  color: #a52b24;
+}
+.custom-variable-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f5f7fb;
+  color: var(--learn-ink);
+  font-size: 13px;
+}
+.custom-variable-shelf span {
+  padding: 4px 8px;
+  border: 1px solid var(--learn-line);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}

@@ -235,11 +235,13 @@ export function FirstLesson({
     else if (contact.variableId !== 'input:I-00')
       task = {
         title: '让触点读取亮灯按钮',
-        action: '点选第一个触点，在“元件变量”选SIM_IN_00 · 亮灯按钮。',
+        action: '点选触点，在元件旁或下方的变量列表选择亮灯按钮（I-00）。',
         why: '放了符号还要指定读哪个消息，触点不能把输出当作本课按钮。',
         selector:
           editor.selection?.instructionId === contact.id
-            ? '[aria-label="元件变量"]'
+            ? editor.inlineVariableOpen
+              ? '[aria-label="图上元件变量"]'
+              : '[aria-label="元件变量"]'
             : '[data-guide="contact-0-0-0"]',
       };
     else if (!n.coil)
@@ -260,11 +262,13 @@ export function FirstLesson({
     else if (n.coil.variableId !== 'output:O-00')
       task = {
         title: '让线圈控制指示灯',
-        action: '点选末端线圈，在“元件变量”选SIM_OUT_00 · 指示灯。',
+        action: '点选末端线圈，在元件旁或下方的变量列表选择指示灯（O-00）。',
         why: '线圈写输出；SIM_OUT_00才对应这盏灯。',
         selector:
           editor.selection?.instructionId === n.coil.id
-            ? '[aria-label="元件变量"]'
+            ? editor.inlineVariableOpen
+              ? '[aria-label="图上元件变量"]'
+              : '[aria-label="元件变量"]'
             : '[data-guide="coil-0"]',
       };
     else
