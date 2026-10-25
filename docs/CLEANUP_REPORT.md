@@ -1,5 +1,11 @@
 # 残留清理记录
 
+## 2.0.2本机布局更新（2026-10-25）
+
+升级前正常退出旧应用，完整数据备份保留于`~/Library/Application Support/PLC-Learning-Simulator-backups/before-2.0.2-20261025-222147/data`；旧2.0.1应用移至`~/.Trash/PLC-2.0.2-upgrade-20261025-222147/PLC学习实验室.app`，安装2.0.2，桌面链接有效，原数据目录未清理。
+
+`desktop-staging`、`release/mac-arm64`、`builder-debug.yml`共3项311023368字节移至`~/.Trash/PLC-2.0.2-build-residue-20261025-222354`，移动前后树摘要一致，内有RESTORE-MANIFEST.json，项目gitignored release亦有本机清单。保留2.0.1正式下载ZIP、源码/配置/依赖/Git/用户备份，不永久删除或清空垃圾桶。只停止本轮5184/PID51055，4173/5173/5184无监听；2.0.2菜单退出无应用进程，随后重开供用户使用。恢复旧应用或数据前先退出当前应用并另存当前学习数据，按清单移回，勿直接覆盖新草稿。
+
 ## 2.0.1更新与过往产物清理（2026-10-25）
 
 旧2.0应用正常菜单退出后，完整数据目录备份保存于`~/Library/Application Support/PLC-Learning-Simulator-backups/before-2.0.1-20261025-215751/data`，仅本地保留、不上传；原数据目录未移动。旧.app移至`~/.Trash/PLC-2.0.1-upgrade-20261025-215751/PLC学习实验室.app`，原位置安装2.0.1，桌面链接继续使用。安装和正式ZIP的app.asar均为`09703794e365198de8a372f399e4289aaf3acaf88df6952b37fd4358e9893c1f`。升级后4/6及独立搭建原草稿保留；新原生导出`~/Downloads/PLC-after-2.0.1-20261025.json`保留作用户备份，未作为残留或上传。
