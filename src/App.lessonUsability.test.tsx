@@ -8,7 +8,7 @@ it('默认展示的按钮计为已读；读完其余三项才出现理解题，�
   render(<App />);
   await user.click(screen.getByRole('button', { name: /开始第一课/ }));
   const cards = within(screen.getByLabelText('认识四个对象'));
-  expect(cards.getByRole('button', { name: /亮灯按钮 已查看/ })).toBeInTheDocument();
+  expect(cards.getByRole('button', { name: /亮灯按钮\s*已查看/ })).toBeInTheDocument();
   expect(screen.queryByRole('radio')).not.toBeInTheDocument();
   for (const name of ['常开触点', '输出线圈']) {
     await user.click(cards.getByRole('button', { name: new RegExp(name) }));
