@@ -1,5 +1,21 @@
 # 残留清理记录
 
+## 2026-10-27：2.0.3本机交付清理
+
+旧应用移动至 `/Users/skaid13/.Trash/PLC-2.0.3-升级旧应用-20261027-230630/PLC学习实验室.app`，新旧asar核验及完整数据备份详见RELEASE_2.0.3.md。
+
+| 原路径                                                                                                    | 垃圾桶位置                                                                                                  |      字节 | SHA-256                                                            |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------: | ------------------------------------------------------------------ |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/desktop-staging`                                    | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/1-desktop-staging`                            |    595653 | `37663a3488a3deba21ca1e163bd71c009a27a7b9a159548e88e1a6e93818e9b4` |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release/mac-arm64`                                  | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/2-mac-arm64`                                  | 310448270 | `5975dc5f5935d270b601d8327fd6aebb0aabf656f05f73c35ff66352d695baff` |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release/verification-2.0.3`                         | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/3-verification-2.0.3`                         | 310448270 | `5975dc5f5935d270b601d8327fd6aebb0aabf656f05f73c35ff66352d695baff` |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release/builder-debug.yml`                          | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/4-builder-debug.yml`                          |        85 | `1fff93d1ba8a2b7d27edb8f0ee0195e2c67b302c942979899a88f4c15f41dd7c` |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release/PLC-Learning-Simulator-2.0.2-mac-arm64.zip` | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/5-PLC-Learning-Simulator-2.0.2-mac-arm64.zip` | 129981218 | `239b015f3508fde09f0af4b8faa8c1438bf111cd63a31c90b001091d3fa58f9e` |
+| `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/release/SHA256SUMS-2.0.2.txt`                       | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/6-SHA256SUMS-2.0.2.txt`                       |       109 | `a02de57fc241820c8fc57b2b3013ff83c9f391d59fbd2566c2f4aaad4e0d590f` |
+| `/private/tmp/plc-phase6-qa.json`                                                                         | `/Users/skaid13/.Trash/PLC-2.0.3-重复构建清理-20261027-231405/7-plc-phase6-qa.json`                         |      1808 | `b7380d0ea30a1fea7d0d4b7b447848f864e1566278f98ec0b2a1bbd51d7f1620` |
+
+以上7项逐项摘要在移动前后完全一致、原路径已移走；没有永久删除。停止本轮Vite测试会话10457，4173/5173/5184无监听；原生退出无项目进程，清理后重开验证通过。保留源代码、锁文件、指导书、Git历史、依赖、最新2.0.3 ZIP与校验、全部真实学习备份。恢复时先退出应用，将相应垃圾桶项目移回原位置；原位置有新文件时先保留新文件，避免覆盖。
+
 ## 2.0.2正式优化版清理（2026-10-25）
 
 核对生产导入图、全局符号与路径搜索后，将无运行/测试引用的`src/data/lesson.ts`（1264字节，SHA256 682d7e33034c139f1749c32906edfaf5e9cd0e7471a2c7f3d4febd41be2d4a44）移至`~/.Trash/PLC-2.0.2-unused-source-20261025-223717/lesson.ts`。仅旧目录文档提及该文件，现课程由其他模块提供；源码仍可从Git历史恢复，不影响指导书或课程。
