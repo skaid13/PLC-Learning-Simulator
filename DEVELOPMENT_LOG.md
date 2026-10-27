@@ -1,5 +1,15 @@
 # 开发日志
 
+## 当前完成：2.0.3已发布GitHub（2026-10-27）
+
+北京时间23:24发布，Release ID425632694，v2.0.3为Latest、非草稿/预发布，仓库Public保持。main由913b600快进至214d7f0，注解标签固定；160文件完整路径/blob SHA逐项一致。Mac ZIP129983252字节及109字节校验附件state/size/SHA256、详细正文核对后公开。链接：https://github.com/skaid13/PLC-Learning-Simulator/releases/tag/v2.0.3 。
+
+本轮无功能改动或重复构建。凭据/禁止路径及ZIP CRC/SHA复核通过，5项系统缓存/发布临时文件校验入垃圾桶；此前旧应用和重复构建已处理，学习数据/备份、正常2.0.3与桌面入口保留。完整摘要及限制见docs/PUBLISH_2.0.3.md。后续只补发布归档提交，不移动标签、不重新发布或打包。
+
+## 历史：2.0.3上传中检查点（已完成）
+
+main/注解标签v2.0.3已上传214d7f0，160文件完整路径/blob SHA与GitHub逐项一致。Release草稿ID425632694已创建，仍draft=true、尚无附件。本机ZIP129983252字节，SHA256 163d0afcf4594eeed1b11260ebfa2d326dc02c5884a88a5c1b52854e90caf53a。下一步上传ZIP与SHA256SUMS，核验附件size/digest及正文后公开为Latest。中断先查ID425632694，不重复建Release/标签或重新开发、打包。
+
 ## 2026-10-27：2.0.3发布准备
 
 用户明确授权清除残留并上传GitHub。核实7aa16dd工作区干净、原生2.0.3/asar及桌面链接正确，远端main仍913b600、Public、无v2.0.3。凭据/禁止路径扫描及ZIP SHA/CRC通过；本项目.DS_Store 6148字节校验入垃圾桶，旧构建已清理，不动个人数据。准备快进main、建标签与Release草稿，核验附件和源码树后公开。中断先查远端状态；详细恢复及摘要见docs/PUBLISH_2.0.3.md。

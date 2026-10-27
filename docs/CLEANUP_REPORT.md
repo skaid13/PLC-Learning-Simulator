@@ -1,5 +1,16 @@
 # 残留清理记录
 
+## 2026-10-27：2.0.3发布临时文件归档
+
+发布验证完成后，以下4项仅为本轮API/说明临时副本，已逐项核验SHA256一致后移至垃圾桶；正式文档与恢复记录保留。
+
+| 原路径                                          | 垃圾桶位置                                                                                      |  字节 | SHA-256                                                            |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----: | ------------------------------------------------------------------ |
+| `/private/tmp/plc-remote-tree-2.0.3.json`       | `/Users/skaid13/.Trash/PLC-2.0.3-发布临时文件-20261027-232517/plc-remote-tree-2.0.3.json`       | 43141 | `ff56e63f7d3865f978640f5188c520915adbab5e8e3360f7c12950756692c859` |
+| `/private/tmp/plc-release-2.0.3-remote.json`    | `/Users/skaid13/.Trash/PLC-2.0.3-发布临时文件-20261027-232517/plc-release-2.0.3-remote.json`    |  8765 | `f5f65024ca861d44b08f3e8d0ee4fbdfb41286480128dbc7d6785ab31dce0103` |
+| `/private/tmp/plc-release-2.0.3-published.json` | `/Users/skaid13/.Trash/PLC-2.0.3-发布临时文件-20261027-232517/plc-release-2.0.3-published.json` |  8859 | `49c5488726b8fd07053ef3bcec9d4f8268bb403fe3401f4477bb36c100f827f9` |
+| `/private/tmp/plc-release-notes-2.0.3.md`       | `/Users/skaid13/.Trash/PLC-2.0.3-发布临时文件-20261027-232517/plc-release-notes-2.0.3.md`       |  3970 | `6f815d100071fe00e8d505f193c3caf8302ba652bd750fb36abae1dc92780775` |
+
 ## 2026-10-27：2.0.3发布前缓存复核
 
 `/Users/skaid13/Documents/Codex/PLC-Learing-Simulator/.DS_Store`（6148字节）移至 `/Users/skaid13/.Trash/PLC-2.0.3-发布残留-20261027-231946/1-.DS_Store`；移动前后SHA-256均为 `d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3`。
