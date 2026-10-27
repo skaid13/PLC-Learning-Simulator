@@ -204,6 +204,8 @@ export function FirstLesson({
       : phase === 2 || phase === 4
         ? reviewAnswer === (phase === 2 ? 'read' : 'invert')
         : valid && cases.on && cases.off;
+  const inputName = program.variables.find((v) => v.id === 'input:I-00')?.name ?? 'SIM_IN_00';
+  const outputName = program.variables.find((v) => v.id === 'output:O-00')?.name ?? 'SIM_OUT_00';
   const input = simulator.state.inputs['input:I-00'] === true;
   const sampled = simulator.state.scan.values['input:I-00'] === true;
   const output = simulator.state.scan.values['output:O-00'] === true;
@@ -293,6 +295,14 @@ export function FirstLesson({
       action: '点击编辑器下方“检查结构”。',
       why: '先确保元件完整、变量有效；结构正确仍需用实际输入验证。',
       selector: '[data-guide="check"]',
+    };
+  else if (editable && lessonView === 'edit')
+    task = {
+      title: '线路已检查，切换到运行验证',
+      action:
+        '点击操作区上方“运行验证（保留编辑）”，继续预测和扫描。返回编辑本身不会清除验证，真正修改程序才会复位。',
+      why: '编程和运行观察分开显示，让当前操作留在同一屏；程序和扫描记录仍属于同一份草稿。',
+      selector: '#lesson-open-verify',
     };
   else if (ready)
     task = {
@@ -468,31 +478,43 @@ export function FirstLesson({
                 当前触点读到了输出SIM_OUT_00。本课应读取按钮输入SIM_IN_00，请改“元件变量”。
               </p>
             )}
-            <details open={phase === 0}>
-              <summary>为什么这样做？</summary>
+            <details open={phase === 0} className={ready && editable ? 'lesson-finish' : undefined}>
+              <summary>
+                {ready && editable ? <h2>你已经让同一盏灯遵守两种规则</h2> : '为什么这样做？'}
+              </summary>
               <p>{task.why}</p>
+              {ready && editable && (
+                <>
+                  <p>
+                    常开和常闭各判断什么？为什么换一个触点就改变了灯的行为？如果停止后改输入，灯为什么暂时不变？
+                  </p>
+                  <p>操作检查通过不等于已掌握。可展开验证记录回顾，再进入停止条件。</p>
+                </>
+              )}
             </details>
             {phase > 0 && (
               <>
-                <div className="lesson-help-actions">
-                  <button onClick={locate} className="button secondary">
-                    定位当前操作
-                  </button>
-                  <button
-                    className="text-button"
-                    aria-label={`需要一点帮助（${hints}/3）`}
-                    onClick={() => setHints((v) => Math.min(3, v + 1))}
-                  >
-                    帮助（{hints}/3）
-                  </button>
-                </div>
-                {hints > 0 && (
+                {!(editable && ready) && (
+                  <div className="lesson-help-actions">
+                    <button onClick={locate} className="button secondary">
+                      定位当前操作
+                    </button>
+                    <button
+                      className="text-button"
+                      aria-label={`需要一点帮助（${hints}/3）`}
+                      onClick={() => setHints((v) => Math.min(3, v + 1))}
+                    >
+                      帮助（{hints}/3）
+                    </button>
+                  </div>
+                )}
+                {hints > 0 && !ready && (
                   <p className="lesson-hint">
                     {hints === 1
                       ? '方向：左边触点读输入，右边线圈写输出；先确认条件，再完成当前任务。'
                       : hints === 2
                         ? `位置：${task.action}`
-                        : `示范思路：常${phase === 5 ? '闭' : '开'}触点绑定SIM_IN_00 → 普通线圈绑定SIM_OUT_00。输入${phase === 5 ? 'FALSE' : 'TRUE'}时灯亮。请手动操作，软件不会替你填入。`}
+                        : `示范思路：常${closed ? '闭' : '开'}触点绑定SIM_IN_00 → 普通线圈绑定SIM_OUT_00。输入${closed ? 'FALSE' : 'TRUE'}时灯亮。${editable ? '请手动操作，软件不会替你填入。' : phase === 2 || phase === 4 ? '理解后回答右侧问题，无需编程。' : '程序只读，请通过预测和实际扫描验证。'}`}
                   </p>
                 )}
                 {phase !== 2 && phase !== 4 && (
@@ -628,6 +650,7 @@ export function FirstLesson({
                     <button
                       className="button secondary"
                       aria-pressed={lessonView === 'verify'}
+                      id="lesson-open-verify"
                       onClick={() => setLessonView('verify')}
                     >
                       运行验证（保留编辑）
@@ -663,12 +686,14 @@ export function FirstLesson({
                           }
                         >
                           <LearningSymbol kind={closed ? 'contactClosed' : 'contact'} />
-                          <small>{closed ? '常闭' : '常开'} · 读SIM_IN_00</small>
+                          <small>
+                            {closed ? '常闭' : '常开'} · 读{inputName}
+                          </small>
                         </span>
                         <b>→</b>
                         <span className={output ? 'energized' : ''}>
                           <LearningSymbol kind="coil" />
-                          <small>普通线圈 · 写SIM_OUT_00</small>
+                          <small>普通线圈 · 写{outputName}</small>
                         </span>
                       </div>
                       <p className="demo-caption">
@@ -693,7 +718,7 @@ export function FirstLesson({
                       >
                         亮灯按钮 · {input ? '接通 TRUE' : '断开 FALSE'}
                       </button>
-                      <small>SIM_IN_00 · 不是直接控制灯</small>
+                      <small>{inputName} · I-00 · 不是直接控制灯</small>
                     </div>
                     <span aria-hidden="true">→</span>
                     <div
@@ -706,7 +731,9 @@ export function FirstLesson({
                         ④ 指示灯：
                         {simulator.state.scan.scanCount ? (output ? '亮' : '灭') : '尚未扫描'}
                       </strong>
-                      <small>SIM_OUT_00 = {output ? 'TRUE' : 'FALSE'}</small>
+                      <small>
+                        {outputName} = {output ? 'TRUE' : 'FALSE'}
+                      </small>
                     </div>
                   </div>
                   <fieldset id="lesson-predict" className="lesson-prediction">
@@ -869,17 +896,6 @@ export function FirstLesson({
                   : '先完成当前线路，保持默认断开先预测并扫描，再接通验证。'}
           </p>
         </footer>
-        {ready && phase === 5 && (
-          <section className="lesson-finish">
-            <h2>你已经让同一盏灯遵守两种规则</h2>
-            <p>
-              请不看说明回答：常开和常闭各判断什么？为什么换一个触点就改变了灯的行为？如果停止后改输入，灯为什么暂时不变？
-            </p>
-            <p>
-              操作检查通过不等于已掌握。请把最困惑的一步告诉我，我们先修好第一课，再推广其余实验。
-            </p>
-          </section>
-        )}
       </main>
       <GuideHighlight
         target={active ? target : null}
