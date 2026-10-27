@@ -10,9 +10,10 @@ import {
   phaseProgram,
   lampProblem,
   verifiedCase,
+  learningPhases,
 } from '../teaching/firstLesson';
 import { downloadText } from '../storage/projects';
-import { learningPhases } from './LearningHome';
+import { LessonPreparation } from './LessonPreparation';
 import { LadderEditor } from './LadderEditor';
 import { GuideHighlight, type GuideTarget } from './GuideHighlight';
 import { KnowledgeLibrary } from './KnowledgeLibrary';
@@ -45,9 +46,9 @@ const objects = [
 const purposes = [
   '认出输入、判断和输出，先不用画程序。',
   '操作现成线路，先建立输入与结果的联系。',
-  '逐步放置并绑定元件，理解每一次操作。',
-  '只缺一个输出线圈，把已学的步骤用一次。',
-  '从空白开始，帮助按需打开，不自动填答案。',
+  '看懂触点和线圈的分工，不重复上一阶段的扫描。',
+  '在只读的常闭示例中，验证FALSE为什么让灯亮。',
+  '先确定选择理由与变量，再进入第六阶段动手编程。',
   '只改变判断方式，检验你是否理解常闭。',
 ];
 export function FirstLesson({
@@ -66,6 +67,11 @@ export function FirstLesson({
   );
   const [allowSave, setAllowSave] = useState(!loaded.recovery);
   const phase = progress.phase;
+  const editable = phase === 5;
+  const closed = phase === 3 || phase === 5;
+  const observing = phase === 1 || phase === 3;
+  const [reviewAnswer, setReviewAnswer] = useState('');
+  const [lessonView, setLessonView] = useState<'edit' | 'verify'>('edit');
   const [initialPrograms] = useState(
     () =>
       Object.fromEntries([1, 2, 3, 4, 5].map((p) => [p, phaseProgram(p)])) as Record<
@@ -73,7 +79,9 @@ export function FirstLesson({
         ProgramWorkspace
       >,
   );
-  const program = progress.programs[phase] ?? initialPrograms[phase] ?? initialPrograms[1];
+  // 示范与旧学生草稿分离：只读阶段不加载或覆盖旧的1–5阶段程序。
+  const program =
+    (editable ? progress.programs[5] : undefined) ?? initialPrograms[phase] ?? initialPrograms[1];
   const simulator = useSimulator(program);
   const [editor, setEditor] = useState<EditorSnapshot>({ tool: 'select', selection: null });
   const [checked, setChecked] = useState<ProgramWorkspace>();
@@ -118,40 +126,40 @@ export function FirstLesson({
       simulator.state.program !== program
     )
       return;
-    const result = verifiedCase(program, simulator.state, phase === 5);
+    const result = verifiedCase(program, simulator.state, closed);
     const input = simulator.state.scan.values['input:I-00'] === true,
       output = simulator.state.scan.values['output:O-00'] === true;
     if (simulator.state.status === 'error')
       setFeedback('程序结构还不完整，请按上方任务修正后再预测和扫描。');
     else if (pending.guess !== output)
       setFeedback(
-        `预测需要修正：本次采样输入${input ? 'TRUE' : 'FALSE'}，${phase === 5 ? '常闭判断对它取反' : '常开判断读取它'}，实际灯${output ? '亮' : '灭'}。想一想原因，重新预测再扫描；这次不计为验证通过。`,
+        `预测需要修正：本次采样输入${input ? 'TRUE' : 'FALSE'}，${closed ? '常闭判断对它取反' : '常开判断读取它'}，实际灯${output ? '亮' : '灭'}。想一想原因，重新预测再扫描；这次不计为验证通过。`,
       );
     else if (result) {
       setCases((c) => ({ ...c, [result]: true }));
       setFeedback(
-        `预测正确。扫描#${simulator.state.scan.scanCount}：输入${input ? 'TRUE' : 'FALSE'} → ${phase === 5 ? '常闭' : '常开'}条件${output ? '成立' : '不成立'} → 输出${output ? 'TRUE' : 'FALSE'} → 灯${output ? '亮' : '灭'}。`,
+        `预测正确。扫描#${simulator.state.scan.scanCount}：输入${input ? 'TRUE' : 'FALSE'} → ${closed ? '常闭' : '常开'}条件${output ? '成立' : '不成立'} → 输出${output ? 'TRUE' : 'FALSE'} → 灯${output ? '亮' : '灭'}。`,
       );
-    } else setFeedback(lampProblem(program, phase === 5) ?? '请检查当前程序及实际扫描结果。');
+    } else setFeedback(lampProblem(program, closed) ?? '请检查当前程序及实际扫描结果。');
     setPending(null);
     setGuess(null);
   }, [simulator.state.scan, simulator.state.status, pending, program, phase]);
   const changePhase = (next: number) => {
     simulator.stop();
-    const independent = progress.programs[4];
-    const variation =
-      next === 5 && independent && !lampProblem(independent)
-        ? { ...structuredClone(independent), name: '第一课 · 独立程序的常闭变式' }
-        : initialPrograms[next];
-    const p = progress.programs[next] ?? variation ?? initialPrograms[1];
+    const p =
+      (next === 5 ? progress.programs[5] : undefined) ??
+      initialPrograms[next] ??
+      initialPrograms[1];
     simulator.reset(p);
     setProgress((old) => ({
       ...old,
       phase: next,
       unlocked: Math.max(old.unlocked, next),
-      programs: next > 0 ? { ...old.programs, [next]: p } : old.programs,
+      programs: next === 5 ? { ...old.programs, 5: p } : old.programs,
     }));
     setCases({ on: false, off: false });
+    setReviewAnswer('');
+    setLessonView('edit');
     setGuess(null);
     setPending(null);
     setChecked(undefined);
@@ -165,6 +173,8 @@ export function FirstLesson({
     heading.current?.closest('.first-lesson')?.scrollIntoView({ block: 'start' });
   };
   const replace = (p: ProgramWorkspace, record = true) => {
+    if (!editable) return;
+    setLessonView('edit');
     if (record) {
       setUndo((u) => [...u, program].slice(-50));
       setRedo([]);
@@ -179,24 +189,20 @@ export function FirstLesson({
     setGuess(null);
     setPending(null);
     setChecked(undefined);
-    setFeedback(
-      phase === 2
-        ? '程序已修改，请完成搭建并检查结构；本阶段不重复观察实验。'
-        : '程序已修改，运行已复位。请重新设置输入，两种情况都需要重新验证。',
-    );
+    setFeedback('程序已修改，运行已复位。请重新设置输入，两种情况都需要重新验证。');
     setTarget(null);
   };
   const edit = (action: EditorAction) => {
-    if (simulator.state.status === 'running' || phase === 1) return;
+    if (simulator.state.status === 'running' || !editable) return;
     const next = editProgram(program, action);
     if (next !== program) replace(next);
   };
-  const valid = phase > 0 && !lampProblem(program, phase === 5);
+  const valid = phase > 0 && !lampProblem(program, closed);
   const ready =
     phase === 0
       ? seen.length === 4 && answer === 'read'
-      : phase === 2
-        ? valid && checked === program
+      : phase === 2 || phase === 4
+        ? reviewAnswer === (phase === 2 ? 'read' : 'invert')
         : valid && cases.on && cases.off;
   const input = simulator.state.inputs['input:I-00'] === true;
   const sampled = simulator.state.scan.values['input:I-00'] === true;
@@ -216,21 +222,21 @@ export function FirstLesson({
       why: '先分清谁提供消息、谁判断、谁写结果，再动手画线路。',
       selector: '.lesson-objects',
     };
-  else if (phase !== 1 && !valid) {
+  else if (editable && !valid) {
     if (!contact)
       task =
-        editor.tool === 'normallyOpen'
+        editor.tool === 'normallyClosed'
           ? {
-              title: '放置常开触点',
+              title: '放置常闭触点',
               action: '点击梯形图左侧“＋ 添加触点”。',
               why: '左侧触点负责读条件。先只放一个。',
               selector: '[data-guide="contact-0-0-0"]',
             }
           : {
-              title: '选择常开触点工具',
-              action: '点击编辑器工具栏“常开触点”。',
-              why: '本课先做按钮接通才亮灯，所以用常开判断TRUE。',
-              selector: '[data-guide="tool-normallyOpen"]',
+              title: '选择常闭触点工具',
+              action: '点击编辑器工具栏“常闭触点”。',
+              why: '第六阶段要求断开才亮灯，所以用常闭判断FALSE。',
+              selector: '[data-guide="tool-normallyClosed"]',
             };
     else if (contact.variableId !== 'input:I-00')
       task = {
@@ -273,18 +279,15 @@ export function FirstLesson({
       };
     else
       task = {
-        title: phase === 5 ? '把常开改为常闭' : '修正当前线路',
+        title: contact.contactType !== 'normallyClosed' ? '把常开改为常闭' : '修正当前线路',
         action:
-          phase === 5
+          contact.contactType !== 'normallyClosed'
             ? '点击梯形图第一个触点，在旁边“图上触点类型”选择常闭触点；下方属性栏也可修改。'
-            : '按“检查结构”，根据提示恢复一条常开按钮→普通灯线圈线路。',
-        why:
-          phase === 5
-            ? '新要求是按钮断开时灯亮，因此要判断输入是不是FALSE。'
-            : '多余支路、其他指令或错误变量会改变这条简单规则。',
+            : (lampProblem(program, true) ?? '请检查当前线路。'),
+        why: '新要求是按钮断开时灯亮，因此要判断输入是不是FALSE；只需一个普通常闭触点和一个灯线圈。',
         selector: '[data-guide="contact-0-0-0"]',
       };
-  } else if (phase !== 1 && checked !== program)
+  } else if (editable && checked !== program)
     task = {
       title: '检查刚搭好的结构',
       action: '点击编辑器下方“检查结构”。',
@@ -293,17 +296,15 @@ export function FirstLesson({
     };
   else if (ready)
     task = {
-      title: phase === 2 ? '线路已搭好，结构检查通过' : '两种输入都验证通过',
+      title: '两种输入都验证通过',
       action:
         phase === 5
           ? '用自己的话解释常开和常闭的区别，再进入下一项目。'
-          : phase === 2
-            ? '直接进入“补全程序”；本阶段无需重复上一阶段的亮灭实验。'
-            : '点击下方“进入下一阶段”，逐步撤去帮助。',
+          : '点击下方“进入下一阶段”，继续学习。',
       why: '能解释并预测结果，比只记住点了哪些按钮更重要。',
       selector: '#lesson-next',
     };
-  else if (phase > 0 && (phase === 1 || (valid && checked === program))) {
+  else if (phase > 0 && (observing || (valid && checked === program))) {
     const needed = cases.off;
     const stateName = needed ? '接通' : '断开';
     const valueName = needed ? 'TRUE' : 'FALSE';
@@ -321,11 +322,20 @@ export function FirstLesson({
             ? '保持断开，先做一次扫描'
             : `预测${stateName}后的灯`,
         action: `${!needed && !simulator.state.scan.scanCount ? '不用切换按钮，保持默认FALSE。' : `保持当前${valueName}。`}选择亮/灭预测，再点“预测后单步扫描”。`,
-        why: `复位状态不算验证。${phase === 5 ? '常闭在FALSE时成立、TRUE时不成立。' : '常开在TRUE时成立、FALSE时不成立。'}扫描后才能记录结果。`,
+        why: `复位状态不算验证。${closed ? '常闭在FALSE时成立、TRUE时不成立。' : '常开在TRUE时成立、FALSE时不成立。'}扫描后才能记录结果。`,
         selector: '#lesson-predict',
       };
   }
-  const showGuidance = phase !== 4 || hints > 0;
+  if (phase === 2 || phase === 4)
+    task = {
+      title: phase === 2 ? '读懂线路，不必再扫描' : '确定修改方案，再动手',
+      action:
+        phase === 2
+          ? '阅读右侧线路分工，回答下方理解题。这里不需要编程。'
+          : '阅读右侧编程准备，选择下一阶段应怎样改规则。第六阶段才开放编程。',
+      why: '先理解元件职责和选择理由，避免操作时只靠试按钮。',
+      selector: ready ? '#lesson-next' : '#lesson-review',
+    };
   const locate = () =>
     setTarget({
       selector: `.first-lesson ${task.selector}`,
@@ -333,7 +343,7 @@ export function FirstLesson({
       request: Date.now(),
     });
   useEffect(() => {
-    if (!active || phase === 0 || !showGuidance) {
+    if (!active || phase === 0) {
       setTarget(null);
       return;
     }
@@ -342,17 +352,17 @@ export function FirstLesson({
       text: task.action,
       request: Date.now(),
     });
-  }, [phase, task.selector, active, showGuidance]);
+  }, [phase, task.selector, active]);
   const scan = () => {
     if (guess === null) {
       setFeedback('先选择你预测的亮或灭，再扫描。');
       return;
     }
     if (!valid) {
-      setFeedback(lampProblem(program, phase === 5) ?? '先完成线路。');
+      setFeedback(lampProblem(program, closed) ?? '先完成线路。');
       return;
     }
-    if (phase > 1 && checked !== program) {
+    if (editable && checked !== program) {
       setFeedback('先点击编辑器的“检查结构”，再进行预测验证。');
       return;
     }
@@ -422,9 +432,9 @@ export function FirstLesson({
               [
                 '按钮、条件和灯',
                 '先让现成的程序运行',
-                '亲手建立第一条线路',
-                '把缺少的结果补上',
-                '这次由你从空白开始',
+                '触点读，线圈写',
+                '断开时，条件成立',
+                '确定下一阶段的修改方案',
                 '按钮断开时，让灯亮',
               ][phase]
             }
@@ -446,11 +456,12 @@ export function FirstLesson({
         <div className="lesson-columns">
           <aside className="lesson-task" aria-label="当前学习任务">
             <span className="eyebrow">你现在要做什么</span>
-            <h2>{showGuidance ? task.title : '独立搭建任务'}</h2>
-            <p>
-              {showGuidance
-                ? task.action
-                : '建立一个按钮接通后灯亮、断开后灯灭的程序。请先自己试，不确定时再打开帮助。'}
+            <h2>{task.title}</h2>
+            <p>{task.action}</p>
+            <p className="notice-text">
+              {editable
+                ? '第六阶段已开放编程；旧草稿保留。'
+                : '第一至第五阶段程序只读，第六阶段开放编程。'}
             </p>
             {contact?.variableId === 'output:O-00' && phase > 1 && (
               <p role="alert">
@@ -484,18 +495,14 @@ export function FirstLesson({
                         : `示范思路：常${phase === 5 ? '闭' : '开'}触点绑定SIM_IN_00 → 普通线圈绑定SIM_OUT_00。输入${phase === 5 ? 'FALSE' : 'TRUE'}时灯亮。请手动操作，软件不会替你填入。`}
                   </p>
                 )}
-                {phase === 2 ? (
-                  <p className="lesson-target">
-                    本阶段只做搭建与结构检查，亮灭观察已在上一阶段完成。
-                  </p>
-                ) : (
+                {phase !== 2 && phase !== 4 && (
                   <details className="lesson-verification">
                     <summary>
                       预期结果与验证记录（{Number(cases.on) + Number(cases.off)}/2）
                     </summary>
                     <p className="lesson-target">
                       预期：
-                      {phase === 5
+                      {closed
                         ? '输入FALSE→灯亮；输入TRUE→灯灭。'
                         : '输入TRUE→灯亮；输入FALSE→灯灭。'}
                       输入改变后必须扫描。
@@ -586,20 +593,77 @@ export function FirstLesson({
               </>
             ) : (
               <>
+                {(phase === 2 || phase === 4) && (
+                  <LessonPreparation
+                    phase={phase}
+                    answer={reviewAnswer}
+                    onAnswer={setReviewAnswer}
+                  />
+                )}
+                {!editable && progress.programs[phase] && (
+                  <details className="lesson-legacy-draft">
+                    <summary>旧版此阶段草稿已保留（不参与示范）</summary>
+                    <p>新流程使用独立只读示范，不覆盖你之前的程序。可下载原草稿留存。</p>
+                    <button
+                      onClick={() =>
+                        downloadText(
+                          JSON.stringify(progress.programs[phase], null, 2),
+                          `PLC-旧版阶段${phase + 1}草稿.json`,
+                        )
+                      }
+                    >
+                      导出旧版此阶段草稿
+                    </button>
+                  </details>
+                )}
+                {editable && valid && checked === program && (
+                  <div className="lesson-view-actions" aria-label="编程和验证切换">
+                    <button
+                      className="button secondary"
+                      aria-pressed={lessonView === 'edit'}
+                      onClick={() => setLessonView('edit')}
+                    >
+                      返回编辑程序（保留草稿）
+                    </button>
+                    <button
+                      className="button secondary"
+                      aria-pressed={lessonView === 'verify'}
+                      onClick={() => setLessonView('verify')}
+                    >
+                      运行验证（保留编辑）
+                    </button>
+                  </div>
+                )}
                 <section
                   className="lesson-simulator"
                   aria-label="按钮与实际扫描"
-                  hidden={phase === 2 || (phase > 1 && (!valid || checked !== program))}
+                  hidden={
+                    !observing &&
+                    (!editable || !valid || checked !== program || lessonView !== 'verify')
+                  }
                 >
-                  {phase === 1 && (
+                  {(observing || (editable && lessonView === 'verify')) && (
                     <div className="lesson-demo">
-                      <h2>这条线路已经搭好，先观察</h2>
-                      <div className="demo-rung" aria-label="常开按钮接普通线圈示例">
+                      <h2>
+                        {editable
+                          ? '当前学生程序：验证常闭规则'
+                          : closed
+                            ? '只读常闭示例：观察相反的规则'
+                            : '这条线路已经搭好，先观察'}
+                      </h2>
+                      <div
+                        className="demo-rung"
+                        aria-label={closed ? '常闭按钮接普通线圈示例' : '常开按钮接普通线圈示例'}
+                      >
                         <span
-                          className={simulator.state.scan.scanCount && sampled ? 'energized' : ''}
+                          className={
+                            simulator.state.scan.scanCount && (closed ? !sampled : sampled)
+                              ? 'energized'
+                              : ''
+                          }
                         >
-                          <LearningSymbol kind="contact" />
-                          <small>常开 · 读SIM_IN_00</small>
+                          <LearningSymbol kind={closed ? 'contactClosed' : 'contact'} />
+                          <small>{closed ? '常闭' : '常开'} · 读SIM_IN_00</small>
                         </span>
                         <b>→</b>
                         <span className={output ? 'energized' : ''}>
@@ -607,7 +671,10 @@ export function FirstLesson({
                           <small>普通线圈 · 写SIM_OUT_00</small>
                         </span>
                       </div>
-                      <p className="demo-caption">常开读取按钮，线圈写入灯；高亮来自实际扫描。</p>
+                      <p className="demo-caption">
+                        {closed ? '常闭判断输入是否为FALSE' : '常开判断输入是否为TRUE'}
+                        ，线圈写入灯；高亮来自实际扫描。
+                      </p>
                     </div>
                   )}
                   <div className="lesson-input-output">
@@ -663,7 +730,7 @@ export function FirstLesson({
                     </p>
                     {input !== sampled && <p>输入已改变，等待下一次扫描；灯仍保留上次结果。</p>}
                   </div>
-                  {(phase === 1 || (phase !== 2 && valid && checked === program)) && feedback && (
+                  {(observing || (editable && valid && checked === program)) && feedback && (
                     <p className="lesson-feedback" role="status">
                       {feedback}
                     </p>
@@ -699,13 +766,11 @@ export function FirstLesson({
                     </button>
                   </details>
                 </section>
-                {phase !== 1 && (
-                  <div className="lesson-editor-wrap">
+                {editable && (
+                  <div className="lesson-editor-wrap" hidden={lessonView !== 'edit'}>
                     {checked !== program && (
                       <p className="lesson-build-intro">
-                        {phase === 2
-                          ? '本阶段专注搭建：放好触点和线圈、绑定变量，再检查结构，即可进入补全练习。'
-                          : '先完成这一条线路并点击“检查结构”，按钮、预测和扫描区会随后出现。当前阶段只用触点、线圈和两个变量。'}
+                        先在图上把常开改为常闭，保留输入和输出绑定，再点击“检查结构”。符合任务要求后出现预测和扫描区。
                       </p>
                     )}
                     <div className="lesson-edit-actions">
@@ -739,21 +804,21 @@ export function FirstLesson({
                       compact
                       program={program}
                       onAction={edit}
-                      running={false}
+                      running={simulator.state.status === 'running'}
                       traces={simulator.state.scan.traces}
                       onEditorState={setEditor}
                       onCheck={() => {
-                        setChecked(lampProblem(program, phase === 5) ? undefined : program);
+                        const problem = lampProblem(program, closed);
+                        setChecked(problem ? undefined : program);
+                        if (!problem) setLessonView('verify');
                         setFeedback(
-                          lampProblem(program, phase === 5) ??
-                            (phase === 2
-                              ? '结构与本课要求符合，可以直接进入补全程序。'
-                              : '结构与本课要求符合。保持默认FALSE先预测并扫描，再接通验证。'),
+                          lampProblem(program, closed) ??
+                            '结构与本课要求符合。保持默认FALSE先预测并扫描，再接通验证。',
                         );
                       }}
                       runtimeControls={null}
                     />
-                    {(phase === 2 || !valid || checked !== program) && feedback && (
+                    {(!valid || checked !== program) && feedback && (
                       <p className="lesson-feedback" role="status">
                         {feedback}
                       </p>
@@ -799,8 +864,8 @@ export function FirstLesson({
               ? '已达到本阶段操作检查。请试着用自己的话解释原因。'
               : phase === 0
                 ? '先认识四个对象并回答问题。'
-                : phase === 2
-                  ? '完成触点与线圈绑定并检查结构，即可继续。'
+                : phase === 2 || phase === 4
+                  ? '阅读说明并完成本阶段理解题，即可继续。'
                   : '先完成当前线路，保持默认断开先预测并扫描，再接通验证。'}
           </p>
         </footer>
@@ -843,7 +908,7 @@ export function FirstLesson({
                     downloadText(loaded.recovery, 'PLC-教学原始记录.txt');
                     setAllowSave(true);
                   } else exportProgram();
-                  replace(phaseProgram(phase));
+                  if (editable) replace(phaseProgram(phase));
                   setResetPrompt(false);
                 }}
               >

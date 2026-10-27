@@ -51,7 +51,7 @@ it('首页显示实际保存阶段，知识下拉与正文同步且不覆盖教�
     'value',
     '2',
   );
-  expect(screen.getByRole('button', { name: '继续第一课：跟随搭建 →' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '继续第一课：读懂线路 →' })).toBeInTheDocument();
   await u.click(screen.getByRole('button', { name: '知识工具箱' }));
   await u.selectOptions(screen.getByRole('combobox', { name: '知识主题' }), 'normallyClosed');
   const dialog = within(screen.getByRole('dialog'));
@@ -62,6 +62,6 @@ it('首页显示实际保存阶段，知识下拉与正文同步且不覆盖教�
   );
   await u.click(dialog.getByRole('button', { name: '关闭弹窗' }));
   expect(localStorage.getItem(FIRST_LESSON_KEY)).toBe(saved);
-  await u.click(screen.getByRole('button', { name: '继续第一课：跟随搭建 →' }));
-  expect(screen.getByRole('heading', { name: '跟随搭建：亲手建立第一条线路' })).toBeInTheDocument();
+  await u.click(screen.getByRole('button', { name: '继续第一课：读懂线路 →' }));
+  expect(screen.getByRole('heading', { name: '读懂线路：触点读，线圈写' })).toBeInTheDocument();
 });

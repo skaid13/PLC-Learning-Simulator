@@ -4,17 +4,9 @@ import { allExperiments } from '../data/catalog';
 import { FoundationCourse } from './FoundationCourse';
 import { KnowledgeLibrary } from './KnowledgeLibrary';
 import { Modal } from './Modal';
-import { loadFirstLesson } from '../teaching/firstLesson';
+import { loadFirstLesson, learningPhases } from '../teaching/firstLesson';
 import { LearningSymbol } from './LearningSymbol';
 import { Icon } from './Icon';
-export const learningPhases = [
-  '认识对象',
-  '观察示例',
-  '跟随搭建',
-  '补全程序',
-  '独立搭建',
-  '变化任务',
-];
 export function LearningHome({
   onStart,
   onWorkbench,
@@ -65,10 +57,10 @@ export function LearningHome({
                       [
                         '先看懂每个部分',
                         '改变输入，观察结果',
-                        '一步一步画出线路',
-                        '把缺少的元件补上',
-                        '从空白开始验证',
-                        '换一个条件再试试',
+                        '只读拆解，不重复扫描',
+                        '观察断开时条件成立',
+                        '确认选择理由和变量',
+                        '第六阶段开放编程',
                       ][i]
                     }
                   </small>
@@ -91,7 +83,7 @@ export function LearningHome({
           <span className="eyebrow">从这里开始 · 第一课</span>
           <h1>让一盏灯，按你的规则亮起来。</h1>
           <p className="learning-lead">
-            先认识按钮、程序和灯，再看一个真的会运行的例子。每次只做一件事，最后自己搭出第一条线路。
+            前五阶段先认识、观察和理解，程序只读；第六阶段再亲手修改线路，并用真实输入验证。
           </p>
           <section className="learning-entry">
             <div className="learning-entry-meta">

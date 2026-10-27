@@ -1,5 +1,9 @@
 /** 本课的输入、逻辑指令与装置符号。颜色由真实选择/扫描状态的父元素提供。 */
-export function LearningSymbol({ kind }: { kind: 'input' | 'contact' | 'coil' | 'lamp' }) {
+export function LearningSymbol({
+  kind,
+}: {
+  kind: 'input' | 'contact' | 'contactClosed' | 'coil' | 'lamp';
+}) {
   return (
     <svg
       className="learning-symbol"
@@ -16,7 +20,10 @@ export function LearningSymbol({ kind }: { kind: 'input' | 'contact' | 'coil' | 
           <path d="M31 13V8h18v5M32 26h16M40 21v10" />
         </>
       )}
-      {kind === 'contact' && <path d="M7 24h25m0-13v26m16-26v26m0-13h25" />}
+      {(kind === 'contact' || kind === 'contactClosed') && (
+        <path d="M7 24h25m0-13v26m16-26v26m0-13h25" />
+      )}
+      {kind === 'contactClosed' && <path d="m28 37 24-26" />}
       {kind === 'coil' && (
         <>
           <path d="M7 24h20m26 0h20M34 10a18 18 0 0 0 0 28m12-28a18 18 0 0 1 0 28" />

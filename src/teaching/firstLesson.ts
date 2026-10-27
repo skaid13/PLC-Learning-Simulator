@@ -1,10 +1,17 @@
 import type { ProgramWorkspace } from '../types';
-import { createWorkspace } from '../editor/model';
 import { createStarterReference, starterExperiments } from '../data/starters';
 import { parseProgram } from '../storage/projects';
 import { validateProgram } from '../editor/validation';
 import type { RuntimeState } from '../engine/runtime';
 export const FIRST_LESSON_KEY = 'plc-learning:first-lesson:v1';
+export const learningPhases = [
+  '认识对象',
+  '观察示例',
+  '读懂线路',
+  '观察常闭',
+  '编程准备',
+  '变化任务',
+];
 export type LessonProgress = {
   version: 1;
   phase: number;
@@ -13,11 +20,9 @@ export type LessonProgress = {
   programs: Record<string, ProgramWorkspace>;
 };
 export function phaseProgram(phase: number): ProgramWorkspace {
-  const program = [1, 3, 5].includes(phase)
-    ? createStarterReference(starterExperiments[0])
-    : createWorkspace(starterExperiments[0]);
-  program.name = `第一课 · ${['认识', '观察', '跟做', '补全', '独立', '变式'][phase]}`;
-  if (phase === 3) program.networks[0].coil = null;
+  const program = createStarterReference(starterExperiments[0]);
+  program.name = `第一课 · ${learningPhases[phase]}`;
+  if (phase === 3) program.networks[0].contacts[0].contactType = 'normallyClosed';
   return program;
 }
 export function loadFirstLesson(storage: Pick<Storage, 'getItem'>): {
