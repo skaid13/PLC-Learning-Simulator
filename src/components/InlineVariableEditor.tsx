@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import type { BoolVariable, LadderInstruction } from '../types';
 import type { EditorAction } from '../editor/model';
 import { VariableBinding } from './VariableBinding';
+import { ContactTypeField } from './ContactTypeField';
 
 export function InlineVariableEditor({
   instruction,
@@ -94,11 +95,17 @@ export function InlineVariableEditor({
       }}
     >
       <div className="inline-variable-heading">
-        <strong>编辑这个元件的变量</strong>
+        <strong>编辑这个元件</strong>
         <button type="button" aria-label="关闭图上变量编辑" onClick={onClose}>
           关闭
         </button>
       </div>
+      <ContactTypeField
+        inline
+        instruction={instruction}
+        networkId={networkId}
+        onAction={onAction}
+      />
       <VariableBinding
         inline
         instruction={instruction}

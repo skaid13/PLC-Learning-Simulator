@@ -276,7 +276,7 @@ export function FirstLesson({
         title: phase === 5 ? '把常开改为常闭' : '修正当前线路',
         action:
           phase === 5
-            ? '点选第一个触点，在“触点类型”选择常闭触点。'
+            ? '点击梯形图第一个触点，在旁边“图上触点类型”选择常闭触点；下方属性栏也可修改。'
             : '按“检查结构”，根据提示恢复一条常开按钮→普通灯线圈线路。',
         why:
           phase === 5
@@ -325,7 +325,7 @@ export function FirstLesson({
         selector: '#lesson-predict',
       };
   }
-  const showGuidance = phase < 4 || hints > 0;
+  const showGuidance = phase !== 4 || hints > 0;
   const locate = () =>
     setTarget({
       selector: `.first-lesson ${task.selector}`,
@@ -446,13 +446,11 @@ export function FirstLesson({
         <div className="lesson-columns">
           <aside className="lesson-task" aria-label="当前学习任务">
             <span className="eyebrow">你现在要做什么</span>
-            <h2>{showGuidance ? task.title : phase === 5 ? '独立变化任务' : '独立搭建任务'}</h2>
+            <h2>{showGuidance ? task.title : '独立搭建任务'}</h2>
             <p>
               {showGuidance
                 ? task.action
-                : phase === 5
-                  ? '让按钮断开时灯亮、接通时灯灭。只改变触点判断方式，保留按钮与灯的变量。'
-                  : '建立一个按钮接通后灯亮、断开后灯灭的程序。请先自己试，不确定时再打开帮助。'}
+                : '建立一个按钮接通后灯亮、断开后灯灭的程序。请先自己试，不确定时再打开帮助。'}
             </p>
             {contact?.variableId === 'output:O-00' && phase > 1 && (
               <p role="alert">
@@ -591,7 +589,7 @@ export function FirstLesson({
                 <section
                   className="lesson-simulator"
                   aria-label="按钮与实际扫描"
-                  hidden={phase === 2 || (phase > 1 && checked !== program)}
+                  hidden={phase === 2 || (phase > 1 && (!valid || checked !== program))}
                 >
                   {phase === 1 && (
                     <div className="lesson-demo">
@@ -665,7 +663,7 @@ export function FirstLesson({
                     </p>
                     {input !== sampled && <p>输入已改变，等待下一次扫描；灯仍保留上次结果。</p>}
                   </div>
-                  {feedback && (
+                  {(phase === 1 || (phase !== 2 && valid && checked === program)) && feedback && (
                     <p className="lesson-feedback" role="status">
                       {feedback}
                     </p>
@@ -745,7 +743,7 @@ export function FirstLesson({
                       traces={simulator.state.scan.traces}
                       onEditorState={setEditor}
                       onCheck={() => {
-                        setChecked(program);
+                        setChecked(lampProblem(program, phase === 5) ? undefined : program);
                         setFeedback(
                           lampProblem(program, phase === 5) ??
                             (phase === 2
@@ -755,7 +753,7 @@ export function FirstLesson({
                       }}
                       runtimeControls={null}
                     />
-                    {phase === 2 && feedback && (
+                    {(phase === 2 || !valid || checked !== program) && feedback && (
                       <p className="lesson-feedback" role="status">
                         {feedback}
                       </p>

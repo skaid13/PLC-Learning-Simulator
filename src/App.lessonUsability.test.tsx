@@ -115,3 +115,31 @@ it('重复选择同一变量不复位真实扫描证据、不占撤销；实际�
     screen.getByRole('button', { name: '网络 1 常开触点 SIM_IN_00 位置 1' }),
   ).toBeInTheDocument();
 });
+
+it('第六阶段恢复常开旧草稿时直接指出修改位置，语义未通过不显示扫描，图上可改常闭', async () => {
+  const user = userEvent.setup();
+  const draft = phaseProgram(5);
+  draft.variables.find((v) => v.id === 'input:I-00')!.name = '开关';
+  const previous = phaseProgram(1);
+  localStorage.setItem(
+    FIRST_LESSON_KEY,
+    JSON.stringify({ version: 1, phase: 5, unlocked: 5, programs: { 4: previous, 5: draft } }),
+  );
+  render(<App />);
+  await user.click(screen.getByRole('button', { name: /继续第一课/ }));
+  expect(screen.getByRole('heading', { name: '把常开改为常闭' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: '检查结构' }));
+  expect(screen.getByText(/变化任务要求常闭触点/)).toBeInTheDocument();
+  expect(screen.queryByRole('switch', { name: '亮灯按钮' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: '网络 1 常开触点 开关 位置 1' }));
+  await user.selectOptions(screen.getByLabelText('图上触点类型'), 'normallyClosed');
+  expect(screen.getByLabelText('触点类型')).toHaveValue('normallyClosed');
+  expect(screen.getByLabelText('图上元件变量')).toHaveValue('input:I-00');
+  await user.click(screen.getByRole('button', { name: '检查结构' }));
+  expect(screen.getByRole('switch', { name: '亮灯按钮' })).toBeInTheDocument();
+  const saved = JSON.parse(localStorage.getItem(FIRST_LESSON_KEY)!);
+  expect(saved.programs[4]).toEqual(previous);
+  expect(saved.programs[5].variables.find((v: { id: string }) => v.id === 'input:I-00').name).toBe(
+    '开关',
+  );
+});

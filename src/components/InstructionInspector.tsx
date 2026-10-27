@@ -1,3 +1,4 @@
+import { ContactTypeField } from './ContactTypeField';
 import { InstructionHelp } from './InstructionHelp';
 import { VariableBinding } from './VariableBinding';
 import type { BoolVariable, CoilInstruction, LadderInstruction, LadderNetwork } from '../types';
@@ -79,23 +80,11 @@ export function InstructionInspector({
           <div className="inspector-fields">
             {instruction.kind === 'contact' ? (
               <>
-                <label className="inspector-field">
-                  触点类型
-                  <select
-                    value={instruction.contactType}
-                    onChange={(e) =>
-                      onAction({
-                        type: 'changeContactType',
-                        networkId: network.id,
-                        instructionId: instruction.id,
-                        contactType: e.target.value as 'normallyOpen' | 'normallyClosed',
-                      })
-                    }
-                  >
-                    <option value="normallyOpen">常开触点</option>
-                    <option value="normallyClosed">常闭触点</option>
-                  </select>
-                </label>
+                <ContactTypeField
+                  instruction={instruction}
+                  networkId={network.id}
+                  onAction={onAction}
+                />
                 {!basic && (
                   <label className="inspector-field">
                     条件方式
